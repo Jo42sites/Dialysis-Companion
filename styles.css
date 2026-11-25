@@ -872,6 +872,15 @@ details.accordion[open] summary { background: var(--teal-soft); }
   display: block; font-size: .6rem; font-weight: 800; letter-spacing: .09em;
   text-transform: uppercase; color: var(--muted);
 }
+.census-title {
+  display: inline-block; padding: 4px 8px; border: 1px solid #d4a72c;
+  border-radius: 6px; background: #fff1a8; color: #263238;
+  font-size: .78rem; line-height: 1.25; letter-spacing: .025em;
+}
+.census-subtitle {
+  display: block; margin-top: 4px; font-size: .62rem; line-height: 1.35;
+  font-weight: 700; letter-spacing: .02em; text-transform: none; color: var(--muted);
+}
 .census-counts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2px; }
 .census-counts span { font-size: .72rem; font-weight: 700; color: var(--muted); }
 .census-counts strong {
