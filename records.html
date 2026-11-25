@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Private hemodialysis patient record book for Dialysis Companion. Records stay encrypted in this browser.">
+<title>HD Patient Records | Dialysis Companion</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="records.css">
+</head>
+<body class="records-body">
+
+<svg class="svg-sprite" aria-hidden="true" focusable="false">
+  <symbol id="r-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="r-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="r-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="r-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="r-print" viewBox="0 0 24 24"><path d="M7 8V3h10v5"/><rect x="4" y="8" width="16" height="8" rx="2"/><path d="M7 16h10v5H7z"/></symbol>
+  <symbol id="r-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 19h16"/></symbol>
+  <symbol id="r-upload" viewBox="0 0 24 24"><path d="M12 21V9m0 0 4 4m-4-4-4 4"/><path d="M4 5h16"/></symbol>
+  <symbol id="r-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/></symbol>
+  <symbol id="r-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4v-.2a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1-2.8-2.8.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3v-4h.2a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 2.8-2.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6V3h4v.2a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 2.8 2.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4h-.2a1.7 1.7 0 0 0-1.6 1Z"/></symbol>
+  <symbol id="r-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="r-edit" viewBox="0 0 24 24"><path d="M4 20h4L20 8l-4-4L4 16v4Z"/><path d="m14 6 4 4"/></symbol>
+  <symbol id="r-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></symbol>
+</svg>
+
+<!-- ============================================================
+     Lock screen / first-time setup
+     ============================================================ -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-brand">
+      <span class="lock-badge"><svg class="ic"><use href="#r-lock"/></svg></span>
+      <div>
+        <strong>Dialysis Companion</strong>
+        <span>HD Patient Records</span>
+      </div>
+    </div>
+
+    <div id="setupView" hidden>
+      <h1>Create your unit's record book</h1>
+      <p class="lock-lede">Anyone can set up their own private record book on their own device. Create a password to start.</p>
+      <form id="setupForm" novalidate>
+        <div class="field">
+          <label for="setupUnit">Unit / center name <span class="optional">(optional)</span></label>
+          <input id="setupUnit" autocomplete="organization" placeholder="e.g., Sta. Mesa Dialysis Center">
+        </div>
+        <div class="field">
+          <label for="newPw">Password</label>
+          <input id="newPw" type="password" minlength="8" autocomplete="new-password" required>
+          <p class="hint">At least 8 characters. Use something only your team knows.</p>
+        </div>
+        <div class="field">
+          <label for="newPw2">Confirm password</label>
+          <input id="newPw2" type="password" minlength="8" autocomplete="new-password" required>
+        </div>
+        <label class="ack">
+          <input type="checkbox" id="ackPw">
+          <span>I understand that if this password is lost, the records cannot be recovered without a backup.</span>
+        </label>
+        <p class="form-error" id="setupError" role="alert"></p>
+        <button class="btn btn-primary lock-submit" id="setupBtn" type="submit">Create password</button>
+      </form>
+    </div>
+
+    <div id="unlockView" hidden>
+      <h1>Enter password</h1>
+      <p class="lock-lede">The patient records on this device are locked.</p>
+      <form id="unlockForm" novalidate>
+        <div class="field">
+          <label for="pw">Password</label>
+          <div class="pw-wrap">
+            <input id="pw" type="password" autocomplete="current-password" required>
+            <button class="pw-toggle" type="button" data-toggle-pw="pw">Show</button>
+          </div>
+        </div>
+        <p class="form-error" id="unlockError" role="alert"></p>
+        <button class="btn btn-primary lock-submit" id="unlockBtn" type="submit">Unlock records</button>
+      </form>
+      <div class="lock-actions">
+        <button class="link-btn" id="restoreBtn" type="button">Restore a backup</button>
+        <button class="link-btn" id="recoveryBtn" type="button" hidden>Use recovery key</button>
+        <input type="file" id="restoreFile" accept="application/json,.json" hidden>
+      </div>
+    </div>
+
+    <p class="lock-note">
+      <svg class="ic"><use href="#r-shield"/></svg>
+      <span>Records are encrypted with AES-256 and saved only in this browser. Nothing is sent to a server. Use a trusted, private device.</span>
+    </p>
+    <p class="lock-back"><a href="index.html">← Back to the patient guide</a></p>
+  </div>
+</div>
+
+<!-- ============================================================
+     Records app
+     ============================================================ -->
+<div id="app" hidden>
+  <header class="rec-header">
+    <div class="rec-header-inner">
+      <a class="rec-brand" href="index.html">
+        <span class="mark"><svg class="ic"><use href="#r-shield"/></svg></span>
+        <span>
+          <strong>Dialysis Companion</strong>
+          <small>HD patient records<span id="recUnitLabel"></span></small>
+        </span>
+      </a>
+      <div class="rec-actions">
+        <button class="btn btn-secondary btn-small" id="settingsBtn" type="button">
+          <svg><use href="#r-gear"/></svg><span class="btn-label">Settings</span>
+        </button>
+        <button class="btn btn-secondary btn-small" id="lockBtn" type="button">
+          <svg><use href="#r-lock"/></svg><span class="btn-label">Lock</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="rec-wrap">
+    <div class="rec-intro">
+      <div>
+        <p class="eyebrow">Private record book</p>
+        <h1>Hemodialysis patient records</h1>
+        <p class="rec-lede">One record per patient, for your own unit. Data stays in this browser and is encrypted with your password.</p>
+      </div>
+    </div>
+
+    <div class="rec-stats">
+      <div class="rec-stat">
+        <span>Active patients</span>
+        <strong id="statTotal">0</strong>
+        <div class="rec-substats">
+          <span><b id="statOpd">0</b> OPD</span>
+          <span><b id="statIp">0</b> IP</span>
+          <span><b id="statOthers">0</b> Others</span>
+        </div>
+      </div>
+      <div class="rec-stat"><span>On HD / HDF</span><strong id="statHD">0</strong></div>
+      <div class="rec-stat alert"><span>URR below 65%</span><strong id="statUrr">0</strong></div>
+      <div class="rec-stat alert"><span>High phosphorus</span><strong id="statP">0</strong></div>
+    </div>
+
+    <div class="rec-toolbar">
+      <div class="search-field">
+        <svg class="ic"><use href="#r-search"/></svg>
+        <input id="recSearch" type="search" placeholder="Search name, PhilHealth, unit, doctor…" autocomplete="off" aria-label="Search patients">
+      </div>
+      <select id="recSort" aria-label="Sort patients">
+        <option value="updated">Recently updated</option>
+        <option value="name">Name A–Z</option>
+      </select>
+      <select id="recStatusFilter" aria-label="Filter by patient status">
+        <option value="all">All statuses</option>
+        <option>Active</option>
+        <option>Transferred</option>
+        <option>Deceased</option>
+      </select>
+      <button class="btn btn-secondary btn-small" id="printListBtn" type="button">
+        <svg><use href="#r-print"/></svg>Print list
+      </button>
+      <button class="btn btn-primary" id="addPatientBtn" type="button">
+        <svg><use href="#r-plus"/></svg>Add patient
+      </button>
+    </div>
+
+    <p class="rec-count" id="recCount" aria-live="polite"></p>
+    <div class="patient-grid" id="patientList"></div>
+
+    <div class="empty-state" id="emptyState" hidden>
+      <span class="empty-icon"><svg class="ic"><use href="#r-user"/></svg></span>
+      <h2>No patient records yet</h2>
+      <p>Create the first HD record. Labs, orders, access, dialyzer, and complications are kept together.</p>
+      <button class="btn btn-primary" id="emptyAddBtn" type="button"><svg><use href="#r-plus"/></svg>Add first patient</button>
+    </div>
+
+    <p class="rec-footnote">
+      <svg class="ic"><use href="#r-lock"/></svg>
+      Encrypted on this device. Download a backup from Settings before changing computers or clearing browser data.
+    </p>
+  </main>
+</div>
+
+<!-- ============================================================
+     Patient form
+     ============================================================ -->
+<dialog id="patientDialog" class="rec-dialog" aria-labelledby="patientDialogTitle">
+  <form id="patientForm" novalidate>
+    <header class="dlg-head">
+      <div>
+        <p class="eyebrow">HD record</p>
+        <h2 id="patientDialogTitle">Add patient</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close aria-label="Close"><svg class="ic"><use href="#r-close"/></svg></button>
+    </header>
+
+    <div class="dlg-body">
+      <p class="form-error" id="patientError" role="alert"></p>
+      <p class="form-tip">Save the patient first. Then open the record and choose <strong>Add monthly data</strong> to track each month.</p>
+
+      <section class="form-section">
+        <h3>Patient details</h3>
+        <div class="form-grid">
+          <div class="field full">
+            <label for="pName">Full name *</label>
+            <input id="pName" name="name" autocomplete="off" required>
+          </div>
+          <div class="field">
+            <label for="pBirthday">Birthday</label>
+            <input id="pBirthday" name="birthday" type="date" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="pAge">Age</label>
+            <input id="pAge" name="age" type="number" min="0" max="120" inputmode="numeric">
+            <p class="hint">Used if birthday is unknown.</p>
+          </div>
+          <div class="field">
+            <label for="pSex">Sex</label>
+            <select id="pSex" name="sex">
+              <option value="">—</option>
+              <option>Female</option>
+              <option>Male</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pType">Patient type</label>
+            <select id="pType" name="patientType">
+              <option>OPD</option>
+              <option>IP</option>
+              <option>Others</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pUnit">Unit / dialysis center</label>
+            <input id="pUnit" name="unit" autocomplete="organization">
+          </div>
+          <div class="field">
+            <label for="pNeph">Nephrologist</label>
+            <input id="pNeph" name="nephrologist">
+          </div>
+          <div class="field">
+            <label for="pContact">Contact number</label>
+            <input id="pContact" name="contact" type="tel" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="pPhilhealth">PhilHealth number</label>
+            <input id="pPhilhealth" name="philhealth" autocomplete="off">
+          </div>
+          <div class="field full">
+            <label for="pAddress">Address</label>
+            <input id="pAddress" name="address" autocomplete="off">
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h3>Status</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label for="pStatus">Patient status</label>
+            <select id="pStatus" name="status">
+              <option>Active</option>
+              <option>Transferred</option>
+              <option>Deceased</option>
+            </select>
+          </div>
+          <div class="field" id="statusDateWrap" hidden>
+            <label for="pStatusDate" id="statusDateLabel">Status date</label>
+            <input id="pStatusDate" name="statusDate" type="date">
+          </div>
+          <div class="field" id="statusFacilityWrap" hidden>
+            <label for="pStatusFacility">Transferred to</label>
+            <input id="pStatusFacility" name="statusFacility" placeholder="Facility name">
+          </div>
+          <div class="field full" id="statusNoteWrap" hidden>
+            <label for="pStatusNote">Status notes</label>
+            <textarea id="pStatusNote" name="statusNote" rows="2"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h3>HD prescription</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label for="pModality">Modality</label>
+            <select id="pModality" name="modality">
+              <option>HD</option>
+              <option>HDF</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pSchedule">Schedule</label>
+            <input id="pSchedule" name="schedule" placeholder="Hal. MWF AM">
+          </div>
+          <div class="field">
+            <label for="pAccess">Access type</label>
+            <select id="pAccess" name="accessType">
+              <option value="">—</option>
+              <optgroup label="Fistula (AVF)">
+                <option>AVF – radiocephalic</option>
+                <option>AVF – brachiocephalic</option>
+                <option>AVF – brachiobasilic</option>
+              </optgroup>
+              <optgroup label="Graft">
+                <option>AVG – upper arm</option>
+                <option>AVG – forearm</option>
+              </optgroup>
+              <optgroup label="Catheter">
+                <option>Tunneled CVC</option>
+                <option>Non-tunneled CVC</option>
+              </optgroup>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field other-field" id="accessOtherWrap" hidden>
+            <label for="pAccessOther">Specify access</label>
+            <input id="pAccessOther" name="accessOther" placeholder="e.g., femoral catheter">
+          </div>
+          <div class="field">
+            <label for="pDialyzer">Dialyzer type</label>
+            <select id="pDialyzer" name="dialyzerType">
+              <option value="">—</option>
+              <optgroup label="Fresenius">
+                <option>Fx60</option>
+                <option>Fx80</option>
+                <option>F8</option>
+                <option>F10</option>
+              </optgroup>
+              <optgroup label="Baxter / Gambro">
+                <option>Polyflux 170H</option>
+                <option>Polyflux 210H</option>
+                <option>Revaclear 300</option>
+                <option>Revaclear 400</option>
+              </optgroup>
+              <optgroup label="Nipro">
+                <option>Elisio 17H</option>
+                <option>Elisio 21H</option>
+                <option>Sureflux 150L</option>
+                <option>Sureflux 170L</option>
+              </optgroup>
+              <optgroup label="B. Braun">
+                <option>Diacap Pro 19H</option>
+                <option>Diacap Pro 21H</option>
+              </optgroup>
+              <option>Other / not listed</option>
+            </select>
+          </div>
+          <div class="field other-field" id="dialyzerOtherWrap" hidden>
+            <label for="pDialyzerOther">Specify dialyzer</label>
+            <input id="pDialyzerOther" name="dialyzerOther" placeholder="Brand and model">
+          </div>
+          <div class="field">
+            <label for="pDry">Dry weight (kg)</label>
+            <input id="pDry" name="dryWeight" type="number" min="0" max="300" step="0.1" inputmode="decimal">
+            <div class="idwg-inline">
+              <div class="idwg-inline-head">
+                <span>IDWG %</span>
+                <strong id="pIdwgValue">—</strong>
+              </div>
+              <div class="idwg-inline-controls">
+                <label for="pIdwgBasis">Using</label>
+                <select id="pIdwgBasis" name="idwgBasis">
+                  <option value="dry">Dry weight</option>
+                  <option value="post">Post-dialysis weight</option>
+                </select>
+              </div>
+              <small id="pIdwgHint">(pre − post) ÷ dry weight × 100</small>
+            </div>
+          </div>
+          <div class="field">
+            <label for="pUf">UF goal (L)</label>
+            <div class="input-with-average"><input id="pUf" name="ufGoal" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g., 2.0, 2.5"><strong class="input-average" id="pUfAvg">—</strong></div>
+            <p class="field-hint">Enter one or several daily values.</p>
+          </div>
+        </div>
+        <p class="section-hint">Dialyzer list: common examples only. Use the dialyzer supplied by your unit.</p>
+      </section>
+
+      <section class="form-section">
+        <h3>Baseline measurements <span class="optional">(optional)</span></h3>
+        <p class="section-hint">Used only until the first monthly entry. Monthly data takes priority.</p>
+        <div class="form-grid">
+          <div class="field">
+            <label for="pPre">Pre-HD weight (kg)</label>
+            <div class="input-with-average"><input id="pPre" name="preWeight" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g., 58, 60, 61"><strong class="input-average" id="pPreAvg">—</strong></div>
+            <p class="field-hint">Enter one or several daily values.</p>
+          </div>
+          <div class="field">
+            <label for="pPost">Post-HD weight (kg)</label>
+            <div class="input-with-average"><input id="pPost" name="postWeight" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g., 56, 57, 58"><strong class="input-average" id="pPostAvg">—</strong></div>
+            <p class="field-hint">Enter one or several daily values.</p>
+          </div>
+          <div class="field">
+            <label for="pBp">Blood pressure</label>
+            <input id="pBp" name="bp" placeholder="Hal. 140/90">
+          </div>
+          <div class="field">
+            <label for="pHr">Heart rate (bpm)</label>
+            <input id="pHr" name="hr" type="number" min="0" max="250" inputmode="numeric">
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h3>Baseline laboratories <span class="optional">(optional)</span></h3>
+        <p class="section-hint">Choose the unit used by your laboratory. The other unit is computed automatically.</p>
+        <div class="lab-grid">
+          <div class="lab-item">
+            <label for="pHb">Hemoglobin</label>
+            <div class="lab-input">
+              <input id="pHb" name="hb" type="number" min="0" step="0.1" inputmode="decimal" data-lab="hb">
+              <select id="pHbUnit" name="hbUnit" data-lab-unit="hb" aria-label="Hemoglobin unit">
+                <option>g/L</option>
+                <option>g/dL</option>
+              </select>
+            </div>
+            <p class="lab-hint" data-lab-hint="hb">—</p>
+          </div>
+
+          <div class="lab-item">
+            <label for="pCa">Calcium</label>
+            <div class="lab-input">
+              <input id="pCa" name="ca" type="number" min="0" step="0.01" inputmode="decimal" data-lab="ca">
+              <select id="pCaUnit" name="caUnit" data-lab-unit="ca" aria-label="Calcium unit">
+                <option>mg/dL</option>
+                <option>mmol/L</option>
+              </select>
+            </div>
+            <p class="lab-hint" data-lab-hint="ca">—</p>
+          </div>
+
+          <div class="lab-item">
+            <label for="pP">Phosphorus</label>
+            <div class="lab-input">
+              <input id="pP" name="po4" type="number" min="0" step="0.01" inputmode="decimal" data-lab="po4">
+              <select id="pPUnit" name="po4Unit" data-lab-unit="po4" aria-label="Phosphorus unit">
+                <option>mg/dL</option>
+                <option>mmol/L</option>
+              </select>
+            </div>
+            <p class="lab-hint" data-lab-hint="po4">—</p>
+          </div>
+
+          <div class="lab-item">
+            <label for="pAlb">Albumin</label>
+            <div class="lab-input">
+              <input id="pAlb" name="alb" type="number" min="0" step="0.1" inputmode="decimal" data-lab="alb">
+              <select id="pAlbUnit" name="albUnit" data-lab-unit="alb" aria-label="Albumin unit">
+                <option>g/L</option>
+                <option>g/dL</option>
+              </select>
+            </div>
+            <p class="lab-hint" data-lab-hint="alb">—</p>
+          </div>
+
+          <div class="lab-item">
+            <label for="pUrr">URR (%)</label>
+            <div class="lab-input single">
+              <input id="pUrr" name="urr" type="number" min="0" max="100" step="0.1" inputmode="decimal">
+              <span class="unit-fixed">%</span>
+            </div>
+            <p class="lab-hint" id="pUrrHint">URR = (pre-BUN − post-BUN) ÷ pre-BUN × 100</p>
+            <div class="lab-bun">
+              <div class="field"><label for="pPreBun">Pre-BUN</label><input id="pPreBun" name="preBun" type="number" min="0" step="0.1" inputmode="decimal"></div>
+              <div class="field"><label for="pPostBun">Post-BUN</label><input id="pPostBun" name="postBun" type="number" min="0" step="0.1" inputmode="decimal"></div>
+              <button class="btn btn-secondary btn-small" type="button" data-calc-urr="p">Calculate URR</button>
+            </div>
+          </div>
+          <div class="lab-item">
+            <label for="pKtv">Kt/V</label>
+            <div class="lab-input single">
+              <div class="input-with-average"><input id="pKtv" name="ktv" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g., 1.25, 1.35"><strong class="input-average" id="pKtvAvg">—</strong></div>
+            </div>
+            <p class="field-hint">Enter one or several daily values.</p>
+          </div>
+
+          <div class="lab-item">
+            <label for="pK">Potassium</label>
+            <div class="lab-input single">
+              <input id="pK" name="k" type="number" min="0" step="0.1" inputmode="decimal">
+              <span class="unit-fixed">mmol/L</span>
+            </div>
+            <p class="lab-hint">Standard unit: mmol/L</p>
+          </div>
+
+          <div class="lab-item">
+            <label for="pPth">PTH</label>
+            <div class="lab-input single">
+              <input id="pPth" name="pth" type="number" min="0" step="1" inputmode="numeric">
+              <span class="unit-fixed">pg/mL</span>
+            </div>
+            <p class="lab-hint">Standard unit: pg/mL</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h3>Baseline orders <span class="optional">(optional)</span></h3>
+        <div class="form-grid">
+          <div class="field full">
+            <label>Current medicines</label>
+            <div class="med-builder">
+              <div class="med-head" aria-hidden="true">
+                <span>Medicine</span><span>Dosage</span><span>Frequency</span><span></span>
+              </div>
+              <div class="med-rows" id="medRows"></div>
+              <button class="btn btn-secondary btn-small med-add-btn" id="addMedRow" type="button">+ Add medicine</button>
+              <div class="med-other">
+                <label for="pMeds">Other medicine notes <span class="optional">(optional)</span></label>
+                <textarea id="pMeds" name="meds" rows="2" placeholder="e.g., stopped medicines, special instructions"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="field full">
+            <label for="pEpo">Epoetin dosage order</label>
+            <input id="pEpo" name="epoetin" list="epoetinOrders" placeholder="e.g., 4000 IU IV 3×/week">
+            <datalist id="epoetinOrders">
+              <option value="2000 IU IV 3×/week"></option>
+              <option value="4000 IU IV 3×/week"></option>
+              <option value="6000 IU IV 3×/week"></option>
+              <option value="8000 IU IV weekly"></option>
+              <option value="100 mcg SC weekly"></option>
+            </datalist>
+          </div>
+          <div class="field full">
+            <label for="pIron">IV iron dosage order</label>
+            <input id="pIron" name="iron" list="ironOrders" placeholder="e.g., 100 mg IV weekly">
+            <datalist id="ironOrders">
+              <option value="100 mg IV weekly"></option>
+              <option value="200 mg IV monthly"></option>
+              <option value="Iron sucrose 100 mg IV per session"></option>
+            </datalist>
+          </div>
+          <div class="field full">
+            <label for="pTrans">Blood transfusion order</label>
+            <input id="pTrans" name="transfusion" list="transfusionOrders" placeholder="e.g., 2 units PRBC">
+            <datalist id="transfusionOrders">
+              <option value="1 unit PRBC"></option>
+              <option value="2 units PRBC"></option>
+              <option value="Transfuse if Hb < 80 g/L"></option>
+            </datalist>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h3>Baseline complications <span class="optional">(optional)</span></h3>
+        <p class="section-hint">Log each complication with its date, time, nurse in charge, and management. Add as many entries as needed.</p>
+        <div class="complication-box">
+          <div class="comp-pick">
+            <label for="pComplicationPick">Complication</label>
+            <select id="pComplicationPick">
+              <option value="">Select a complication…</option>
+              <optgroup label="During dialysis">
+                <option>Hypotension</option>
+                <option>Muscle cramps</option>
+                <option>Dizziness</option>
+                <option>Nausea or vomiting</option>
+                <option>Headache</option>
+                <option>Chest pain</option>
+                <option>Difficulty breathing</option>
+                <option>Fever or chills</option>
+                <option>Palpitations / irregular heartbeat</option>
+                <option>Seizure</option>
+              </optgroup>
+              <optgroup label="Access">
+                <option>Bleeding from access</option>
+                <option>Access infection (redness, pus)</option>
+                <option>Clotted access / poor flow</option>
+                <option>Access aneurysm</option>
+                <option>Needle dislodgement</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option>Itching</option>
+                <option>Fatigue</option>
+                <option>Fluid overload</option>
+                <option>Hypertension</option>
+                <option>Allergic reaction</option>
+                <option>Other</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="comp-fields">
+            <div class="field full">
+              <label for="pCompOther">Other complication (optional)</label>
+              <input id="pCompOther" placeholder="Type another complication">
+            </div>
+            <div class="field">
+              <label for="pCompDate">Date</label>
+              <input id="pCompDate" type="date">
+            </div>
+            <div class="field">
+              <label for="pCompTime">Time</label>
+              <input id="pCompTime" type="time">
+            </div>
+            <div class="field">
+              <label for="pCompNurse">Nurse in charge</label>
+              <input id="pCompNurse" placeholder="Name">
+            </div>
+            <div class="field full">
+              <label for="pCompManagement">Management done</label>
+              <textarea id="pCompManagement" rows="2" placeholder="What was done"></textarea>
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-small comp-add-btn" id="addComplication" type="button">+ Add complication</button>
+          <div class="comp-chips" id="complicationChips"></div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h3>Clinical notes</h3>
+        <div class="form-grid">
+          <div class="field full">
+            <label for="pComorb">Comorbidities</label>
+            <textarea id="pComorb" name="comorbidities" rows="2" placeholder="Hal. diabetes, hypertension"></textarea>
+          </div>
+          <div class="field full">
+            <label for="pAllergies">Allergies</label>
+            <textarea id="pAllergies" name="allergies" rows="2"></textarea>
+          </div>
+          <div class="field full">
+            <label for="pNotes">Notes</label>
+            <textarea id="pNotes" name="notes" rows="3"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <p class="record-note">For record keeping only. Clinical decisions remain with the care team.</p>
+    </div>
+
+    <footer class="dlg-foot">
+      <button class="btn btn-secondary" type="button" data-close>Cancel</button>
+      <button class="btn btn-primary" id="savePatient" type="submit">Save patient</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ============================================================
+     Monthly data
+     ============================================================ -->
+<dialog id="monthDialog" class="rec-dialog" aria-labelledby="monthDialogTitle">
+  <form id="monthForm" novalidate>
+    <header class="dlg-head">
+      <div>
+        <p class="eyebrow">Monthly monitoring</p>
+        <h2 id="monthDialogTitle">Add monthly data</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close aria-label="Close"><svg class="ic"><use href="#r-close"/></svg></button>
+    </header>
+
+    <div class="dlg-body">
+      <p class="form-error" id="monthError" role="alert"></p>
+
+      <section class="form-section">
+        <h3>Month</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label for="mMonth">Month *</label>
+            <input id="mMonth" name="month" type="month" required>
+          </div>
+          <div class="field">
+            <label for="mDate">Date of data</label>
+            <input id="mDate" name="date" type="date">
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h3>Measurements</h3>
+        <div class="form-grid">
+          <div class="field">
+            <label for="mPre">Pre-HD weight (kg)</label>
+            <div class="input-with-average"><input id="mPre" name="preWeight" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g., 58, 60, 61"><strong class="input-average" id="mPreAvg">—</strong></div>
+            <p class="field-hint">Enter one or several daily values.</p>
+          </div>
+          <div class="field">
+            <label for="mPost">Post-HD weight (kg)</label>
+            <div class="input-with-average"><input id="mPost" name="postWeight" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g., 56, 57, 58"><strong class="input-average" id="mPostAvg">—</strong></div>
+            <p class="field-hint">Enter one or several daily values.</p>
+          </div>
+          <div class="field">
+            <label for="mBp">Blood pressure</label>
+            <input id="mBp" name="bp" placeholder="Hal. 140/90">
+          </div>
+          <div class="field">
+            <label for="mHr">Heart rate (bpm)</label>
+            <input id="mHr" name="hr" type="number" min="0" max="250" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="mDry">Dry weight (kg)</label>
+            <input id="mDry" name="dryWeight" type="number" min="0" max="300" step="0.1" inputmode="decimal">
+            <div class="idwg-inline">
+              <div class="idwg-inline-head">
+                <span>IDWG %</span>
+                <strong id="mIdwgValue">—</strong>
+              </div>
+              <div class="idwg-inline-controls">
+                <label for="mIdwgBasis">Using</label>
+                <select id="mIdwgBasis" name="idwgBasis">
+                  <option value="dry">Dry weight</option>
+                  <option value="post">Post-dialysis weight</option>
+                </select>
+              </div>
+              <small id="mIdwgHint">(pre − post) ÷ dry weight × 100</small>
+            </div>
+          </div>
+          <div class="field">
+            <label for="mUf">UF goal (L)</label>
+            <div class="input-with-average"><input id="mUf" name="ufGoal" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g., 2.0, 2.5, 2.2"><strong class="input-average" id="mUfAvg">—</strong></div>
+            <p class="field-hint">Enter one or several daily values.</p>
+          </div>
+        </div>
+        
+      </section>
+
+      <section class="form-section">
+        <h3>Laboratories</h3>
+        <div class="lab-grid">
+          <div class="lab-item">
+            <label for="mHb">Hemoglobin</label>
+            <div class="lab-input">
+              <input id="mHb" name="hb" type="number" min="0" step="0.1" inputmode="decimal" data-mlab="hb">
+              <select id="mHbUnit" name="hbUnit" data-mlab-unit="hb" aria-label="Hemoglobin unit">
+                <option>g/L</option>
+                <option>g/dL</option>
+              </select>
+            </div>
+            <p class="lab-hint" data-mlab-hint="hb">—</p>
+          </div>
+          <div class="lab-item">
+            <label for="mCa">Calcium</label>
+            <div class="lab-input">
+              <input id="mCa" name="ca" type="number" min="0" step="0.01" inputmode="decimal" data-mlab="ca">
+              <select id="mCaUnit" name="caUnit" data-mlab-unit="ca" aria-label="Calcium unit">
+                <option>mg/dL</option>
+                <option>mmol/L</option>
+              </select>
+            </div>
+            <p class="lab-hint" data-mlab-hint="ca">—</p>
+          </div>
+          <div class="lab-item">
+            <label for="mP">Phosphorus</label>
+            <div class="lab-input">
+              <input id="mP" name="po4" type="number" min="0" step="0.01" inputmode="decimal" data-mlab="po4">
+              <select id="mPUnit" name="po4Unit" data-mlab-unit="po4" aria-label="Phosphorus unit">
+                <option>mg/dL</option>
+                <option>mmol/L</option>
+              </select>
+            </div>
+            <p class="lab-hint" data-mlab-hint="po4">—</p>
+          </div>
+          <div class="lab-item">
+            <label for="mAlb">Albumin</label>
+            <div class="lab-input">
+              <input id="mAlb" name="alb" type="number" min="0" step="0.1" inputmode="decimal" data-mlab="alb">
+              <select id="mAlbUnit" name="albUnit" data-mlab-unit="alb" aria-label="Albumin unit">
+                <option>g/L</option>
+                <option>g/dL</option>
+              </select>
+            </div>
+            <p class="lab-hint" data-mlab-hint="alb">—</p>
+          </div>
+          <div class="lab-item">
+            <label for="mUrr">URR (%)</label>
+            <div class="lab-input single">
+              <input id="mUrr" name="urr" type="number" min="0" max="100" step="0.1" inputmode="decimal">
+              <span class="unit-fixed">%</span>
+            </div>
+            <p class="lab-hint" id="mUrrHint">URR = (pre-BUN − post-BUN) ÷ pre-BUN × 100</p>
+            <div class="lab-bun">
+              <div class="field"><label for="mPreBun">Pre-BUN</label><input id="mPreBun" name="preBun" type="number" min="0" step="0.1" inputmode="decimal"></div>
+              <div class="field"><label for="mPostBun">Post-BUN</label><input id="mPostBun" name="postBun" type="number" min="0" step="0.1" inputmode="decimal"></div>
+              <button class="btn btn-secondary btn-small" type="button" data-calc-urr="m">Calculate URR</button>
+            </div>
+          </div>
+          <div class="lab-item">
+            <label for="mKtv">Kt/V</label>
+            <div class="lab-input single">
+              <div class="input-with-average"><input id="mKtv" name="ktv" type="text" inputmode="decimal" autocomplete="off" placeholder="e.g., 1.25, 1.35"><strong class="input-average" id="mKtvAvg">—</strong></div>
+            </div>
+            <p class="field-hint">Enter one or several daily values.</p>
+          </div>
+          <div class="lab-item">
+            <label for="mK">Potassium</label>
+            <div class="lab-input single">
+              <input id="mK" name="k" type="number" min="0" step="0.1" inputmode="decimal">
+              <span class="unit-fixed">mmol/L</span>
+            </div>
+            <p class="lab-hint">Standard unit: mmol/L</p>
+          </div>
+          <div class="lab-item">
+            <label for="mPth">PTH</label>
+            <div class="lab-input single">
+              <input id="mPth" name="pth" type="number" min="0" step="1" inputmode="numeric">
+              <span class="unit-fixed">pg/mL</span>
+            </div>
+            <p class="lab-hint">Standard unit: pg/mL</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h3>Orders</h3>
+        <div class="form-grid">
+          <div class="field full">
+            <label for="mEpo">Epoetin dosage order</label>
+            <input id="mEpo" name="epoetin" list="epoetinOrders" placeholder="e.g., 4000 IU IV 3×/week">
+          </div>
+          <div class="field full">
+            <label for="mIron">IV iron dosage order</label>
+            <input id="mIron" name="iron" list="ironOrders" placeholder="e.g., 100 mg IV weekly">
+          </div>
+          <div class="field full">
+            <label for="mTrans">Blood transfusion order</label>
+            <input id="mTrans" name="transfusion" list="transfusionOrders" placeholder="e.g., 2 units PRBC">
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h3>Complications</h3>
+        <p class="section-hint">Log each complication with its date, time, nurse in charge, and management. Add as many entries as needed.</p>
+        <div class="complication-box">
+          <div class="comp-pick">
+            <label for="mCompPick">Complication</label>
+            <select id="mCompPick">
+              <option value="">Select a complication…</option>
+              <optgroup label="During dialysis">
+                <option>Hypotension</option>
+                <option>Muscle cramps</option>
+                <option>Dizziness</option>
+                <option>Nausea or vomiting</option>
+                <option>Headache</option>
+                <option>Chest pain</option>
+                <option>Difficulty breathing</option>
+                <option>Fever or chills</option>
+                <option>Palpitations / irregular heartbeat</option>
+                <option>Seizure</option>
+              </optgroup>
+              <optgroup label="Access">
+                <option>Bleeding from access</option>
+                <option>Access infection (redness, pus)</option>
+                <option>Clotted access / poor flow</option>
+                <option>Access aneurysm</option>
+                <option>Needle dislodgement</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option>Itching</option>
+                <option>Fatigue</option>
+                <option>Fluid overload</option>
+                <option>Hypertension</option>
+                <option>Allergic reaction</option>
+                <option>Other</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="comp-fields">
+            <div class="field full">
+              <label for="mCompOther">Other complication (optional)</label>
+              <input id="mCompOther" placeholder="Type another complication">
+            </div>
+            <div class="field">
+              <label for="mCompDate">Date</label>
+              <input id="mCompDate" type="date">
+            </div>
+            <div class="field">
+              <label for="mCompTime">Time</label>
+              <input id="mCompTime" type="time">
+            </div>
+            <div class="field">
+              <label for="mCompNurse">Nurse in charge</label>
+              <input id="mCompNurse" placeholder="Name">
+            </div>
+            <div class="field full">
+              <label for="mCompManagement">Management done</label>
+              <textarea id="mCompManagement" rows="2" placeholder="What was done"></textarea>
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-small comp-add-btn" id="addMonthComp" type="button">+ Add complication</button>
+          <div class="comp-chips" id="monthCompChips"></div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h3>Notes for this month</h3>
+        <div class="field">
+          <label for="mNotes">Notes</label>
+          <textarea id="mNotes" name="notes" rows="3"></textarea>
+        </div>
+      </section>
+
+      <p class="record-note">For record keeping only. Clinical decisions remain with the care team.</p>
+    </div>
+
+    <footer class="dlg-foot">
+      <button class="btn btn-secondary" type="button" data-close>Cancel</button>
+      <button class="btn btn-primary" id="saveMonth" type="submit">Save monthly data</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ============================================================
+     Patient detail
+     ============================================================ -->
+<dialog id="detailDialog" class="rec-dialog" aria-labelledby="detailTitle">
+  <header class="dlg-head">
+    <div>
+      <p class="eyebrow" id="detailMeta">Patient record</p>
+      <h2 id="detailTitle">Patient</h2>
+    </div>
+    <button class="icon-btn" type="button" data-close aria-label="Close"><svg class="ic"><use href="#r-close"/></svg></button>
+  </header>
+  <div class="dlg-body" id="detailBody"></div>
+  <footer class="dlg-foot">
+    <button class="btn btn-danger btn-small" id="deletePatient" type="button"><svg><use href="#r-trash"/></svg>Delete</button>
+    <span class="spacer"></span>
+    <button class="btn btn-secondary btn-small" id="addMonthFooter" type="button"><svg><use href="#r-plus"/></svg>Add month</button>
+    <button class="btn btn-secondary btn-small" id="printPatient" type="button"><svg><use href="#r-print"/></svg>Print</button>
+    <button class="btn btn-primary btn-small" id="editPatient" type="button"><svg><use href="#r-edit"/></svg>Edit</button>
+  </footer>
+</dialog>
+
+<!-- ============================================================
+     Settings
+     ============================================================ -->
+<dialog id="settingsDialog" class="rec-dialog narrow" aria-labelledby="settingsTitle">
+  <header class="dlg-head">
+    <div>
+      <p class="eyebrow">Private area</p>
+      <h2 id="settingsTitle">Settings</h2>
+    </div>
+    <button class="icon-btn" type="button" data-close aria-label="Close"><svg class="ic"><use href="#r-close"/></svg></button>
+  </header>
+  <div class="dlg-body">
+    <section class="set-block">
+      <h3>Record book label</h3>
+      <p>Shown at the top of this page. Stored only in this browser.</p>
+      <div class="field">
+        <label for="unitName">Unit / center name</label>
+        <input id="unitName" placeholder="e.g., Sta. Mesa Dialysis Center">
+      </div>
+      <button class="btn btn-secondary btn-small" id="saveUnit" type="button">Save label</button>
+    </section>
+
+    <section class="set-block">
+      <h3>Recovery key</h3>
+      <p id="recoveryStatus">No recovery key set.</p>
+      <button class="btn btn-secondary btn-small" id="recoveryAction" type="button">Create recovery key</button>
+      <p class="hint" style="margin-top:8px">A recovery key can reset a forgotten password without deleting records. Keep it offline, not on this device.</p>
+    </section>
+
+    <section class="set-block">
+      <h3>Other sessions</h3>
+      <p>Log out other open tabs of this record book on this device. They will need the password again.</p>
+      <button class="btn btn-secondary btn-small" id="logoutOthers" type="button">Log out other tabs</button>
+      <p class="hint" style="margin-top:8px">This works only in this browser. To block re-entry, change the password below.</p>
+    </section>
+
+    <section class="set-block">
+      <h3>Change password</h3>
+      <p>The new password re-encrypts all records on this device.</p>
+      <form id="pwForm" novalidate>
+        <div class="field">
+          <label for="curPw">Current password</label>
+          <input id="curPw" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="field">
+          <label for="newPwSet">New password</label>
+          <input id="newPwSet" type="password" minlength="8" autocomplete="new-password" required>
+        </div>
+        <div class="field">
+          <label for="newPwSet2">Confirm new password</label>
+          <input id="newPwSet2" type="password" minlength="8" autocomplete="new-password" required>
+        </div>
+        <p class="form-error" id="pwError" role="alert"></p>
+        <button class="btn btn-primary btn-small" id="pwSave" type="submit">Update password</button>
+      </form>
+    </section>
+
+    <section class="set-block">
+      <h3>Backup</h3>
+      <p>Download an encrypted copy of all records. The backup opens only with its password.</p>
+      <div class="btn-row">
+        <button class="btn btn-secondary btn-small" id="backupBtn" type="button"><svg><use href="#r-download"/></svg>Download backup</button>
+        <button class="btn btn-secondary btn-small" id="restoreBtn2" type="button"><svg><use href="#r-upload"/></svg>Restore backup</button>
+        <input type="file" id="restoreFile2" accept="application/json,.json" hidden>
+      </div>
+    </section>
+
+    <section class="set-block danger-zone">
+      <h3>Erase all records</h3>
+      <p>This removes the encrypted records from this browser. Without a backup, they cannot be recovered.</p>
+      <button class="btn btn-danger btn-small" id="eraseBtn" type="button"><svg><use href="#r-trash"/></svg>Erase all records</button>
+    </section>
+
+    <p class="privacy-note">
+      This page is a private, local record book. It is not a hospital system and does not send data online.
+      Use a trusted device, lock it when not in use, and keep an encrypted backup. Clinical judgment remains with the care team.
+    </p>
+  </div>
+</dialog>
+
+<!-- ============================================================
+     Delete confirmation (password re-entry)
+     ============================================================ -->
+<dialog id="deleteAuthDialog" class="rec-dialog narrow" aria-labelledby="deleteAuthTitle">
+  <form id="deleteAuthForm" novalidate>
+    <header class="dlg-head">
+      <div>
+        <p class="eyebrow">Confirm deletion</p>
+        <h2 id="deleteAuthTitle">Retype your password</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close aria-label="Close"><svg class="ic"><use href="#r-close"/></svg></button>
+    </header>
+    <div class="dlg-body">
+      <p class="delete-message" id="deleteAuthMessage">Retype your password to continue.</p>
+      <div class="field">
+        <label for="deletePw">Password</label>
+        <div class="pw-wrap">
+          <input id="deletePw" type="password" autocomplete="current-password" required>
+          <button class="pw-toggle" type="button" data-toggle-pw="deletePw">Show</button>
+        </div>
+      </div>
+      <p class="form-error" id="deleteAuthError" role="alert"></p>
+    </div>
+    <footer class="dlg-foot">
+      <button class="btn btn-secondary" type="button" data-close>Cancel</button>
+      <button class="btn btn-danger" id="deleteAuthConfirm" type="submit">Delete</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ============================================================
+     Recovery key — show once
+     ============================================================ -->
+<dialog id="recoveryKeyDialog" class="rec-dialog narrow" aria-labelledby="recoveryKeyTitle">
+  <header class="dlg-head">
+    <div>
+      <p class="eyebrow">One-time setup</p>
+      <h2 id="recoveryKeyTitle">Save your recovery key</h2>
+    </div>
+  </header>
+  <div class="dlg-body">
+    <p class="delete-message">This is the only way to reset a forgotten password without deleting records. Save it somewhere offline, not on this device.</p>
+    <code class="recovery-code" id="recoveryCodeText">—</code>
+    <div class="recovery-actions">
+      <button type="button" class="btn btn-secondary btn-small" id="copyRecovery">Copy</button>
+      <button type="button" class="btn btn-secondary btn-small" id="downloadRecovery">Download</button>
+    </div>
+    <p class="form-error" id="recoveryKeyError" role="alert"></p>
+    <label class="ack">
+      <input type="checkbox" id="recoveryAck">
+      <span>I have saved this recovery key somewhere safe.</span>
+    </label>
+  </div>
+  <footer class="dlg-foot">
+    <button class="btn btn-secondary" type="button" id="recoverySkip">Not now</button>
+    <button class="btn btn-primary" id="recoverySave" type="button" disabled>Continue</button>
+  </footer>
+</dialog>
+
+<!-- ============================================================
+     Reset with recovery key
+     ============================================================ -->
+<dialog id="recoverDialog" class="rec-dialog narrow" aria-labelledby="recoverTitle">
+  <form id="recoverForm" novalidate>
+    <header class="dlg-head">
+      <div>
+        <p class="eyebrow">Password recovery</p>
+        <h2 id="recoverTitle">Reset with recovery key</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close aria-label="Close"><svg class="ic"><use href="#r-close"/></svg></button>
+    </header>
+    <div class="dlg-body">
+      <p class="delete-message">Enter your recovery key and choose a new password. Your records stay intact.</p>
+      <div class="field">
+        <label for="recoverCode">Recovery key</label>
+        <input id="recoverCode" autocomplete="off" placeholder="XXXX-XXXX-XXXX-XXXX">
+      </div>
+      <div class="field">
+        <label for="recoverPw">New password</label>
+        <input id="recoverPw" type="password" minlength="8" autocomplete="new-password">
+        <p class="hint">At least 8 characters.</p>
+      </div>
+      <div class="field">
+        <label for="recoverPw2">Confirm new password</label>
+        <input id="recoverPw2" type="password" minlength="8" autocomplete="new-password">
+      </div>
+      <p class="form-error" id="recoverError" role="alert"></p>
+    </div>
+    <footer class="dlg-foot">
+      <button class="btn btn-secondary" type="button" data-close>Cancel</button>
+      <button class="btn btn-primary" id="recoverSave" type="submit">Reset password</button>
+    </footer>
+  </form>
+</dialog>
+
+<div id="printRecord" aria-hidden="true"></div>
+<div class="toast" id="recToast" role="status" aria-live="polite"></div>
+
+<script src="records.js"></script>
+</body>
+</html>
