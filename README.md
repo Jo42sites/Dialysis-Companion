@@ -36,7 +36,7 @@ Keep the project files together in one folder:
 
 Open `index.html` in a browser to read the guide. Choose **HD records** from the
 navigation or the guide's main button to open the record book. The guide can be
-hosted as a static site, but the record book also requires the Express API in
+hosted as a static site, but the record book also requires the FastAPI service in
 [server/](./server/) to be deployed separately. A static host alone cannot
 create unit accounts or save records.
 
@@ -45,8 +45,8 @@ For the local record book, start the API as described in
 `http://127.0.0.1:5500` (do not open the record book as a `file://` URL).
 
 To enable unit accounts on GitHub Pages, deploy the API using the included
-[Render blueprint](./render.yaml). Then set the GitHub Actions repository
-variable `ADMIN_API_URL` to the Render service's HTTPS origin and select
+[Python FastAPI/SQLite Render blueprint](./render.yaml). Then set the GitHub
+Actions repository variable `ADMIN_API_URL` to the Render service's HTTPS origin and select
 **GitHub Actions** as the Pages build and deployment source. Run the
 **Deploy GitHub Pages** workflow after setting the variable. The setup details
 are in [server/README.md](./server/README.md).
@@ -123,7 +123,7 @@ read-only. Deletion requires confirmation.
 
 ## Sharing and deployment
 
-The static website needs the Express server in [server/](./server/) to use
+The static website needs the FastAPI server in [server/](./server/) to use
 patient records. Configure HTTPS, CORS, secrets, firewall rules, backups, and a
 production rate-limit store before deployment. The **HD records** link expects
 `records.html` to be available beside the guide.

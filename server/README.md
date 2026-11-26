@@ -1,8 +1,8 @@
-# Unit-Based Patient Records Server
+# Unit-Based Patient Records API
 
-The Express API supports separate dialysis units and individual staff accounts.
-Patient record contents are encrypted with AES-256-GCM before being written to
-SQLite.
+The FastAPI API supports separate dialysis units and individual staff accounts.
+SQLite stores account and audit data; patient record contents are encrypted
+with AES-256-GCM before being written to the database.
 
 > **Prototype warning:** this is not a certified clinical system. Do not enter
 > real patient data until your organization has reviewed the deployment,
@@ -12,7 +12,9 @@ SQLite.
 
 ```bash
 cd server
-npm install
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -r requirements.txt
 cp .env.example .env
 ```
 
@@ -20,14 +22,20 @@ Set `JWT_SECRET` and `MEDICAL_DATA_KEY` to separate random values of at least
 32 bytes. Keep `.env` and `data/` private and out of source control. Losing
 `MEDICAL_DATA_KEY` makes encrypted patient records unrecoverable.
 
-Start the API:
+Start the API from the `server/` directory:
 
 ```bash
-npm start
+python run.py
 ```
 
-It binds to `127.0.0.1` by default. Serve the website locally on port 5500 and
-open `http://127.0.0.1:5500/records.html`; do not open it using a `file://` URL.
+The local database is `server/data/dialysis-admin.sqlite` by default. Serve the
+website locally on port 5500 and open `http://127.0.0.1:5500/records.html`; do
+not open it using a `file://` URL.
+
+The Python API is compatible with the existing SQLite schema, bcrypt password
+hashes, JWT tokens, and AES-256-GCM encrypted data. Keep the same
+`MEDICAL_DATA_KEY` when switching an existing database; changing or losing it
+makes encrypted records and MFA secrets unreadable.
 
 ## Sign-in and staff
 
@@ -77,10 +85,10 @@ tamper-proof against a host administrator.
 ## Encrypted backups
 
 Set `BACKUP_PASSWORD` to a unique passphrase of at least 16 characters using
-your secret manager, then run:
+your secret manager, activate the virtual environment, then run:
 
 ```bash
-npm run backup -- ./backups/patient-records.dcbackup
+python backup.py ./backups/patient-records.dcbackup
 ```
 
 Backups use scrypt and AES-256-GCM. Keep the backup file and its passphrase
@@ -89,16 +97,25 @@ separate from the server. Test a restore before relying on backups.
 Stop the server before restoring:
 
 ```bash
-npm run restore-backup -- ./backups/patient-records.dcbackup
+python restore_backup.py ./backups/patient-records.dcbackup
 ```
 
 Use the same `BACKUP_PASSWORD` that encrypted the file. The restore replaces
 the configured database.
 
+## Tests
+
+Install the development dependencies and run the Python API and backup tests:
+
+```bash
+pip install -r requirements-dev.txt
+python -m unittest discover -s tests -v
+```
+
 ## Production deployment requirements
 
-- Deploy this API as a Node.js service. Set `HOST=0.0.0.0` so the hosting
-  platform can reach it, and use the platform-provided `PORT`.
+- Deploy this API as a Python 3.12 service running FastAPI and Uvicorn. Set
+  `HOST=0.0.0.0` and use the platform-provided `PORT`.
 - Set `DATABASE_PATH` to a location on persistent storage. The default SQLite
   file is lost if the host uses ephemeral storage.
 - Set `CORS_ORIGIN` to the exact origin of the website (for example
@@ -123,10 +140,10 @@ the configured database.
 
 The repository includes a Render Blueprint in `../render.yaml`. In Render,
 create a new **Blueprint** from this GitHub repository and deploy the
-`dialysis-companion-api` service. The blueprint configures the required secrets,
-HTTPS proxy handling, GitHub Pages CORS origin, and a persistent 1 GB disk for
-SQLite. It uses Render's paid 0.5 CPU/512 MB plan; check Render's current
-pricing before deploying.
+`dialysis-companion-api` service. The blueprint installs the Python requirements,
+starts Uvicorn, configures generated secrets and GitHub Pages CORS, and mounts
+a persistent 1 GB disk for SQLite. Check Render's current pricing before
+deploying.
 
 After the service is live:
 
