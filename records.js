@@ -13,6 +13,9 @@
   const UNIT_KEY = 'dc-records-unit';
   const CENSUS_KEY = 'dc-records-census';
   const SESSION_KEY = 'dc-records-session-epoch';
+  const UNIT_TOKEN_KEY = 'dc-unit-token';
+  const UNIT_SLUG_KEY = 'dc-unit-slug';
+  const SERVER_API = (document.querySelector('meta[name="admin-api"]')?.content || 'http://127.0.0.1:3001').replace(/\/$/, '');
   const ITERATIONS = 250000;
   const IDLE_MS = 15 * 60 * 1000;
 
@@ -26,7 +29,9 @@
     sort: 'updated',
     statusFilter: 'all',
     sessionEpoch: '0',
-    idleTimer: null
+    idleTimer: null,
+    unitToken: null,
+    unit: null
   };
 
   let formComplications = [];
@@ -304,7 +309,50 @@
     localStorage.setItem(VAULT_KEY, JSON.stringify(vault));
   }
 
+  async function serverApi(path, options) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (state.unitToken) headers.Authorization = 'Bearer ' + state.unitToken;
+    const response = await fetch(SERVER_API + path, {
+      ...options,
+      headers,
+      credentials: 'omit'
+    });
+    if (response.status === 204) return null;
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.error || 'Server request failed');
+    return body;
+  }
+
   async function persist() {
+    if (state.unitToken) {
+      const existing = await serverApi('/api/units/records');
+      const serverIds = new Set((existing.records || []).map((item) => item.id));
+      const localIds = new Set(state.patients.map((item) => item.id));
+
+      for (const patient of state.patients) {
+        if (serverIds.has(patient.id)) {
+          await serverApi('/api/units/records/' + encodeURIComponent(patient.id), {
+            method: 'PUT',
+            body: JSON.stringify(patient)
+          });
+        } else {
+          const created = await serverApi('/api/units/records', {
+            method: 'POST',
+            body: JSON.stringify(patient)
+          });
+          patient.id = created.id;
+        }
+      }
+      for (const serverId of serverIds) {
+        if (!localIds.has(serverId)) {
+          await serverApi('/api/units/records/' + encodeURIComponent(serverId), {
+            method: 'DELETE'
+          });
+        }
+      }
+      updateCensus();
+      return;
+    }
     const salt = fromB64(state.vault.salt);
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const cipher = await crypto.subtle.encrypt(
@@ -629,8 +677,11 @@
   }
 
   function lockNow() {
+    state.unitToken = null;
+    state.unit = null;
     state.key = null;
     state.patients = [];
+    try { localStorage.removeItem(UNIT_TOKEN_KEY); } catch (err) { /* ignore */ }
     location.reload();
   }
 
@@ -1289,6 +1340,13 @@
   let pendingDelete = null;
 
   function requirePassword(options) {
+    if (state.unitToken) {
+      if (window.confirm((options.message || 'Confirm deletion') + '\n\nThis cannot be undone.')) {
+        const action = options.onConfirm;
+        if (action) action();
+      }
+      return;
+    }
     pendingDelete = options.onConfirm;
     $('#deleteAuthTitle').textContent = options.title || 'Confirm deletion';
     $('#deleteAuthMessage').textContent = options.message || 'Retype your password to continue.';
@@ -1733,9 +1791,11 @@
      Events
      ------------------------------------------------------------ */
   function init() {
-    const vault = readVault();
-    if (vault) {
+    let savedSlug = '';
+    try { savedSlug = localStorage.getItem(UNIT_SLUG_KEY) || ''; } catch (err) { /* ignore */ }
+    if (savedSlug) {
       $('#unlockView').hidden = false;
+      $('#unitSlug').value = savedSlug;
       setTimeout(() => $('#pw').focus(), 80);
     } else {
       $('#setupView').hidden = false;
@@ -1743,45 +1803,54 @@
     }
 
     loadUnitLabel();
-    const recoveryBtn = $('#recoveryBtn');
-    if (recoveryBtn) recoveryBtn.hidden = !(vault && vault.recovery);
-
-    if (!cryptoReady) {
-      const error = 'This browser cannot encrypt records. Open this page in a current version of Chrome, Safari, or Edge.';
-      if (vault) $('#unlockError').textContent = error;
-      else $('#setupError').textContent = error;
-      $$('#setupForm button, #unlockForm button').forEach((btn) => { btn.disabled = true; });
-    }
+    $('#showLoginBtn').addEventListener('click', () => {
+      $('#setupView').hidden = true;
+      $('#unlockView').hidden = false;
+      setTimeout(() => $('#unitSlug').focus(), 60);
+    });
+    $('#showRegisterBtn').addEventListener('click', () => {
+      $('#unlockView').hidden = true;
+      $('#setupView').hidden = false;
+      setTimeout(() => $('#setupUnit').focus(), 60);
+    });
 
     /* Setup */
     $('#setupForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       const error = $('#setupError');
       error.textContent = '';
+      const unitName = $('#setupUnit').value.trim();
+      const slug = $('#setupSlug').value.trim();
       const pw = $('#newPw').value;
       const pw2 = $('#newPw2').value;
-      if (pw.length < 8) { error.textContent = 'Use at least 8 characters.'; $('#newPw').focus(); return; }
+      if (!unitName) { error.textContent = 'Enter a unit or center name.'; $('#setupUnit').focus(); return; }
+      if (!slug) { error.textContent = 'Enter a unit login code.'; $('#setupSlug').focus(); return; }
+      if (pw.length < 12) { error.textContent = 'Use at least 12 characters.'; $('#newPw').focus(); return; }
       if (pw !== pw2) { error.textContent = 'The passwords do not match.'; $('#newPw2').focus(); return; }
-      if (!$('#ackPw').checked) { error.textContent = 'Please confirm that the password cannot be recovered.'; return; }
+      if (!$('#ackPw').checked) { error.textContent = 'Please confirm the unit password acknowledgment.'; return; }
       const btn = $('#setupBtn');
       btn.disabled = true;
       btn.textContent = 'Creating…';
       try {
-        const unit = $('#setupUnit').value.trim();
-        if (unit) { try { localStorage.setItem(UNIT_KEY, unit); } catch (err) { /* ignore */ } }
-        await createVault(pw);
+        const result = await serverApi('/api/units/register', {
+          method: 'POST',
+          body: JSON.stringify({ name: unitName, slug, password: pw })
+        });
+        state.unitToken = result.token;
+        state.unit = result.unit;
+        state.patients = [];
+        try {
+          localStorage.setItem(UNIT_SLUG_KEY, result.unit.slug);
+          localStorage.setItem(UNIT_KEY, result.unit.name);
+        } catch (err) { /* ignore */ }
         $('#setupForm').reset();
         showApp();
-        showRecoveryCode(prepareRecoveryCode(), (committed) => {
-          toast(committed
-            ? 'Private records ready. Keep the recovery key offline.'
-            : 'Record book created. You can add a recovery key later in Settings.');
-        });
+        toast('Unit account created.');
       } catch (err) {
-        error.textContent = 'Could not create the encrypted vault in this browser.';
+        error.textContent = err.message || 'Could not create the unit account.';
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Create password';
+        btn.textContent = 'Create unit account';
       }
     });
 
@@ -1790,13 +1859,26 @@
       event.preventDefault();
       const error = $('#unlockError');
       error.textContent = '';
+      const slug = $('#unitSlug').value.trim();
       const pw = $('#pw').value;
+      if (!slug) { error.textContent = 'Enter your unit login code.'; $('#unitSlug').focus(); return; }
       if (!pw) { error.textContent = 'Enter your password.'; return; }
       const btn = $('#unlockBtn');
       btn.disabled = true;
       btn.textContent = 'Unlocking…';
       try {
-        await unlockVault(pw);
+        const result = await serverApi('/api/units/login', {
+          method: 'POST',
+          body: JSON.stringify({ slug, password: pw })
+        });
+        state.unitToken = result.token;
+        state.unit = result.unit;
+        try {
+          localStorage.setItem(UNIT_SLUG_KEY, result.unit.slug);
+          localStorage.setItem(UNIT_KEY, result.unit.name);
+        } catch (err) { /* ignore */ }
+        const response = await serverApi('/api/units/records');
+        state.patients = (response.records || []).map((item) => normalizePatient(item.record));
         $('#unlockForm').reset();
         showApp();
       } catch (err) {

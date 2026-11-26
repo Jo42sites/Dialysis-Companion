@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <meta name="description" content="Private hemodialysis patient record book for Dialysis Companion. Records stay encrypted in this browser.">
+<meta name="admin-api" content="http://127.0.0.1:3001">
 <title>HD Patient Records | Dialysis Companion</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="records.css">
@@ -40,17 +41,22 @@
     </div>
 
     <div id="setupView" hidden>
-      <h1>Create your unit's record book</h1>
-      <p class="lock-lede">Anyone can set up their own private record book on their own device. Create a password to start.</p>
+      <h1>Register your dialysis unit</h1>
+      <p class="lock-lede">Create a unit account to save and manage patient records in the secure backend.</p>
       <form id="setupForm" novalidate>
         <div class="field">
-          <label for="setupUnit">Unit / center name <span class="optional">(optional)</span></label>
+          <label for="setupUnit">Unit / center name</label>
           <input id="setupUnit" autocomplete="organization" placeholder="e.g., Sta. Mesa Dialysis Center">
         </div>
         <div class="field">
+          <label for="setupSlug">Unit login code</label>
+          <input id="setupSlug" autocomplete="username" placeholder="e.g., sta-mesa" required>
+          <p class="hint">Use 3-50 letters, numbers, or hyphens.</p>
+        </div>
+        <div class="field">
           <label for="newPw">Password</label>
-          <input id="newPw" type="password" minlength="8" autocomplete="new-password" required>
-          <p class="hint">At least 8 characters. Use something only your team knows.</p>
+          <input id="newPw" type="password" minlength="12" autocomplete="new-password" required>
+          <p class="hint">At least 12 characters. Use something only your team knows.</p>
         </div>
         <div class="field">
           <label for="newPw2">Confirm password</label>
@@ -58,17 +64,24 @@
         </div>
         <label class="ack">
           <input type="checkbox" id="ackPw">
-          <span>I understand that if this password is lost, the records cannot be recovered without a backup.</span>
+          <span>I understand that my unit password controls access to our patient records.</span>
         </label>
         <p class="form-error" id="setupError" role="alert"></p>
-        <button class="btn btn-primary lock-submit" id="setupBtn" type="submit">Create password</button>
+        <button class="btn btn-primary lock-submit" id="setupBtn" type="submit">Create unit account</button>
       </form>
+      <div class="lock-actions">
+        <button class="link-btn" type="button" id="showLoginBtn">Already registered? Log in</button>
+      </div>
     </div>
 
     <div id="unlockView" hidden>
-      <h1>Enter password</h1>
-      <p class="lock-lede">The patient records on this device are locked.</p>
+      <h1>Unit login</h1>
+      <p class="lock-lede">Sign in to your dialysis unit's patient records.</p>
       <form id="unlockForm" novalidate>
+        <div class="field">
+          <label for="unitSlug">Unit login code</label>
+          <input id="unitSlug" autocomplete="username" required>
+        </div>
         <div class="field">
           <label for="pw">Password</label>
           <div class="pw-wrap">
@@ -80,15 +93,13 @@
         <button class="btn btn-primary lock-submit" id="unlockBtn" type="submit">Unlock records</button>
       </form>
       <div class="lock-actions">
-        <button class="link-btn" id="restoreBtn" type="button">Restore a backup</button>
-        <button class="link-btn" id="recoveryBtn" type="button" hidden>Use recovery key</button>
-        <input type="file" id="restoreFile" accept="application/json,.json" hidden>
+        <button class="link-btn" type="button" id="showRegisterBtn">Register a new unit</button>
       </div>
     </div>
 
     <p class="lock-note">
       <svg class="ic"><use href="#r-shield"/></svg>
-      <span>Records are encrypted with AES-256 and saved only in this browser. Nothing is sent to a server. Use a trusted, private device.</span>
+      <span>Records are encrypted in the server database and isolated by dialysis unit.</span>
     </p>
     <p class="lock-back"><a href="index.html">← Back to the patient guide</a></p>
   </div>
