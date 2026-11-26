@@ -529,6 +529,33 @@
   document.querySelectorAll('[data-guide-lang]').forEach((button) => {
     button.addEventListener('click', () => setLanguage(button.dataset.guideLang));
   });
+  const menuToggle = $('#menuToggle');
+  const mobileMenu = $('#mobileMenu');
+  if (menuToggle && mobileMenu) {
+    const closeMenu = () => {
+      mobileMenu.hidden = true;
+      menuToggle.setAttribute('aria-expanded', 'false');
+    };
+    menuToggle.addEventListener('click', () => {
+      const open = mobileMenu.hidden;
+      mobileMenu.hidden = !open;
+      menuToggle.setAttribute('aria-expanded', String(open));
+    });
+    mobileMenu.addEventListener('click', (event) => {
+      if (event.target.closest('a, [data-guide-lang]')) closeMenu();
+    });
+    document.addEventListener('click', (event) => {
+      if (!mobileMenu.hidden && !mobileMenu.contains(event.target) && !menuToggle.contains(event.target)) {
+        closeMenu();
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !mobileMenu.hidden) {
+        closeMenu();
+        menuToggle.focus();
+      }
+    });
+  }
   let initialLanguage = 'tl';
   try {
     initialLanguage = localStorage.getItem('dc-lang-v2') || 'tl';

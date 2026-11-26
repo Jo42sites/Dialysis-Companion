@@ -464,6 +464,7 @@ html[data-lang="en"] h4 .en {
 .guide-link-card:nth-child(3) { --guide-accent: var(--red); --guide-soft: var(--red-soft); }
 .guide-link-card:nth-child(4) { --guide-accent: #95620d; --guide-soft: var(--gold-soft); }
 .guide-link-card:nth-child(5) { --guide-accent: var(--green); --guide-soft: var(--green-soft); }
+.guide-link-card.guide-health-card { --guide-accent: var(--teal); --guide-soft: var(--teal-soft); }
 .guide-link-card .icon-badge {
   grid-column: 1; grid-row: 1; align-self: center;
   width: 42px; height: 42px; margin: 0; border-radius: 13px;
@@ -480,6 +481,7 @@ html[data-lang="en"] h4 .en {
   grid-auto-rows: 260px;
   gap: 16px;
 }
+.guide-health-card { width: min(100%, 520px); min-height: 196px; margin: 16px auto 0; }
 .section-head .kicker {
   width: fit-content; padding: 5px 10px; border-radius: 999px;
   background: var(--coral-soft);

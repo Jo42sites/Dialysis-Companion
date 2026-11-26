@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex,nofollow">
-  <meta name="description" content="An educational dialysis symptom and common lab-flag guide for patients and families.">
+  <meta name="description" content="A public educational dialysis symptom and lab-result guide for patients and families.">
   <meta name="theme-color" content="#0d6b61">
   <title>Interactive health guide | Dialysis Companion</title>
   <link rel="stylesheet" href="styles.css">
@@ -14,18 +13,51 @@
 </head>
 <body class="account-page interactive-guide-page">
   <a class="skip-link" href="#main">Lumaktaw sa nilalaman / Skip to content</a>
-  <header class="account-header">
-    <a class="brand" href="index.html">
+  <header class="site-header">
+    <div class="wrap header-inner">
+    <a class="brand" href="index.html#top" aria-label="Dialysis Companion home">
       <span class="account-brand-icon" aria-hidden="true">+</span>
       <span><span class="brand-name">Dialysis Companion</span><span class="brand-sub">Nurse Jo42</span></span>
     </a>
-    <nav aria-label="Guide navigation">
+    <nav class="main-nav" aria-label="Pangunahing menu / Main menu">
       <a href="index.html"><span class="tl">Simula</span><span class="en">Home</span></a>
-      <a href="records.html">HD staff records</a>
+      <a href="dialysis.html"><span class="tl">Dialysis</span><span class="en">Dialysis</span></a>
+      <a href="daily-care.html"><span class="tl">Pagkain at kalusugan</span><span class="en">Food & health</span></a>
+      <a href="emergency.html"><span class="tl">Emergency</span><span class="en">Emergency</span></a>
+      <a href="philhealth.html"><span class="tl">PhilHealth</span><span class="en">PhilHealth</span></a>
+      <a href="support.html"><span class="tl">Suporta at card</span><span class="en">Support & card</span></a>
+      <a href="account.html" aria-current="page"><span class="tl">Gabay sa kalusugan</span><span class="en">Health guide</span></a>
+      <a href="records.html">HD records</a>
     </nav>
-    <div class="guide-language-switch" role="group" aria-label="Language">
-      <button type="button" data-guide-lang="tl" aria-pressed="true">Tagalog</button>
-      <button type="button" data-guide-lang="en" aria-pressed="false">English</button>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <a class="header-cta" href="tel:911">911</a>
+      <div class="guide-language-switch" role="group" aria-label="Language">
+        <button type="button" data-guide-lang="tl" aria-pressed="true">Tagalog</button>
+        <button type="button" data-guide-lang="en" aria-pressed="false">English</button>
+      </div>
+      <button class="menu-toggle" type="button" id="menuToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Buksan ang menu / Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+    </div>
+    <div class="mobile-menu" id="mobileMenu" hidden>
+      <div class="mobile-menu-grid">
+        <a href="index.html"><span class="tl">Simula</span><span class="en">Home</span></a>
+        <a href="dialysis.html"><span class="tl">Dialysis</span><span class="en">Dialysis</span></a>
+        <a href="daily-care.html"><span class="tl">Pagkain at kalusugan</span><span class="en">Food & health</span></a>
+        <a href="emergency.html"><span class="tl">Emergency</span><span class="en">Emergency</span></a>
+        <a href="philhealth.html"><span class="tl">PhilHealth</span><span class="en">PhilHealth</span></a>
+        <a href="support.html"><span class="tl">Suporta at card</span><span class="en">Support & card</span></a>
+        <a href="account.html" aria-current="page"><span class="tl">Gabay sa kalusugan</span><span class="en">Health guide</span></a>
+        <a href="records.html">HD patient records</a>
+      </div>
+      <div class="mobile-menu-foot">
+        <span class="menu-lang"><span class="tl">Wika</span><span class="en">Language</span></span>
+        <div class="guide-language-switch" role="group" aria-label="Language">
+          <button type="button" data-guide-lang="tl" aria-pressed="true">Tagalog</button>
+          <button type="button" data-guide-lang="en" aria-pressed="false">English</button>
+        </div>
+      </div>
     </div>
   </header>
 

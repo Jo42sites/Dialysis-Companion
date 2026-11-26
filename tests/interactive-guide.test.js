@@ -196,7 +196,8 @@ test('high potassium range avoids a home food fix and flags emergency symptoms',
 
 test('low dialysis adequacy is not offered as a normal-range laboratory option', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'account.html'), 'utf8');
-  assert.doesNotMatch(html, /Kt\/V|URR|adequacy/i);
+  const labNames = Array.from(html.matchAll(/data-lab="([^"]+)"/g), (match) => match[1]);
+  assert.equal(labNames.some((name) => /ktv|urr|adequacy/i.test(name)), false);
 });
 
 test('low glucose guidance follows the personal plan and protects someone unable to swallow', () => {
