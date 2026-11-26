@@ -758,10 +758,7 @@ textarea { min-height: 82px; resize: vertical; }
 /* ============================================================
    Food finder, symptoms, stats
    ============================================================ */
-.food-tools { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; margin: 14px 0 6px; }
-.food-tools .field { flex: 1 1 230px; margin: 0; }
-.food-tools .field.filter { flex: 0 1 210px; }
-.food-legend { display: flex; flex-wrap: wrap; gap: 5px; margin: 9px 0 14px; }
+.food-legend { display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 14px; }
 .badge {
   display: inline-flex; align-items: center; gap: .25rem; padding: 3px 7px;
   border-radius: 999px; font-size: .6rem; font-weight: 900; letter-spacing: .05em;
@@ -799,7 +796,7 @@ textarea { min-height: 82px; resize: vertical; }
 .food-checker-form label { flex: 1 1 100%; font-size: .84rem; font-weight: 800; }
 .food-checker-form input { flex: 1 1 240px; min-width: 0; min-height: 44px; padding: .65rem .75rem; border: 1px solid var(--line-strong); border-radius: 10px; background: #fff; color: var(--ink); font: inherit; }
 .food-checker-form input:focus { outline: 3px solid rgba(13,107,97,.18); border-color: var(--teal); }
-.food-checker-button { min-height: 44px; padding: .65rem 1rem; border: 0; border-radius: 10px; background: var(--teal); color: #fff; font-weight: 800; cursor: pointer; }
+.food-checker-button { min-height: 44px; padding: .65rem 1rem; border: 0; border-radius: 10px; background: var(--teal); color: #fff; font-size: .88rem; font-weight: 800; cursor: pointer; }
 .food-checker-button:hover { background: var(--teal-dark); }
 .food-checker-result { margin-top: .9rem; padding: .85rem 1rem; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
 .food-checker-result h4 { margin: 0 0 .55rem; font-size: .95rem; }
@@ -1185,7 +1182,7 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .emergency-checker-form textarea { display: block; width: 100%; min-height: 100px; padding: .75rem; border: 1px solid var(--line-strong); border-radius: 10px; background: #fff; color: var(--ink); font: inherit; font-size: .84rem; resize: vertical; }
 .emergency-checker-form textarea:focus { outline: 3px solid rgba(13,107,97,.18); border-color: var(--teal); }
 .emergency-checker-hint { margin: .35rem 0 .65rem; }
-.emergency-checker-button { min-height: 44px; padding: .65rem 1rem; border: 0; border-radius: 10px; background: var(--teal); color: #fff; font-weight: 800; cursor: pointer; }
+.emergency-checker-button { min-height: 44px; padding: .65rem 1rem; border: 0; border-radius: 10px; background: var(--teal); color: #fff; font-size: .88rem; font-weight: 800; cursor: pointer; }
 .emergency-checker-button:hover { background: var(--teal-dark); }
 .emergency-checker-result { margin-top: 1rem; padding: .9rem 1rem; border: 1px solid; border-radius: 12px; }
 .emergency-checker-result h4 { margin: 0 0 .4rem; font-size: 1rem; }
@@ -1308,7 +1305,7 @@ details.accordion[open] summary { background: var(--teal-soft); }
   body { background: #fff; color: #000; font-size: 10.5pt; }
   .utility-bar, .site-header, .section-nav, .emergency-strip, .hero-art, .home-hero-art, .hero-compass,
   .hero-actions, .hero-note, .back-top, .toast, .no-print, .mobile-menu,
-  .section-nav, .checklist-actions, .quick-add, .food-tools, .symptom-grid,
+  .section-nav, .checklist-actions, .quick-add, .symptom-grid,
   .tool button, .header-cta { display: none !important; }
   .hero { padding: 0 0 18px; background: #fff; }
   .hero::after { display: none; }

@@ -317,19 +317,15 @@
   ];
 
   const foodSearch = $('#foodCheckerInput');
-  const foodFilter = $('#foodFilter');
   const foodGrid = $('#foodGrid');
   const foodCount = $('#foodCount');
-  if (foodSearch && foodFilter && foodGrid) {
+  if (foodSearch && foodGrid) {
     const tagLabel = { 'high-k': 'High K', 'high-p': 'High P', 'high-na': 'High Na', protein: 'Protein', fluid: 'Fluid' };
     const renderFoods = () => {
       const q = foodSearch.value.trim().toLowerCase();
-      const filter = foodFilter.value;
       const list = foods.filter((f) => {
         const hay = (f.nTl + ' ' + f.nEn + ' ' + f.noteTl + ' ' + f.noteEn + ' ' + f.swapTl + ' ' + f.swapEn).toLowerCase();
-        const matchQ = !q || hay.includes(q);
-        const matchF = filter === 'all' || f.tags.includes(filter);
-        return matchQ && matchF;
+        return !q || hay.includes(q);
       });
       foodGrid.innerHTML = list.length ? list.map((f) => {
         const badges = f.tags.map((t) => '<span class="badge ' + t + '">' + tagLabel[t] + '</span>').join('');
@@ -339,11 +335,10 @@
           '<p>' + bi(f.noteTl, f.noteEn) + '</p>' +
           '<p class="swap"><strong>' + bi('Mas mabuti', 'Better') + ':</strong> ' + bi(f.swapTl, f.swapEn) + '</p>' +
           '</article>';
-      }).join('') : '<div class="food-empty">' + bi('Walang nahanap. Subukan ang ibang salita o filter.', 'No results. Try another word or filter.') + '</div>';
+      }).join('') : '<div class="food-empty">' + bi('Walang nahanap. Subukan ang ibang salita.', 'No results. Try another word.') + '</div>';
       if (foodCount) foodCount.textContent = list.length + ' / ' + foods.length + ' ' + (list.length === 1 ? 'pagkain / food' : 'pagkain / foods');
     };
     foodSearch.addEventListener('input', renderFoods);
-    foodFilter.addEventListener('change', renderFoods);
     renderFoods();
   }
 

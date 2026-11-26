@@ -43,7 +43,7 @@
 .auth-form input { width: 100%; padding: .72rem .8rem; border: 1px solid var(--line-strong); border-radius: 10px; background: white; color: var(--ink); }
 .auth-form input:focus { border-color: var(--teal); outline: 3px solid rgba(13,107,97,.15); }
 .field-help { margin: .45rem 0 .8rem; color: var(--muted); font-size: .78rem; line-height: 1.5; }
-.account-button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; margin-top: 1rem; padding: .7rem 1rem; border: 0; border-radius: 12px; background: var(--teal); color: white; font-weight: 800; cursor: pointer; }
+.account-button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; margin-top: 1rem; padding: .7rem 1rem; border: 0; border-radius: 12px; background: var(--teal); color: white; font-size: .88rem; font-weight: 800; cursor: pointer; }
 .account-button:hover { background: var(--teal-dark); color: white; }
 .account-button:disabled { opacity: .6; cursor: wait; }
 .account-button-light { border: 1px solid #b7d4cb; background: white; color: var(--teal-dark); }
