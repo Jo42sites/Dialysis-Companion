@@ -54,7 +54,16 @@ function createGuide() {
     input.dataset.test = test;
     return input;
   }));
+  const clearButtons = [
+    'hemoglobin', 'potassium', 'phosphorus', 'calcium',
+    'albumin', 'uricAcid', 'bun', 'glucose'
+  ].map((test) => {
+    const button = new Element();
+    button.dataset.clearLab = test;
+    return button;
+  });
   elements.labInputs = labInputs;
+  elements.clearButtons = clearButtons;
   const languageButtons = ['tl', 'en'].map((language) => {
     const button = new Element();
     button.dataset.guideLang = language;
@@ -66,6 +75,7 @@ function createGuide() {
     querySelector: (selector) => elements[selector],
     querySelectorAll(selector) {
       if (selector === '[data-guide-lang]') return languageButtons;
+      if (selector === '[data-clear-lab]') return clearButtons;
       if (selector === '#labForm input[type="checkbox"][data-test]') return labInputs;
       if (selector === '#labForm input[type="checkbox"]:checked') {
         return labInputs.filter((input) => input.checked);
@@ -109,6 +119,14 @@ function toggleLab(elements, testName, range) {
   assert.ok(input, `${testName} ${range} option exists`);
   input.checked = !input.checked;
   elements['#labForm'].listeners.change({ target: input });
+}
+
+function clearLab(elements, testName) {
+  const button = elements.clearButtons.find(
+    (candidate) => candidate.dataset.clearLab === testName
+  );
+  assert.ok(button, `${testName} clear control exists`);
+  button.listeners.click();
 }
 
 function selectAllAdvice(elements) {
@@ -237,6 +255,17 @@ test('a selected lab choice can be toggled off before submitting', () => {
   submitLab(elements);
 
   assert.match(elements['#labResultTitle'].textContent, /select a result/i);
+  assert.equal(elements['#labResultDetails'].children.length, 0);
+});
+
+test('the per-lab clear control removes a submitted selection and its recommendations', () => {
+  const { elements } = createGuide();
+  selectLab(elements, 'hemoglobin', 'below');
+  submitLab(elements);
+  clearLab(elements, 'hemoglobin');
+
+  assert.equal(elements.labInputs[0].checked, false);
+  assert.match(elements['#labResultTitle'].textContent, /pumili muna ng resulta/i);
   assert.equal(elements['#labResultDetails'].children.length, 0);
 });
 

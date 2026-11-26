@@ -401,22 +401,43 @@
     labResult.hidden = false;
   }
 
+  function selectedLabResults() {
+    return Array.from(
+      document.querySelectorAll('#labForm input[type="checkbox"]:checked'),
+      (input) => ({ test: input.dataset.test, range: input.value })
+    );
+  }
+
+  function refreshLabResultAfterEdit() {
+    if (latestLab === null || labResult.hidden) return;
+    latestLab = selectedLabResults();
+    renderLabResult();
+  }
+
   $('#labForm').addEventListener('change', (event) => {
     const changedInput = event.target;
-    if (!changedInput.checked) return;
-    document.querySelectorAll('#labForm input[type="checkbox"][data-test]').forEach((input) => {
-      if (input !== changedInput && input.dataset.test === changedInput.dataset.test) {
-        input.checked = false;
-      }
+    if (changedInput.checked) {
+      document.querySelectorAll('#labForm input[type="checkbox"][data-test]').forEach((input) => {
+        if (input !== changedInput && input.dataset.test === changedInput.dataset.test) {
+          input.checked = false;
+        }
+      });
+    }
+    refreshLabResultAfterEdit();
+  });
+
+  document.querySelectorAll('[data-clear-lab]').forEach((button) => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('#labForm input[type="checkbox"][data-test]').forEach((input) => {
+        if (input.dataset.test === button.dataset.clearLab) input.checked = false;
+      });
+      refreshLabResultAfterEdit();
     });
   });
 
   $('#labForm').addEventListener('submit', (event) => {
     event.preventDefault();
-    latestLab = Array.from(
-      document.querySelectorAll('#labForm input[type="checkbox"]:checked'),
-      (input) => ({ test: input.dataset.test, range: input.value })
-    );
+    latestLab = selectedLabResults();
     renderLabResult();
   });
 
