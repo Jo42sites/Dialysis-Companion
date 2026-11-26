@@ -56,7 +56,7 @@
 .lab-range-choice { display: inline-flex; align-items: center; gap: .35rem; padding: .3rem .5rem; border: 1px solid var(--line); border-radius: 8px; background: #f9fbfa; color: var(--ink-soft); font-size: .76rem; cursor: pointer; }
 .lab-range-choice input { width: 15px; height: 15px; margin: 0; accent-color: var(--teal); }
 .lab-range-choice:focus-within { outline: 2px solid rgba(13,107,97,.18); border-color: var(--teal); }
-.lab-choice-clear { margin-left: auto; padding: .3rem .35rem; border: 0; background: transparent; color: var(--teal-dark); font: inherit; font-size: .72rem; text-decoration: underline; cursor: pointer; }
+.lab-choice-clear { width: 28px; height: 28px; margin-left: auto; padding: 0; flex: 0 0 auto; border: 0; background: transparent; cursor: pointer; }
 .lab-choice-clear:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 .lab-result-form .account-button { grid-column: 1 / -1; margin-top: 0; min-height: 42px; }
 .health-tool-icon {
