@@ -14,7 +14,6 @@ class Element {
     this.attributes = {};
     this.hidden = true;
     this.textContent = '';
-    this.value = '';
   }
 
   addEventListener(name, callback) {
@@ -37,22 +36,8 @@ class Element {
 }
 
 function createGuide() {
-  const ids = [
-    'labUnit', 'labTest', 'labResult', 'symptomResult', 'labFlag', 'labForm',
-    'labValue', 'labResultTitle', 'labFlagText', 'labResultText',
-    'labResultQuestions', 'labRecommendations', 'symptomForm',
-    'symptomResultTitle', 'symptomResultText', 'symptomDetails'
-  ];
+  const ids = ['symptomResult', 'symptomForm', 'symptomResultTitle', 'symptomResultText', 'symptomDetails'];
   const elements = Object.fromEntries(ids.map((id) => [`#${id}`, new Element()]));
-  elements['#labTest'].value = 'hemoglobin';
-  elements['#labFlag'].value = 'unsure';
-  elements['#labFlag'].options = ['unsure', 'low', 'high', 'target'].map((value) => {
-    const option = new Element();
-    option.value = value;
-    option.dataset.tl = value;
-    option.dataset.en = value;
-    return option;
-  });
   const languageButtons = ['tl', 'en'].map((language) => {
     const button = new Element();
     button.dataset.guideLang = language;
@@ -64,7 +49,6 @@ function createGuide() {
     querySelector: (selector) => elements[selector],
     querySelectorAll(selector) {
       if (selector === '[data-guide-lang]') return languageButtons;
-      if (selector === '#labFlag option') return elements['#labFlag'].options;
       if (selector === 'input[name="symptom"]:checked') return checkedSymptoms;
       return [];
     },
@@ -80,35 +64,62 @@ function createGuide() {
   return { elements, languageButtons, checkedSymptoms };
 }
 
-function submit(elements, formSelector) {
-  elements[formSelector].listeners.submit({ preventDefault() {} });
+function submit(elements) {
+  elements['#symptomForm'].listeners.submit({ preventDefault() {} });
+}
+
+function selectAllAdvice(elements) {
+  return elements['#symptomDetails'].children
+    .flatMap((detail) => detail.children[1].children)
+    .map((item) => item.textContent)
+    .join(' ');
 }
 
 test('low hemoglobin suggests renal-plan-compatible iron foods and avoids self-treatment', () => {
-  const { elements, languageButtons } = createGuide();
+  const { elements, checkedSymptoms, languageButtons } = createGuide();
   languageButtons[1].listeners.click({});
-  elements['#labValue'].value = '9.2';
-  elements['#labFlag'].value = 'low';
-  submit(elements, '#labForm');
+  checkedSymptoms.push({ value: 'lowHb' });
+  submit(elements);
 
-  const recommendations = elements['#labRecommendations'].children
-    .map((item) => item.textContent)
-    .join(' ');
-  assert.match(recommendations, /lean beef/i);
-  assert.match(recommendations, /renal dietitian/i);
-  assert.match(recommendations, /do not start over-the-counter iron/i);
-  assert.match(elements['#labFlagText'].textContent, /below target/i);
+  const advice = selectAllAdvice(elements);
+  assert.match(advice, /lean meat, poultry, or fish/i);
+  assert.match(advice, /renal dietitian/i);
+  assert.match(advice, /do not start iron, vitamins, or epoetin/i);
+  assert.equal(elements['#symptomResult'].dataset.level, 'general');
+});
+
+test('high hemoglobin does not suggest diet restriction or extra water', () => {
+  const { elements, checkedSymptoms, languageButtons } = createGuide();
+  languageButtons[1].listeners.click({});
+  checkedSymptoms.push({ value: 'highHb' });
+  submit(elements);
+
+  const advice = selectAllAdvice(elements);
+  assert.match(advice, /repeat CBC/i);
+  assert.match(advice, /no food that safely and reliably lowers Hb/i);
+  assert.match(advice, /do not.*add water/i);
+});
+
+test('high uric acid suggests reasonable food limits without excessive fluid advice', () => {
+  const { elements, checkedSymptoms, languageButtons } = createGuide();
+  languageButtons[1].listeners.click({});
+  checkedSymptoms.push({ value: 'highUric' });
+  submit(elements);
+
+  const advice = selectAllAdvice(elements);
+  assert.match(advice, /organ meats/i);
+  assert.match(advice, /sardines/i);
+  assert.match(advice, /sugary drinks/i);
+  assert.match(advice, /do not eliminate protein or increase water/i);
 });
 
 test('dizziness suggests safe BP checking without recommending extra food or fluids', () => {
   const { elements, checkedSymptoms, languageButtons } = createGuide();
   languageButtons[1].listeners.click({});
   checkedSymptoms.push({ value: 'dizzy' });
-  submit(elements, '#symptomForm');
+  submit(elements);
 
-  const advice = elements['#symptomDetails'].children[0].children[1].children
-    .map((item) => item.textContent)
-    .join(' ');
+  const advice = selectAllAdvice(elements);
   assert.match(advice, /record the reading/i);
   assert.match(advice, /do not add fluids or food/i);
   assert.match(advice, /call your dialysis team today/i);
@@ -119,11 +130,9 @@ test('high blood pressure guidance recommends rest and rechecking, not self-trea
   const { elements, checkedSymptoms, languageButtons } = createGuide();
   languageButtons[1].listeners.click({});
   checkedSymptoms.push({ value: 'highBP' });
-  submit(elements, '#symptomForm');
+  submit(elements);
 
-  const advice = elements['#symptomDetails'].children[0].children[1].children
-    .map((item) => item.textContent)
-    .join(' ');
+  const advice = selectAllAdvice(elements);
   assert.match(advice, /sit quietly and rest/i);
   assert.match(advice, /repeat the measurement/i);
   assert.match(advice, /do not take an extra dose/i);
@@ -134,20 +143,25 @@ test('multiple symptoms show emergency guidance before less urgent suggestions',
   const { elements, checkedSymptoms, languageButtons } = createGuide();
   languageButtons[1].listeners.click({});
   checkedSymptoms.push({ value: 'itch' }, { value: 'chest' });
-  submit(elements, '#symptomForm');
+  submit(elements);
 
   assert.equal(elements['#symptomResult'].dataset.level, 'urgent');
   assert.match(elements['#symptomResultTitle'].textContent, /emergency/i);
   assert.match(elements['#symptomDetails'].children[0].children[0].children[0].textContent, /chest/i);
-  assert.equal(elements['#symptomDetails'].children.length, 2);
 });
 
-test('every symptom choice has a rendered recommendation', () => {
+test('every selectable symptom or lab finding has a recommendation', () => {
   const { elements, checkedSymptoms } = createGuide();
   const html = fs.readFileSync(path.join(__dirname, '..', 'account.html'), 'utf8');
   const values = Array.from(html.matchAll(/name="symptom" value="([^"]+)"/g), (match) => match[1]);
   checkedSymptoms.push(...values.map((value) => ({ value })));
-  submit(elements, '#symptomForm');
+  submit(elements);
 
   assert.equal(elements['#symptomDetails'].children.length, values.length);
+});
+
+test('the separate lab guide has been removed', () => {
+  const html = fs.readFileSync(path.join(__dirname, '..', 'account.html'), 'utf8');
+  assert.doesNotMatch(html, /GABAY SA LAB|LAB GUIDE|id="labForm"/i);
+  assert.match(html, /GABAY SA SINTOMAS/);
 });

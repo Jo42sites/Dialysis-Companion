@@ -3,8 +3,8 @@
 The FastAPI API supports separate dialysis units and individual staff accounts,
 and an optional site-wide administrator. SQLite stores unit and audit data;
 patient records are encrypted with AES-256-GCM before being written to the
-database. The patient/family interactive health guide is browser-only and does
-not send or save lab values or symptom selections.
+database. The patient/family symptom guide is browser-only and does not send or
+save symptom or lab-finding selections.
 
 > **Prototype warning:** this is not a certified clinical system. Do not enter
 > real patient data until your organization has reviewed the deployment,
@@ -67,13 +67,13 @@ account or changing its password invalidates existing tokens.
 
 ## Patient and family interactive guide
 
-The health guide provides lab-specific suggestions for hemoglobin, potassium,
-phosphorus, calcium, albumin, and Kt/V, plus actionable symptom next steps.
-Food suggestions are qualified by the patient's renal meal plan; the guide
-does not prescribe treatment or recommend medication doses. Inputs are held
-only in page memory: they are not saved in local storage and are not sent to
-the API. The guide does not diagnose, set personal targets, or replace advice
-from a dialysis team.
+The browser-only guide provides actionable symptom next steps and general
+education for low/high hemoglobin and high uric acid flags. Food suggestions
+are qualified by the patient's renal meal plan; the guide does not prescribe
+treatment or recommend medication doses. Selections are held only in page
+memory: they are not saved in local storage and are not sent to the API. The
+guide does not diagnose, set personal targets, or replace advice from a
+dialysis team.
 
 Public patient/family account registration, sign-in, and card-sync API routes
 have been removed. The legacy `guide_accounts` database table is retained so

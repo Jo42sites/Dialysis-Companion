@@ -2,174 +2,35 @@
   'use strict';
 
   const $ = (selector) => document.querySelector(selector);
-  const unitSelect = $('#labUnit');
-  const labTest = $('#labTest');
-  const labResult = $('#labResult');
   const symptomResult = $('#symptomResult');
-  const labFlag = $('#labFlag');
-  const unitsByLab = {
-    hemoglobin: [['g/dL', 'g/L']],
-    potassium: [['mmol/L']],
-    phosphorus: [['mg/dL', 'mmol/L']],
-    calcium: [['mg/dL', 'mmol/L']],
-    albumin: [['g/dL', 'g/L']],
-    ktv: [['No unit']]
-  };
-  const labGuidance = {
-    hemoglobin: {
-      label: ['Hemoglobin (Hb)', 'Hemoglobin (Hb)'],
-      context: [
-        'Ang target na Hb ay indibidwal. Itanong sa dialysis team kung paano ito nauugnay sa iron tests, posibleng pagkawala ng dugo, at planong iron o epoetin na sila ang nagtakda.',
-        'Hemoglobin targets are individualized. Ask your dialysis team how this relates to iron tests, possible blood loss, and any iron or epoetin plan they prescribed.'
-      ],
-      question: [
-        'Mga tanong: Ano ang target ko? Kailangan bang tingnan ang trend o iba pang blood tests? Huwag magdagdag o magbago ng iron o epoetin nang walang payo nila.',
-        'Questions: What is my target? Should we review the trend or other blood tests? Do not start or change iron or epoetin without their advice.'
-      ],
-      recommendations: [
-        [
-          'Itanong kung may ibang posibleng sanhi ng anemia, gaya ng inflammation, impeksiyon, o pagdurugo.',
-          'Ipaalam sa care team ang pagkapagod, panghihina, hilo, o hirap huminga; ang matinding hirap huminga o pananakit ng dibdib ay nangangailangan ng agarang tulong.'
-        ],
-        [
-          'Ask whether other causes of anemia, such as inflammation, infection, or blood loss, should be reviewed.',
-          'Tell your care team about fatigue, weakness, dizziness, or trouble breathing; severe trouble breathing or chest pain needs urgent help.'
-        ]
-      ],
-      lowRecommendations: [
-        [
-          'Kung mababa o pababa ang Hb, itanong kung dapat suriin ang iron stores (ferritin/TSAT), B12/folate, at posibleng pagkawala ng dugo.',
-          'Kung pinapayagan ng renal meal plan mo, maaaring pumili ng pagkaing may iron tulad ng lean beef/karne, manok, o isda. Tanungin ang renal dietitian kung anong portion ang angkop.',
-          'Magtanong muna kung pasok sa potassium/phosphorus plan mo ang monggo/beans o fortified cereal; hindi pare-pareho ang angkop na pagkain sa dialysis.',
-          'Makakatulong ang pagkain sa nutrisyon pero maaaring hindi nito maitama nang mag-isa ang anemia na kaugnay ng kidney failure. Iron o epoetin lamang kung iniutos ng team; huwag magsimula ng over-the-counter iron.'
-        ],
-        [
-          'If Hb is low or falling, ask whether iron stores (ferritin/TSAT), B12/folate, and possible blood loss should be checked.',
-          'If they fit your renal meal plan, iron-containing choices may include lean beef/meat, poultry, or fish. Ask a renal dietitian what portions are suitable.',
-          'Ask first whether beans or fortified cereal fit your potassium/phosphorus plan; suitable foods differ among people on dialysis.',
-          'Food can support nutrition but may not correct kidney-failure-related anemia by itself. Use iron or epoetin only if your team prescribes it; do not start over-the-counter iron.'
-        ]
-      ]
-    },
-    potassium: {
-      label: ['Potassium', 'Potassium'],
-      context: [
-        'Maaaring makaapekto ang potassium sa tibok ng puso. Ang kahulugan nito ay nakadepende sa resulta, sintomas, at iyong care plan; ang critical na resulta ay dapat ipaalam agad sa dialysis team.',
-        'Potassium can affect heart rhythm. Its meaning depends on the result, symptoms, and your care plan; promptly report a critical result to your dialysis team.'
-      ],
-      question: [
-        'Mga tanong: May kailangan bang baguhin sa aking pagkain, gamot, o dialysis plan? Huwag baguhin ang mga ito nang mag-isa.',
-        'Questions: Does anything need to change in my diet, medicines, or dialysis plan? Do not change them on your own.'
-      ],
-      recommendations: [
-        [
-          'Kung minarkahang mataas o mababa, tawagan ang dialysis team para sa payo; maaaring makaapekto ang potassium sa tibok ng puso.',
-          'Ihanda ang resulta, petsa, sintomas, at listahan ng gamot. Huwag magdagdag o magtanggal ng pagkain nang maramihan.',
-          'Iwasan ang salt substitute o “low-sodium salt” na may potassium chloride maliban kung inaprubahan ng team.',
-          'Bagong iregular na tibok, matinding panghihina, pananakit ng dibdib, o hirap huminga: emergency help ngayon.'
-        ],
-        [
-          'If flagged high or low, contact your dialysis team for advice; potassium can affect heart rhythm.',
-          'Have the result, date, symptoms, and medicine list ready. Do not make major food changes on your own.',
-          'Avoid salt substitutes or “low-sodium salt” containing potassium chloride unless your team approves them.',
-          'New irregular heartbeat, severe weakness, chest pain, or trouble breathing: get emergency help now.'
-        ]
-      ]
-    },
-    phosphorus: {
-      label: ['Phosphorus', 'Phosphorus'],
-      context: [
-        'Isinasaalang-alang ng dialysis team ang trend at iba pang resulta. Maaari mong itanong kung paano naaangkop sa iyo ang mga pagkain at ang timing ng binder na nireseta na.',
-        'Your dialysis team considers the trend and other results. Ask how food choices and the timing of any already-prescribed binder apply to you.'
-      ],
-      question: [
-        'Mga tanong: Aling pagkain o binder instructions ang mahalaga sa aking plano? Huwag magbago ng binder o diet nang walang gabay ng team.',
-        'Questions: Which food choices or binder instructions matter for my plan? Do not change binders or diet without your team’s guidance.'
-      ],
-      recommendations: [
-        [
-          'Tingnan ang ingredient list para sa phosphate additives (madalas may “phos” sa pangalan); itanong sa renal dietitian kung aling pamalit ang angkop.',
-          'Kung may phosphate binder ka, inumin lamang ayon sa eksaktong instructions ng team, kabilang ang timing sa pagkain.',
-          'Huwag mag-skip, magdoble, o magpalit ng binder o pagkain batay lamang sa isang resulta.'
-        ],
-        [
-          'Check ingredient lists for phosphate additives (often containing “phos”); ask a renal dietitian which swaps fit your plan.',
-          'If you have a phosphate binder, take it only as your care team directed, including its timing with food.',
-          'Do not skip, double, or change binders or foods based only on one result.'
-        ]
-      ]
-    },
-    calcium: {
-      label: ['Calcium', 'Calcium'],
-      context: [
-        'Karaniwang binibigyang-kahulugan ang calcium kasama ng albumin at iba pang mineral/bone tests. Ipaubaya sa clinician ang pag-interpret ng resulta at trend.',
-        'Calcium is often interpreted alongside albumin and other mineral/bone tests. Let your clinician interpret the result and trend.'
-      ],
-      question: [
-        'Mga tanong: Kailangan bang tingnan ito kasama ng ibang resulta o gamot? Huwag magsimula o magbago ng supplement o gamot nang walang payo.',
-        'Questions: Should this be reviewed alongside other results or medicines? Do not start or change a supplement or medicine without advice.'
-      ],
-      recommendations: [
-        [
-          'Itanong kung dapat itong basahin kasama ng albumin, phosphorus, at iba pang resulta.',
-          'Huwag magsimula, huminto, o magbago ng calcium/vitamin D supplement o gamot nang walang payo.',
-          'Ibahagi ang bago o lumalalang pamamanhid, pangingilig, pulikat, o pagkalito sa care team.'
-        ],
-        [
-          'Ask whether this should be interpreted alongside albumin, phosphorus, and other results.',
-          'Do not start, stop, or change calcium/vitamin D supplements or medicines without advice.',
-          'Tell your care team about new or worsening numbness, tingling, cramps, or confusion.'
-        ]
-      ]
-    },
-    albumin: {
-      label: ['Albumin', 'Albumin'],
-      context: [
-        'Maaaring maapektuhan ang albumin ng maraming bagay, kaya hindi ito simpleng sukatan ng pagkain lamang. Ipa-review ang trend at pangkalahatang kalusugan sa care team.',
-        'Albumin can be affected by many factors, so it is not a simple measure of food intake alone. Ask your care team to review the trend and overall health.'
-      ],
-      question: [
-        'Mga tanong: Ano ang maaaring dahilan ng pagbabago? Kailangan ba ng dietitian o karagdagang pagsusuri? Huwag basta dagdagan ang protein nang walang payo.',
-        'Questions: What might explain the change? Would a dietitian or further review help? Do not increase protein without advice.'
-      ],
-      recommendations: [
-        [
-          'Hindi albumin lang ang sukatan ng nutrisyon; itanong kung may ibang sanhi gaya ng impeksiyon o inflammation.',
-          'Kung nahihirapan kumain o pumapayat, humingi ng tulong sa renal dietitian para makahanap ng pagkaing tugma sa iyong kidney meal plan.',
-          'Huwag basta dagdagan ang protein o gumamit ng nutrition supplement nang walang payo.'
-        ],
-        [
-          'Albumin alone does not measure nutrition; ask whether other causes such as infection or inflammation need review.',
-          'If eating is difficult or you are losing weight, ask a renal dietitian for foods that fit your kidney meal plan.',
-          'Do not simply increase protein or start nutrition supplements without advice.'
-        ]
-      ]
-    },
-    ktv: {
-      label: ['Kt/V', 'Kt/V'],
-      context: [
-        'Ginagamit ang Kt/V bilang isa sa mga sukatan ng dialysis adequacy. I-interpret ito kasama ng iyong treatment history at iba pang clinical details.',
-        'Kt/V is one measure used to assess dialysis adequacy. Interpret it alongside your treatment history and other clinical details.'
-      ],
-      question: [
-        'Mga tanong: Tugma ba ito sa aking target? Kailangan bang suriin ang access, oras, o schedule ng dialysis? Huwag baguhin ang schedule nang walang team.',
-        'Questions: Is this in line with my target? Should access, treatment time, or schedule be reviewed? Do not change your schedule without your team.'
-      ],
-      recommendations: [
-        [
-          'Itanong sa team kung naaayon ito sa iyong personal na target at kung dapat suriin ang access o treatment plan.',
-          'Subukang dumalo at tapusin ang buong dialysis session ayon sa iskedyul; ipaalam agad kung may naputol o hindi natapos na session.',
-          'Huwag baguhin o dagdagan ang dialysis schedule nang walang instructions.'
-        ],
-        [
-          'Ask your team whether this matches your personal target and whether your access or treatment plan should be reviewed.',
-          'Attend and complete each dialysis session as scheduled; tell the team promptly about any shortened or missed session.',
-          'Do not change or add dialysis sessions without instructions.'
-        ]
-      ]
-    }
-  };
   const symptomGuidance = {
+    lowHb: {
+      level: 'general', label: ['mababang hemoglobin (Hb) / anemia', 'low hemoglobin (Hb) / anemia'],
+      steps: [
+        ['Ipa-review ang Hb sa dialysis team; itanong kung kailangan tingnan ang ferritin/TSAT, B12/folate, at posibleng pagdurugo o ibang sanhi.', 'Ask your dialysis team to review Hb and whether ferritin/TSAT, B12/folate, blood loss, or other causes should be checked.'],
+        ['Kung pasok sa iyong kidney meal plan, maaaring pag-usapan ang lean na karne, manok, o isda bilang pagkaing may iron. Tanungin ang renal dietitian sa angkop na portion at kung pasok ang beans o fortified cereal sa potassium/phosphorus plan mo.', 'If they fit your kidney meal plan, discuss lean meat, poultry, or fish as iron-containing choices. Ask a renal dietitian about portions and whether beans or fortified cereal fit your potassium/phosphorus plan.'],
+        ['Nakakatulong ang pagkain sa nutrisyon ngunit maaaring hindi sapat para maitama ang anemia sa kidney failure. Huwag magsimula ng iron, vitamin, o epoetin maliban kung iniutos ng care team.', 'Food supports nutrition but may not be enough to correct anemia in kidney failure. Do not start iron, vitamins, or epoetin unless your care team directs you.'],
+        ['Ipaalam agad ang lumalalang panghihina, hilo, o pagkapagod. Sakit ng dibdib o matinding hirap huminga: tumawag sa 911.', 'Promptly report worsening weakness, dizziness, or fatigue. Chest pain or severe trouble breathing: call 911.']
+      ]
+    },
+    highHb: {
+      level: 'general', label: ['mataas na hemoglobin (Hb)', 'high hemoglobin (Hb)'],
+      steps: [
+        ['Ipa-review ang resulta sa care team; itanong kung kailangan ulitin ang CBC o suriin ang fluid status at iba pang posibleng sanhi.', 'Ask your care team to review the result and whether a repeat CBC, fluid status, or other causes should be assessed.'],
+        ['Walang pagkain na ligtas at tiyak na magpapababa ng Hb. Huwag bawasan ang iron/protein, mag-donate ng dugo, o magdagdag ng tubig para “itama” ito nang walang medical advice.', 'There is no food that safely and reliably lowers Hb. Do not restrict iron/protein, donate blood, or add water to “correct” it without medical advice.'],
+        ['Sundin ang iyong kasalukuyang fluid limit at gamot plan; tawagan ang dialysis team para sa personal na susunod na hakbang.', 'Follow your current fluid limit and medicine plan; contact your dialysis team for your next steps.'],
+        ['Matinding sakit ng ulo, pagbabago ng paningin, sakit ng dibdib, hirap huminga, o biglang panghihina/pamamanhid: humingi agad ng emergency help.', 'Severe headache, vision changes, chest pain, trouble breathing, or sudden weakness/numbness: get emergency help now.']
+      ]
+    },
+    highUric: {
+      level: 'general', label: ['mataas na uric acid', 'high uric acid'],
+      steps: [
+        ['Ang mataas na uric acid lang ay hindi nangangahulugang may gout. Ipa-review ang resulta, sintomas, gamot, at personal na target sa care team.', 'High uric acid alone does not mean you have gout. Ask your care team to review the result, symptoms, medicines, and personal target.'],
+        ['Kung bahagi ng iyong renal meal plan, pag-usapan ang pagbabawas ng laman-loob gaya ng atay, malalaking portion ng pulang karne, ilang seafood gaya ng dilis/sardinas/shellfish, beer/alcohol, at matatamis na inuming may asukal/fructose.', 'If compatible with your renal meal plan, discuss limiting organ meats such as liver, large portions of red meat, some seafood such as anchovies/sardines/shellfish, beer/alcohol, and sugary drinks with added sugar/fructose.'],
+        ['Huwag tuluyang alisin ang protein o dagdagan ang tubig; sundin ang renal dietitian at fluid limit mo. Huwag ihinto ang niresetang gout medicine o uminom ng ibuprofen/naproxen nang walang payo.', 'Do not eliminate protein or increase water; follow your renal dietitian’s advice and fluid limit. Do not stop prescribed gout medicine or take ibuprofen/naproxen without advice.'],
+        ['Kung biglang namula, uminit, sumakit, o namaga ang kasukasuan, makipag-ugnayan sa clinician sa araw ding iyon; kailangan ding maalis sa posibilidad ang impeksiyon.', 'If a joint suddenly becomes red, warm, painful, or swollen, contact a clinician the same day; infection may also need to be ruled out.']
+      ]
+    },
     chest: {
       level: 'urgent', label: ['pananakit o bigat ng dibdib', 'chest pain or pressure'],
       steps: [
@@ -279,52 +140,52 @@
         ['Ipaalam sa team kung bago, lumalala, o nakakaapekto sa gawain. Itanong kung dapat repasuhin ang Hb/iron, nutrisyon, gamot, tulog, o ibang sanhi.', 'Tell your team if it is new, worsening, or affecting daily activities. Ask whether Hb/iron, nutrition, medicines, sleep, or other causes should be reviewed.'],
         ['Bigla o matinding panghihina, sakit ng dibdib, hirap huminga, o pagkalito: humingi agad ng emergency help.', 'Sudden or severe weakness, chest pain, trouble breathing, or confusion: get emergency help now.']
       ]
+    },
+    headache: {
+      level: 'general', label: ['sakit ng ulo', 'headache'],
+      steps: [
+        ['Magpahinga sa tahimik na lugar. Kung may BP monitor, sukatin ayon sa tamang paraan at itala ang reading.', 'Rest in a quiet place. If you have a BP monitor, check it as instructed and record the reading.'],
+        ['Kung bago, paulit-ulit, o hindi nawawala, ipaalam sa dialysis team/clinician. Huwag uminom ng pain reliever nang hindi tinitiyak na ligtas ito sa kidney disease.', 'Tell your dialysis team/clinician if it is new, recurring, or persistent. Do not take a pain reliever without checking that it is safe for kidney disease.'],
+        ['Bigla at napakatinding sakit ng ulo, pagbabago ng paningin, pagkalito, o pamamanhid/panghihina: tumawag sa 911.', 'A sudden, extremely severe headache, vision changes, confusion, or numbness/weakness: call 911.']
+      ]
+    },
+    pale: {
+      level: 'same-day', label: ['kapansin-pansing pamumutla', 'noticeably pale skin'],
+      steps: [
+        ['Ipaalam sa care team, lalo na kung bago ito o may pagkapagod, hilo, panghihina, o hirap huminga; itanong kung dapat suriin ang CBC/Hb.', 'Tell your care team, especially if this is new or comes with fatigue, dizziness, weakness, or trouble breathing; ask whether CBC/Hb should be checked.'],
+        ['Huwag magsimula ng iron o supplement batay lamang sa pamumutla; maaaring maraming sanhi ito.', 'Do not start iron or supplements based only on paleness; there may be many causes.'],
+        ['Sakit ng dibdib, pagkahimatay, o matinding hirap huminga: humingi agad ng emergency help.', 'Chest pain, fainting, or severe trouble breathing: get emergency help now.']
+      ]
+    },
+    joint: {
+      level: 'same-day', label: ['biglaang masakit, mapula, mainit, o namamagang kasukasuan', 'sudden painful, red, warm, or swollen joint'],
+      steps: [
+        ['Makipag-ugnayan sa clinician o dialysis team sa araw ding ito, lalo na kung unang beses; maaaring gout o impeksiyon at kailangan itong masuri.', 'Contact a clinician or your dialysis team the same day, especially for a first episode; it could be gout or infection and needs assessment.'],
+        ['Ipahinga at protektahan ang kasukasuan; huwag magsimula ng ibuprofen, naproxen, colchicine, steroid, o ibang gamot nang walang medical advice.', 'Rest and protect the joint; do not start ibuprofen, naproxen, colchicine, steroids, or other medicines without medical advice.'],
+        ['Kung may lagnat/panginginig, mabilis na paglala, o matinding panghihina, humingi agad ng urgent medical care.', 'If there is fever/chills, rapid worsening, or severe weakness, seek urgent medical care now.']
+      ]
     }
   };
   const text = {
     tl: {
-      labTitle: 'Gabay para sa',
-      labFlagLow: 'Minarkahan mong mababa / below target',
-      labFlagHigh: 'Minarkahan mong mataas / above target',
-      labFlagTarget: 'Minarkahan mong nasa target',
-      labFlagUnsure: 'Hindi sigurado sa target o kahulugan',
-      flagReminder: 'I-verify ang flag, yunit, at personal na target sa report o care team; hindi ito ini-interpret ng gabay.',
-      flagActions: {
-        low: 'Ipa-review ito sa care team para malaman ang susunod na hakbang; huwag magbago ng pagkain o gamot nang mag-isa.',
-        high: 'Ipa-review ito sa care team para malaman ang susunod na hakbang; huwag magbago ng pagkain o gamot nang mag-isa.',
-        target: 'Ituloy ang kasalukuyang plano at itanong kung paano ito ikinukumpara sa mga naunang resulta.',
-        unsure: 'Tingnan ang reference range at yunit sa report at itanong sa care team kung ano ang personal mong target.'
-      },
       symptomMissing: 'Pumili muna ng sintomas para makita ang mga mungkahing hakbang.',
       emergencyTitle: 'Kailangan ng agarang tulong',
       emergencyText: 'Tumawag sa 911 o pumunta sa pinakamalapit na emergency department ngayon. Huwag maghintay ng sagot mula sa online guide. Kung maaari, magpasama sa isang tao.',
       sameDayTitle: 'Makipag-ugnayan agad sa dialysis team',
       sameDayText: 'Tawagan ang dialysis unit ngayon para sa payo. Kung malubha o mabilis lumalala, pumunta sa emergency department o tumawag sa 911.',
       generalTitle: 'Mga praktikal na hakbang at paalala',
-      generalText: 'Sundin ang mga hakbang sa ibaba at ipaalam sa care team kung nagpapatuloy o lumalala ang sintomas. Huwag baguhin ang gamot, fluid, pagkain, o dialysis nang walang payo.',
-      urgency: { urgent: 'Emergency', 'same-day': 'Tawagan ang care team ngayon', general: 'Ipaalam sa care team kung nagpapatuloy' }
+      generalText: 'Sundin ang mga hakbang sa ibaba. Ipaalam sa care team kung nagpapatuloy o lumalala ang sintomas o hindi malinaw ang resulta. Huwag baguhin ang gamot, fluid, pagkain, o dialysis nang walang payo.',
+      urgency: { urgent: 'Emergency', 'same-day': 'Tawagan ang care team ngayon', general: 'Ipaalam sa care team' }
     },
     en: {
-      labTitle: 'Guide for',
-      labFlagLow: 'You marked this low / below target',
-      labFlagHigh: 'You marked this high / above target',
-      labFlagTarget: 'You marked this within target',
-      labFlagUnsure: 'Target or meaning is unclear',
-      flagReminder: 'Verify the flag, unit, and personal target with the report or care team; this guide does not interpret it.',
-      flagActions: {
-        low: 'Ask your care team to review it and advise on next steps; do not change food or medicines on your own.',
-        high: 'Ask your care team to review it and advise on next steps; do not change food or medicines on your own.',
-        target: 'Continue your current plan and ask how this compares with earlier results.',
-        unsure: 'Check the report’s reference range and unit, and ask your care team about your personal target.'
-      },
       symptomMissing: 'Select at least one symptom to see suggested steps.',
       emergencyTitle: 'Get emergency help now',
       emergencyText: 'Call 911 or go to the nearest emergency department now. Do not wait for an online guide. If possible, have someone stay with you.',
       sameDayTitle: 'Contact your dialysis team promptly',
       sameDayText: 'Call your dialysis unit today for advice. If symptoms are severe or getting worse quickly, go to the emergency department or call 911.',
       generalTitle: 'Practical steps and reminders',
-      generalText: 'Follow the steps below and tell your care team if symptoms persist or worsen. Do not change medicines, fluids, diet, or dialysis without advice.',
-      urgency: { urgent: 'Emergency', 'same-day': 'Contact your care team today', general: 'Tell your care team if it persists' }
+      generalText: 'Follow the steps below. Tell your care team if symptoms persist or worsen or a result is unclear. Do not change medicines, fluids, diet, or dialysis without advice.',
+      urgency: { urgent: 'Emergency', 'same-day': 'Contact your care team today', general: 'Discuss with your care team' }
     }
   };
 
@@ -344,77 +205,11 @@
     document.querySelectorAll('[data-guide-lang]').forEach((button) => {
       button.setAttribute('aria-pressed', String(button.dataset.guideLang === selected));
     });
-    document.querySelectorAll('#labFlag option').forEach((option) => {
-      option.textContent = option.dataset[selected];
-    });
-    updateUnits();
-    renderLabResult();
     renderSymptomResult();
     if (!latestSymptoms.length && !symptomResult.hidden) {
       $('#symptomResultTitle').textContent = text[selected].symptomMissing;
     }
   }
-
-  function updateUnits() {
-    const options = unitsByLab[labTest.value][0];
-    const previous = unitSelect.value;
-    unitSelect.replaceChildren();
-    options.forEach((unit) => {
-      const option = document.createElement('option');
-      option.value = unit;
-      option.textContent = unit;
-      unitSelect.append(option);
-    });
-    if (options.includes(previous)) unitSelect.value = previous;
-  }
-
-  let latestLab = null;
-  function renderLabResult() {
-    if (!latestLab) return;
-    const language = currentLanguage();
-    const guidance = labGuidance[latestLab.test];
-    const index = language === 'tl' ? 0 : 1;
-    const flagLabels = {
-      low: text[language].labFlagLow,
-      high: text[language].labFlagHigh,
-      target: text[language].labFlagTarget,
-      unsure: text[language].labFlagUnsure
-    };
-    $('#labResultTitle').textContent =
-      `${text[language].labTitle} ${guidance.label[index]}: ${latestLab.displayValue} ${latestLab.unit}`;
-    $('#labFlagText').textContent =
-      `${flagLabels[latestLab.flag]}. ${text[language].flagActions[latestLab.flag]} ${text[language].flagReminder}`;
-    $('#labResultText').textContent = guidance.context[index];
-    $('#labResultQuestions').textContent = guidance.question[index];
-    const recommendations = guidance.recommendations[index].slice();
-    if (latestLab.test === 'hemoglobin' && latestLab.flag === 'low') {
-      recommendations.push(...guidance.lowRecommendations[index]);
-    }
-    $('#labRecommendations').replaceChildren(
-      ...recommendations.map((recommendation) => {
-        const item = document.createElement('li');
-        item.textContent = recommendation;
-        return item;
-      })
-    );
-    labResult.hidden = false;
-  }
-
-  $('#labTest').addEventListener('change', updateUnits);
-  $('#labForm').addEventListener('submit', (event) => {
-    event.preventDefault();
-    const value = Number($('#labValue').value);
-    if (!Number.isFinite(value)) return;
-    latestLab = {
-      test: labTest.value,
-      displayValue: value.toLocaleString(currentLanguage() === 'tl' ? 'tl-PH' : 'en-PH', {
-        maximumFractionDigits: 4
-      }),
-      unit: unitSelect.value,
-      flag: labFlag.value
-    };
-    renderLabResult();
-  });
 
   let latestSymptoms = [];
   function renderSymptomResult() {
@@ -495,11 +290,8 @@
   setLanguage(initialLanguage);
 
   window.addEventListener('pagehide', () => {
-    $('#labForm').reset();
     $('#symptomForm').reset();
-    latestLab = null;
     latestSymptoms = [];
-    labResult.hidden = true;
     symptomResult.hidden = true;
   });
 })();

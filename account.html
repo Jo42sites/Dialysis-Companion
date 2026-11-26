@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <meta name="description" content="An educational dialysis lab and symptom discussion guide for patients and families.">
+  <meta name="description" content="An educational dialysis symptom and common lab-flag guide for patients and families.">
   <meta name="theme-color" content="#0d6b61">
   <title>Interactive health guide | Dialysis Companion</title>
   <link rel="stylesheet" href="styles.css">
@@ -32,8 +32,8 @@
   <main id="main" class="health-guide-wrap">
     <section class="health-guide-hero">
       <p class="account-eyebrow"><span class="tl">GABAY PARA SA PASYENTE AT PAMILYA</span><span class="en">PATIENT & FAMILY GUIDE</span></p>
-      <h1><span class="tl">Unawain ang resulta. Alamin ang susunod na hakbang.</span><span class="en">Understand a result. Find a safer next step.</span></h1>
-      <p><span class="tl">Gamitin ang gabay na ito para maghanda ng mga tanong para sa dialysis team at malaman kung kailan dapat humingi agad ng tulong.</span><span class="en">Use this guide to prepare questions for your dialysis team and recognize when to get urgent help.</span></p>
+      <h1><span class="tl">Gabay sa sintomas. Alamin ang susunod na hakbang.</span><span class="en">Symptom guide. Find a safer next step.</span></h1>
+      <p><span class="tl">Pumili ng nararamdaman o resulta na minarkahan sa iyong lab report para sa praktikal na payo, mga pagkaing maaaring pag-usapan, at kung kailan dapat humingi agad ng tulong.</span><span class="en">Choose a symptom or a finding flagged on your lab report for practical steps, food ideas to discuss, and when to seek urgent help.</span></p>
       <div class="privacy-note">
         <span aria-hidden="true">⌑</span>
         <span><span class="tl">Hindi sine-save o ipinapadala ang ilalagay mo rito. Gabay lamang ito, hindi diagnosis o kapalit ng payo ng doktor.</span><span class="en">What you enter is not saved or sent. This is educational guidance, not a diagnosis or a substitute for clinical advice.</span></span>
@@ -47,59 +47,7 @@
     </section>
 
     <div class="health-guide-grid">
-      <section class="health-tool-card" aria-labelledby="labTitle">
-        <div class="health-tool-heading">
-          <span class="health-tool-icon lab-icon" aria-hidden="true">↗</span>
-          <div>
-            <p class="account-eyebrow"><span class="tl">GABAY SA LAB</span><span class="en">LAB GUIDE</span></p>
-            <h2 id="labTitle"><span class="tl">Pag-usapan ang resulta</span><span class="en">Explore a lab result</span></h2>
-          </div>
-        </div>
-        <p class="tool-intro"><span class="tl">Ilagay ang resulta at kung paano ito minarkahan sa report o care plan. Makakakita ka ng praktikal na mungkahi at mga tanong para sa team. Hindi ito diagnosis: magkakaiba ang target, units, at meal plan ng bawat pasyente.</span><span class="en">Enter the result and how it is flagged on your report or care plan for practical suggestions and questions to ask your team. This is not a diagnosis: targets, units, and meal plans differ.</span></p>
-
-        <form id="labForm" class="health-form">
-          <label for="labTest"><span class="tl">Uri ng resulta</span><span class="en">Lab test</span></label>
-          <select id="labTest" name="labTest" required>
-            <option value="hemoglobin">Hemoglobin (Hb)</option>
-            <option value="potassium">Potassium</option>
-            <option value="phosphorus">Phosphorus</option>
-            <option value="calcium">Calcium</option>
-            <option value="albumin">Albumin</option>
-            <option value="ktv">Kt/V</option>
-          </select>
-
-          <label for="labFlag"><span class="tl">Paano ito minarkahan sa report o care plan?</span><span class="en">How is it flagged on your report or care plan?</span></label>
-          <select id="labFlag" name="labFlag">
-            <option value="unsure" data-tl="Hindi sigurado" data-en="Not sure">Hindi sigurado</option>
-            <option value="low" data-tl="Mababa / below target" data-en="Low / below target">Mababa / below target</option>
-            <option value="high" data-tl="Mataas / above target" data-en="High / above target">Mataas / above target</option>
-            <option value="target" data-tl="Nasa target" data-en="Within target">Nasa target</option>
-          </select>
-
-          <div class="lab-entry-row">
-            <div>
-              <label for="labValue"><span class="tl">Halaga sa resulta</span><span class="en">Result value</span></label>
-              <input id="labValue" name="labValue" type="number" min="0" step="any" inputmode="decimal" autocomplete="off" placeholder="e.g. 10.2" required>
-            </div>
-            <div>
-              <label for="labUnit"><span class="tl">Yunit</span><span class="en">Unit</span></label>
-              <select id="labUnit" name="labUnit" aria-label="Result unit"></select>
-            </div>
-          </div>
-
-          <button class="account-button" type="submit"><span class="tl">Tingnan ang gabay</span><span class="en">Show discussion guide</span></button>
-        </form>
-
-        <div id="labResult" class="health-result" role="status" aria-live="polite" hidden>
-          <h3 id="labResultTitle"></h3>
-          <p id="labFlagText" class="lab-flag-text"></p>
-          <p id="labResultText"></p>
-          <p id="labResultQuestions" class="result-question"></p>
-          <ul id="labRecommendations" class="recommendation-list"></ul>
-        </div>
-      </section>
-
-      <section class="health-tool-card" aria-labelledby="symptomTitle">
+      <section class="health-tool-card symptom-guide-card" aria-labelledby="symptomTitle">
         <div class="health-tool-heading">
           <span class="health-tool-icon symptom-icon" aria-hidden="true">♡</span>
           <div>
@@ -107,11 +55,16 @@
             <h2 id="symptomTitle"><span class="tl">Ano ang nararamdaman?</span><span class="en">What are you experiencing?</span></h2>
           </div>
         </div>
-        <p class="tool-intro"><span class="tl">Piliin ang mga naaangkop. Kung malubha o mabilis lumalala ang sintomas, huwag maghintay sa online guide.</span><span class="en">Select what applies. If a symptom is severe or rapidly worsening, do not wait for an online guide.</span></p>
+        <p class="tool-intro"><span class="tl">Piliin ang lahat ng naaangkop, kabilang ang resultang minarkahang mataas o mababa. Gamitin ang flag ng sarili mong report—hindi nagtatakda ng generic na normal range ang gabay na ito. Kung malubha o mabilis lumalala, huwag maghintay rito.</span><span class="en">Select all that apply, including results flagged high or low. Use the flag on your own report—this guide does not set generic normal ranges. For severe or rapidly worsening symptoms, do not wait here.</span></p>
 
         <form id="symptomForm" class="symptom-form">
           <fieldset>
-            <legend><span class="tl">Pumili ng sintomas</span><span class="en">Select symptoms</span></legend>
+            <legend><span class="tl">Pumili ng sintomas o resulta</span><span class="en">Select symptoms or findings</span></legend>
+            <p class="symptom-group-label"><span class="tl">Mga resulta sa lab na minarkahang abnormal</span><span class="en">Lab results flagged as abnormal</span></p>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowHb"><span><span class="tl">Mababang hemoglobin (Hb) / anemia sa report</span><span class="en">Low hemoglobin (Hb) / anemia on report</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="highHb"><span><span class="tl">Mataas na hemoglobin (Hb) sa report</span><span class="en">High hemoglobin (Hb) on report</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="highUric"><span><span class="tl">Mataas na uric acid sa report</span><span class="en">High uric acid on report</span></span></label>
+            <p class="symptom-group-label"><span class="tl">Mga sintomas</span><span class="en">Symptoms</span></p>
             <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="chest"><span><span class="tl">Pananakit o bigat ng dibdib</span><span class="en">Chest pain or pressure</span></span></label>
             <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="breathing"><span><span class="tl">Matinding hirap huminga</span><span class="en">Severe trouble breathing</span></span></label>
             <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="faint"><span><span class="tl">Nahimatay, seizure, o biglaang pagkalito</span><span class="en">Fainting, seizure, or sudden confusion</span></span></label>
@@ -126,6 +79,9 @@
             <label class="symptom-option"><input type="checkbox" name="symptom" value="nausea"><span><span class="tl">Pagduduwal o pagsusuka</span><span class="en">Nausea or vomiting</span></span></label>
             <label class="symptom-option"><input type="checkbox" name="symptom" value="itch"><span><span class="tl">Pangangati</span><span class="en">Itching</span></span></label>
             <label class="symptom-option"><input type="checkbox" name="symptom" value="fatigue"><span><span class="tl">Hindi pangkaraniwang pagkapagod o panghihina</span><span class="en">Unusual tiredness or weakness</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="headache"><span><span class="tl">Sakit ng ulo</span><span class="en">Headache</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="pale"><span><span class="tl">Kapansin-pansing pamumutla</span><span class="en">Noticeably pale skin</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="joint"><span><span class="tl">Biglaang masakit, mapula, mainit, o namamagang kasukasuan (posibleng gout flare)</span><span class="en">Sudden painful, red, warm, or swollen joint (possible gout flare)</span></span></label>
           </fieldset>
           <button class="account-button" type="submit"><span class="tl">Tingnan ang susunod na hakbang</span><span class="en">Show next steps</span></button>
         </form>
@@ -140,11 +96,10 @@
 
     <section class="health-guide-note">
       <h2><span class="tl">Laging sundin ang planong ibinigay ng iyong dialysis team</span><span class="en">Follow the plan from your dialysis team</span></h2>
-      <p><span class="tl">Huwag baguhin ang gamot, iron/epoetin, fluid limit, pagkain, o dialysis schedule batay lamang sa gabay na ito. Ibahagi agad sa iyong care team ang resultang minarkahang critical at ang anumang bago o lumalalang sintomas.</span><span class="en">Do not change medicines, iron/epoetin, fluid limits, diet, or dialysis schedule based only on this guide. Promptly share critical lab results and any new or worsening symptoms with your care team.</span></p>
+      <p><span class="tl">Huwag baguhin ang gamot, iron/epoetin, fluid limit, pagkain, o dialysis schedule batay lamang sa gabay na ito. Ibahagi agad sa care team ang abnormal o critical na resulta at anumang bago o lumalalang sintomas.</span><span class="en">Do not change medicines, iron/epoetin, fluid limits, diet, or dialysis schedule based only on this guide. Promptly share abnormal or critical results and any new or worsening symptoms with your care team.</span></p>
       <p class="guide-sources"><span class="tl">Karagdagang impormasyon:</span><span class="en">More information:</span>
         <a href="https://www.niddk.nih.gov/health-information/kidney-disease/anemia" target="_blank" rel="noopener noreferrer">NIDDK: Anemia in CKD</a> ·
-        <a href="https://www.kidney.org/kidney-topics/anemia-ckd" target="_blank" rel="noopener noreferrer">National Kidney Foundation: Anemia in CKD</a> ·
-        <a href="https://www.niddk.nih.gov/health-information/kidney-disease/kidney-failure/hemodialysis" target="_blank" rel="noopener noreferrer">NIDDK: Hemodialysis</a>
+        <a href="https://www.kidney.org/kidney-topics/gout-and-kidney-disease" target="_blank" rel="noopener noreferrer">National Kidney Foundation: Gout and Kidney Disease</a>
       </p>
     </section>
   </main>
