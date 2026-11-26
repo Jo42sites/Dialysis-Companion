@@ -35,8 +35,19 @@ Keep the project files together in one folder:
 | `records.html`, `records.css`, `records.js` | Private HD patient record book |
 
 Open `index.html` in a browser to read the guide. Choose **HD records** from the
-navigation or the guide's main button to open the record book. The guide and
-record book can also be hosted together on a static web host.
+navigation or the guide's main button to open the record book. The guide can be
+hosted as a static site, but the record book also requires the Express API in
+[server/](./server/) to be deployed separately. A static host alone cannot
+create unit accounts or save records.
+
+For the local record book, start the API as described in
+[server/README.md](./server/README.md) and serve the project on
+`http://127.0.0.1:5500` (do not open the record book as a `file://` URL). For
+the GitHub Pages deployment, set the repository variable `ADMIN_API_URL` to
+the public HTTPS origin of the deployed API and use **GitHub Actions** as the
+Pages build and deployment source. The Pages workflow injects that URL into the
+record book. Configure the API's `CORS_ORIGIN` to the exact website origin,
+such as `https://jo42sites.github.io`.
 
 ## Using the HD record book
 

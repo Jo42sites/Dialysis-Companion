@@ -8,6 +8,7 @@ function required(name) {
 
 module.exports = {
   port: Number(process.env.PORT || 3001),
+  host: process.env.HOST || '127.0.0.1',
   jwtSecret: required('JWT_SECRET'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '15m',
   medicalDataKey: required('MEDICAL_DATA_KEY'),

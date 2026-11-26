@@ -27,7 +27,7 @@ npm start
 ```
 
 It binds to `127.0.0.1` by default. Serve the website locally on port 5500 and
-open `http://127.0.0.1:5500/records.html`.
+open `http://127.0.0.1:5500/records.html`; do not open it using a `file://` URL.
 
 ## Sign-in and staff
 
@@ -97,6 +97,16 @@ the configured database.
 
 ## Production deployment requirements
 
+- Deploy this API as a Node.js service. Set `HOST=0.0.0.0` so the hosting
+  platform can reach it, and use the platform-provided `PORT`.
+- Set `DATABASE_PATH` to a location on persistent storage. The default SQLite
+  file is lost if the host uses ephemeral storage.
+- Set `CORS_ORIGIN` to the exact origin of the website (for example
+  `https://jo42sites.github.io`, with no path or trailing slash).
+- For this repository's GitHub Pages site, add the GitHub Actions repository
+  variable `ADMIN_API_URL` with the API's public HTTPS origin, then select
+  **GitHub Actions** under **Settings → Pages → Build and deployment**. The
+  workflow fails if this variable is missing or is not an HTTPS origin.
 - Serve both the website and API over HTTPS. In production the API rejects
   non-HTTPS requests. Behind a reverse proxy, set `TRUST_PROXY` to the exact
   trusted proxy hop count, and ensure the proxy overwrites forwarded headers.

@@ -14,7 +14,9 @@
   const SESSION_KEY = 'dc-records-session-epoch';
   const UNIT_TOKEN_KEY = 'dc-unit-token';
   const UNIT_SLUG_KEY = 'dc-unit-slug';
-  const SERVER_API = (document.querySelector('meta[name="admin-api"]')?.content || 'http://127.0.0.1:3001').replace(/\/$/, '');
+  const configuredApi = document.querySelector('meta[name="admin-api"]')?.content.trim() || '';
+  const isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+  const SERVER_API = (configuredApi || (isLocalHost ? 'http://127.0.0.1:3001' : '')).replace(/\/$/, '');
   const ITERATIONS = 250000;
   const IDLE_MS = 15 * 60 * 1000;
 
@@ -312,6 +314,9 @@
   }
 
   async function serverApi(path, options) {
+    if (!SERVER_API) {
+      throw new Error('The records API is not configured. Ask the site administrator to deploy the API and set ADMIN_API_URL.');
+    }
     const headers = { 'Content-Type': 'application/json' };
     if (state.unitToken) headers.Authorization = 'Bearer ' + state.unitToken;
     const response = await fetch(SERVER_API + path, {
