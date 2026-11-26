@@ -463,8 +463,8 @@ html[data-lang="en"] h4 .en {
 .guide-link-card:nth-child(1) { --guide-accent: var(--teal); --guide-soft: var(--teal-soft); }
 .guide-link-card:nth-child(2) { --guide-accent: #b34d36; --guide-soft: var(--coral-soft); }
 .guide-link-card:nth-child(4) { --guide-accent: var(--red); --guide-soft: var(--red-soft); }
-.guide-link-card:nth-child(5) { --guide-accent: #95620d; --guide-soft: var(--gold-soft); }
-.guide-link-card:nth-child(6) { --guide-accent: var(--green); --guide-soft: var(--green-soft); }
+.guide-link-card:nth-child(5) { --guide-accent: var(--green); --guide-soft: var(--green-soft); }
+.guide-link-card:nth-child(6) { --guide-accent: #95620d; --guide-soft: var(--gold-soft); }
 .guide-link-card.guide-health-card { --guide-accent: var(--teal); --guide-soft: var(--teal-soft); }
 .guide-link-card .icon-badge {
   grid-column: 1; grid-row: 1; align-self: start;
