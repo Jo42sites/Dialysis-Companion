@@ -14,6 +14,7 @@
   const SESSION_KEY = 'dc-records-session-epoch';
   const UNIT_TOKEN_KEY = 'dc-unit-token';
   const UNIT_SLUG_KEY = 'dc-unit-slug';
+  const LOCAL_ACCOUNT_KEY = 'dc-records-local-account-v1';
   const configuredApi = document.querySelector('meta[name="admin-api"]')?.content.trim() || '';
   const isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
   const SERVER_API = (configuredApi || (isLocalHost ? 'http://127.0.0.1:3001' : '')).replace(/\/$/, '');
@@ -34,6 +35,7 @@
     unitToken: null,
     unit: null,
     user: null,
+    localOnly: false,
     pendingSetupToken: null,
     pendingAuth: null
   };
@@ -304,6 +306,23 @@
       const vault = JSON.parse(raw);
       if (!vault || !vault.salt || !vault.iter || !vault.iv || !vault.data) return null;
       return vault;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function hasStoredVault() {
+    try {
+      return localStorage.getItem(VAULT_KEY) !== null;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function readLocalAccount() {
+    try {
+      const account = JSON.parse(localStorage.getItem(LOCAL_ACCOUNT_KEY) || 'null');
+      return account && typeof account === 'object' ? account : null;
     } catch (err) {
       return null;
     }
@@ -617,6 +636,7 @@
   }
 
   async function activateUnit(result) {
+    state.localOnly = false;
     state.unitToken = result.token;
     state.unit = result.unit;
     state.user = result.user;
@@ -654,6 +674,13 @@
   function showApp() {
     $('#lockScreen').hidden = true;
     $('#app').hidden = false;
+    $('#appLocalWarning').hidden = !state.localOnly;
+    $('#recordsLede').textContent = state.localOnly
+      ? 'Temporary local record book. Data is encrypted in this browser only and is not shared with your unit.'
+      : 'One record per patient, for your own unit. Records are encrypted before being saved on the unit\'s server.';
+    $('#recordsFootnote').lastElementChild.textContent = state.localOnly
+      ? 'Encrypted in this browser only. It is not synced or backed up; use test data until the API is deployed.'
+      : 'Encrypted in the server database. Admins should create and test secure backups regularly.';
     try { state.sessionEpoch = localStorage.getItem(SESSION_KEY) || '0'; } catch (err) { state.sessionEpoch = '0'; }
     loadUnitLabel();
     const accountLabel = $('#accountLabel');
@@ -663,9 +690,12 @@
     const staffSection = $('#staffForm').closest('.set-block');
     const auditSection = $('#auditList').closest('.set-block');
     const importSection = $('#legacyImportForm').closest('.set-block');
-    if (staffSection) staffSection.hidden = state.user.role !== 'admin';
-    if (auditSection) auditSection.hidden = state.user.role !== 'admin';
-    if (importSection) importSection.hidden = state.user.role === 'viewer';
+    const passwordSection = $('#accountPasswordForm').closest('.set-block');
+    if (staffSection) staffSection.hidden = state.localOnly || state.user.role !== 'admin';
+    if (auditSection) auditSection.hidden = state.localOnly || state.user.role !== 'admin';
+    if (importSection) importSection.hidden = state.localOnly || state.user.role === 'viewer';
+    if (passwordSection) passwordSection.hidden = state.localOnly;
+    $('#localSettingsNote').hidden = !state.localOnly;
     const canEdit = state.user.role !== 'viewer';
     $('#addPatientBtn').hidden = !canEdit;
     $('#emptyAddBtn').hidden = !canEdit;
@@ -1867,7 +1897,36 @@
   function init() {
     let savedSlug = '';
     try { savedSlug = localStorage.getItem(UNIT_SLUG_KEY) || ''; } catch (err) { /* ignore */ }
-    if (savedSlug) {
+    const localMode = !SERVER_API;
+    const localAccount = readLocalAccount();
+    $('#localMigrationNotice').hidden = !(SERVER_API && localAccount && readVault());
+    if (localMode) {
+      $('#localModeNotice').hidden = false;
+      $('#setupLede').textContent = 'Create a temporary browser-only record book. The password encrypts data saved on this device; this does not create a shared unit account.';
+      $('#unlockLede').textContent = 'Unlock the encrypted record book saved in this browser.';
+      $('#setupAckText').textContent = 'I understand this is browser-only, has no staff accounts or MFA, and is for test data until the server is deployed.';
+      $('#storageNote').textContent = 'The records API is not connected. Data is encrypted in this browser only and is not synced or backed up.';
+      $('#unitSlugField').hidden = true;
+      $('#unitUsernameField').hidden = true;
+      $('#unitSlug').required = false;
+      $('#unitUsername').required = false;
+      $('#loginCode').closest('.field').hidden = true;
+      $('label[for="pw"]').textContent = 'Browser vault password';
+      $('#setupBtn').textContent = 'Create local record book';
+      $('#showLoginBtn').hidden = true;
+      $('#showRegisterBtn').hidden = true;
+      if (hasStoredVault()) {
+        $('#unlockView').hidden = false;
+        if (localAccount) {
+          $('#unitSlug').value = localAccount.slug || '';
+          $('#unitUsername').value = localAccount.username || '';
+        }
+        setTimeout(() => $('#pw').focus(), 80);
+      } else {
+        $('#setupView').hidden = false;
+        setTimeout(() => $('#newPw').focus(), 80);
+      }
+    } else if (savedSlug) {
       $('#unlockView').hidden = false;
       $('#unitSlug').value = savedSlug;
       setTimeout(() => $('#pw').focus(), 80);
@@ -1901,6 +1960,16 @@
       if (!unitName) { error.textContent = 'Enter a unit or center name.'; $('#setupUnit').focus(); return; }
       if (!slug) { error.textContent = 'Enter a unit login code.'; $('#setupSlug').focus(); return; }
       if (!username) { error.textContent = 'Choose an admin username.'; $('#setupUsername').focus(); return; }
+      if (!/^[a-z0-9][a-z0-9-]{2,49}$/i.test(slug)) {
+        error.textContent = 'Use 3–50 letters, numbers, or hyphens for the unit login code.';
+        $('#setupSlug').focus();
+        return;
+      }
+      if (!/^[a-zA-Z0-9._-]{3,50}$/.test(username)) {
+        error.textContent = 'Use 3–50 letters, numbers, periods, underscores, or hyphens for the username.';
+        $('#setupUsername').focus();
+        return;
+      }
       if (pw.length < 12) { error.textContent = 'Use at least 12 characters.'; $('#newPw').focus(); return; }
       if (pw !== pw2) { error.textContent = 'The passwords do not match.'; $('#newPw2').focus(); return; }
       if (!$('#ackPw').checked) { error.textContent = 'Please confirm the unit password acknowledgment.'; return; }
@@ -1908,9 +1977,30 @@
       btn.disabled = true;
       btn.textContent = 'Creating…';
       try {
+        if (localMode) {
+          if (hasStoredVault()) throw new Error('A browser record book already exists. Unlock it instead of creating another.');
+          if (!cryptoReady) {
+            throw new Error('Encrypted browser storage requires a modern browser on HTTPS or localhost.');
+          }
+          await createVault(pw);
+          const localSlug = slug.toLowerCase();
+          localStorage.setItem(LOCAL_ACCOUNT_KEY, JSON.stringify({
+            slug: localSlug,
+            username,
+            unitName
+          }));
+          localStorage.setItem(UNIT_SLUG_KEY, localSlug);
+          localStorage.setItem(UNIT_KEY, unitName);
+          state.localOnly = true;
+          state.unit = { name: unitName, slug: localSlug };
+          state.user = { id: 'local-admin', username, role: 'admin' };
+          $('#setupForm').reset();
+          showApp();
+          return;
+        }
         const result = await serverApi('/api/units/register', {
           method: 'POST',
-          body: JSON.stringify({ name: unitName, slug, username, password: pw })
+          body: JSON.stringify({ name: unitName, slug: slug.toLowerCase(), username, password: pw })
         });
         try {
           localStorage.setItem(UNIT_SLUG_KEY, result.unit.slug);
@@ -1922,7 +2012,7 @@
         error.textContent = err.message || 'Could not create the unit account.';
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Create unit account';
+        btn.textContent = localMode ? 'Create local record book' : 'Create unit account';
       }
     });
 
@@ -1934,6 +2024,36 @@
       const slug = $('#unitSlug').value.trim();
       const username = $('#unitUsername').value.trim();
       const pw = $('#pw').value;
+      if (localMode) {
+        const account = readLocalAccount();
+        if (!hasStoredVault()) {
+          error.textContent = 'No browser record book was found. Register a local record book first.';
+          return;
+        }
+        const btn = $('#unlockBtn');
+        btn.disabled = true;
+        btn.textContent = 'Unlocking…';
+        try {
+          await unlockVault(pw);
+          state.localOnly = true;
+          state.unit = {
+            name: account?.unitName || localStorage.getItem(UNIT_KEY) || 'Local browser record book',
+            slug: account?.slug || ''
+          };
+          state.user = { id: 'local-admin', username: account?.username || 'Local admin', role: 'admin' };
+          $('#unlockForm').reset();
+          showApp();
+        } catch (err) {
+          error.textContent = readVault()
+            ? 'Could not unlock the browser record book. Check the password or use your recovery key.'
+            : 'The saved browser record book is unreadable. Do not clear browser data; contact the site administrator.';
+          $('#pw').select();
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Unlock records';
+        }
+        return;
+      }
       if (!slug) { error.textContent = 'Enter your unit login code.'; $('#unitSlug').focus(); return; }
       if (!username) { error.textContent = 'Enter your username.'; $('#unitUsername').focus(); return; }
       if (!pw) { error.textContent = 'Enter your password.'; return; }
@@ -2071,6 +2191,7 @@
     $('#lockBtn').addEventListener('click', lockNow);
     $('#settingsBtn').addEventListener('click', async () => {
       $('#settingsDialog').showModal();
+      if (state.localOnly) return;
       try {
         await loadAdminSettings();
       } catch (err) {

@@ -18,9 +18,9 @@ families, with a unit-based hemodialysis (HD) record manager for care teams.
 - **HD patient record book:** password-protected patient profiles and monthly
   monitoring, including measurements, laboratory results, orders, complications,
   medicines, and notes.
-- **Unit accounts:** each dialysis unit has separate accounts and records.
-  Patient record contents are encrypted before being saved in the server's
-  SQLite database.
+- **Unit accounts:** with the API deployed, each dialysis unit has separate
+  accounts and records. Patient record contents are encrypted before being
+  saved in the server's SQLite database.
 - **Interactive symptom guide:** patients and families can explore practical
   next steps for common symptoms, custom symptom descriptions, and lab results
   compared with the reference range printed on their report (hemoglobin, uric
@@ -31,8 +31,10 @@ families, with a unit-based hemodialysis (HD) record manager for care teams.
   manage legacy accounts and units, manage unit access, and view/edit clinical
   records across units. Admin record access is audited.
 - **Offline guide:** the patient and family guide works without an internet
-  connection. The HD record book needs a connection to its API; internet access
-  is also needed for PhilHealth/DOH links in the guide footer.
+  connection. If the records API is not configured, HD Records offers a
+  temporary password-encrypted browser-only record book for test data; it is
+  not synced, backed up, or suitable for real patient information. Deploy the
+  API for shared unit access.
 
 ## Open the app
 
@@ -45,11 +47,11 @@ Keep the project files together in one folder:
 | `admin.html`, `admin.css`, `admin.js` | Protected site administration |
 | `records.html`, `records.css`, `records.js` | Private HD patient record book |
 
-Open `index.html` in a browser to find the focused guide pages. Choose **HD
-records** from the navigation or the guide's main button to open the record
-book. The guide can be hosted as a static site, but the record book also
-requires the FastAPI service in [server/](./server/) to be deployed separately.
-A static host alone cannot create unit accounts or save records.
+Open `index.html` in a browser to find the focused guide pages. Choose **HD records** from the navigation or the guide's main button to open
+the record book. The guide can be hosted as a static site. For secure,
+shared unit accounts, deploy the FastAPI service in [server/](./server/)
+separately. A static host alone cannot provide server-backed accounts or
+shared records.
 The interactive health guide works without an account or API. Symptom and
 selected lab-finding choices are not transmitted or retained after leaving the page.
 For local development, set `SITE_ADMIN_EMAIL` and `SITE_ADMIN_PASSWORD` in

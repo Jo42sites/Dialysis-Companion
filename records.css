@@ -67,6 +67,13 @@
   font-size: .7rem; line-height: 1.5; color: var(--muted);
 }
 .lock-note .ic { width: 15px; height: 15px; margin-top: 2px; color: var(--teal); }
+.storage-warning {
+  margin: 0 0 14px; padding: 12px 14px; border: 1px solid #e8c27d;
+  border-radius: 12px; background: #fff7e6; color: #68460a;
+  font-size: .78rem; line-height: 1.55;
+}
+.app-storage-warning { width: min(1180px, calc(100% - 32px)); margin: 14px auto 0; }
+.storage-warning strong { display: block; margin-bottom: 2px; }
 .lock-back { margin: 12px 0 0; font-size: .72rem; text-align: center; }
 .lock-back a { color: var(--muted); text-decoration: none; font-weight: 700; }
 .lock-back a:hover { color: var(--teal-dark); text-decoration: underline; }

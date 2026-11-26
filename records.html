@@ -42,7 +42,7 @@
 
     <div id="setupView" hidden>
       <h1>Register your dialysis unit</h1>
-      <p class="lock-lede">Create a unit account to save and manage patient records in the secure backend.</p>
+      <p class="lock-lede" id="setupLede">Create a unit account to save and manage patient records in the secure backend.</p>
       <form id="setupForm" novalidate>
         <div class="field">
           <label for="setupUnit">Unit / center name</label>
@@ -68,7 +68,7 @@
         </div>
         <label class="ack">
           <input type="checkbox" id="ackPw">
-          <span>I understand that my unit password controls access to our patient records.</span>
+          <span id="setupAckText">I understand that my unit password controls access to our patient records.</span>
         </label>
         <p class="form-error" id="setupError" role="alert"></p>
         <button class="btn btn-primary lock-submit" id="setupBtn" type="submit">Create unit account</button>
@@ -80,13 +80,13 @@
 
     <div id="unlockView" hidden>
       <h1>Unit login</h1>
-      <p class="lock-lede">Sign in to your dialysis unit's patient records.</p>
+      <p class="lock-lede" id="unlockLede">Sign in to your dialysis unit's patient records.</p>
       <form id="unlockForm" novalidate>
-        <div class="field">
+        <div class="field" id="unitSlugField">
           <label for="unitSlug">Unit login code</label>
           <input id="unitSlug" autocomplete="username" required>
         </div>
-        <div class="field">
+        <div class="field" id="unitUsernameField">
           <label for="unitUsername">Username</label>
           <input id="unitUsername" autocomplete="username" required>
         </div>
@@ -129,9 +129,15 @@
       </div>
     </div>
 
+    <p id="localModeNotice" class="storage-warning" hidden>
+      Temporary browser-only mode: records are encrypted on this device with your password, but are not synced, backed up, or shared with staff. Use a private, controlled device and test data only until your organization approves the setup and the server is deployed.
+    </p>
+    <p id="localMigrationNotice" class="storage-warning" hidden>
+      A browser-only record book exists on this device. To move it to the server, register a server unit account, unlock it, then use Settings → Import older browser records with the browser vault password.
+    </p>
     <p class="lock-note">
       <svg class="ic"><use href="#r-shield"/></svg>
-      <span>Records are encrypted in the server database and isolated by dialysis unit.</span>
+      <span id="storageNote">Records are encrypted in the server database and isolated by dialysis unit.</span>
     </p>
     <p class="lock-back"><a href="index.html">← Back to the patient guide</a></p>
   </div>
@@ -161,12 +167,17 @@
     </div>
   </header>
 
+  <div id="appLocalWarning" class="storage-warning app-storage-warning" hidden>
+    <strong>Temporary browser-only mode.</strong>
+    This record book is saved only in this browser on this device. It is not synced or backed up, and staff access and MFA are unavailable. Use test data only until the API is deployed and your organization approves handling real patient information.
+  </div>
+
   <main class="rec-wrap">
     <div class="rec-intro">
       <div>
         <p class="eyebrow">Private record book</p>
         <h1>Hemodialysis patient records</h1>
-        <p class="rec-lede">One record per patient, for your own unit. Records are encrypted before being saved on the unit's server.</p>
+        <p class="rec-lede" id="recordsLede">One record per patient, for your own unit. Records are encrypted before being saved on the unit's server.</p>
       </div>
     </div>
 
@@ -218,9 +229,9 @@
       <button class="btn btn-primary" id="emptyAddBtn" type="button"><svg><use href="#r-plus"/></svg>Add first patient</button>
     </div>
 
-    <p class="rec-footnote">
+    <p class="rec-footnote" id="recordsFootnote">
       <svg class="ic"><use href="#r-lock"/></svg>
-      Encrypted in the server database. Admins should create and test secure backups regularly.
+      <span>Encrypted in the server database. Admins should create and test secure backups regularly.</span>
     </p>
   </main>
 </div>
@@ -977,6 +988,9 @@
     <button class="icon-btn" type="button" data-close aria-label="Close"><svg class="ic"><use href="#r-close"/></svg></button>
   </header>
   <div class="dlg-body">
+    <section class="set-block storage-warning" id="localSettingsNote" hidden>
+      This temporary browser account has no staff-management, MFA, or server backup. After deploying the API, create a server unit account and import these browser records from Settings.
+    </section>
     <section class="set-block">
       <h3>Signed in</h3>
       <p id="accountLabel"></p>

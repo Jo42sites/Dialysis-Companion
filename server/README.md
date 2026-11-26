@@ -6,6 +6,14 @@ patient records are encrypted with AES-256-GCM before being written to the
 database. The patient/family symptom guide is browser-only and does not send or
 save symptom or lab-finding selections.
 
+When `ADMIN_API_URL` is not configured on the static site, HD Records provides
+a temporary browser-only vault encrypted with the user's password. It does
+not sync across devices, provide staff accounts or MFA, or create server
+backups. Use test data only until the API is deployed and the organization has
+approved the system for clinical information. Once the API is available,
+register a server unit account and use **Settings → Import older browser
+records** to move local records into that unit.
+
 > **Prototype warning:** this is not a certified clinical system. Do not enter
 > real patient data until your organization has reviewed the deployment,
 > privacy controls, and applicable requirements.
