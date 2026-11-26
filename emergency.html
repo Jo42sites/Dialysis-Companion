@@ -154,7 +154,22 @@
           </div>
         </div>
 
-        
+        <section class="emergency-checker" aria-labelledby="emergencyCheckerTitle">
+          <h3 id="emergencyCheckerTitle"><span class="tl">Ilarawan ang emergency o sintomas</span><span class="en">Describe the emergency or symptom</span></h3>
+          <p class="emergency-checker-intro"><span class="tl">I-type ang nararamdaman at tingnan kung anong antas ng tulong ang dapat hingin. Kung may matinding sintomas, huwag maghintay sa checker—tumawag sa 911.</span><span class="en">Type what is happening to see what level of help to seek. For severe symptoms, do not wait for this checker—call 911.</span></p>
+          <form id="emergencyCheckerForm" class="emergency-checker-form">
+            <label for="emergencyDescription"><span class="tl">Ano ang nangyayari?</span><span class="en">What is happening?</span></label>
+            <textarea id="emergencyDescription" name="emergencyDescription" maxlength="300" required aria-describedby="emergencyCheckerHint" placeholder="Hal. nahihilo ako / I feel dizzy"></textarea>
+            <p class="emergency-checker-hint" id="emergencyCheckerHint"><span class="tl">Huwag maglagay ng pangalan o personal na impormasyon. Hanggang 300 character.</span><span class="en">Do not include names or personal information. Up to 300 characters.</span></p>
+            <button type="submit" class="emergency-checker-button"><span class="tl">Tingnan ang antas ng tulong</span><span class="en">Check urgency</span></button>
+          </form>
+          <div id="emergencyCheckerResult" class="emergency-checker-result" role="status" aria-live="polite" hidden>
+            <h4><span class="tl" id="emergencyCheckerLevelTl"></span><span class="en" id="emergencyCheckerLevelEn"></span></h4>
+            <p><span class="tl" id="emergencyCheckerAdviceTl"></span><span class="en" id="emergencyCheckerAdviceEn"></span></p>
+            <a id="emergencyCheckerCall" href="tel:911" hidden><span class="tl">Tumawag sa 911</span><span class="en">Call 911</span></a>
+          </div>
+          <p class="emergency-checker-disclaimer"><span class="tl">Awtomatikong pagtukoy lamang ito, hindi diagnosis. Maaaring hindi makilala ang lahat ng salita. Kung hindi sigurado, lumalala, o hindi pangkaraniwan ang sintomas, makipag-ugnayan agad sa healthcare worker; kung matindi o may panganib sa buhay, tumawag sa 911.</span><span class="en">This is automated keyword guidance, not a diagnosis. It may not recognize every word. If unsure, worsening, or unusual, contact a healthcare worker promptly; for severe or life-threatening symptoms, call 911.</span></p>
+        </section>
       </div>
     </section>
   </main>
@@ -199,5 +214,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <button class="back-top" type="button" id="backToTop" aria-label="Bumalik sa itaas / Back to top"><svg aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
   <script src="app.js"></script>
+  <script src="emergency-triage.js"></script>
 </body>
 </html>

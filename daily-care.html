@@ -179,7 +179,21 @@
           <div class="nutrient"><span class="nutrient-dot protein"></span><strong>Protein</strong><p><span class="tl">Huwag magbawas nang wala sa payo; kailangan ito sa lakas at laban sa infection.</span><span class="en">Do not cut back without advice; it supports strength and infection defense.</span></p></div>
         </div>
 
-        
+        <section class="food-checker" aria-labelledby="foodCheckerTitle">
+          <h3 id="foodCheckerTitle"><span class="tl">Suriin ang pagkain</span><span class="en">Check a food</span></h3>
+          <p class="food-checker-intro"><span class="tl">I-type ang pangalan ng pagkain o inumin, kasama ang paraan ng pagluto kung mahalaga. Magbibigay ito ng posibleng paalala tungkol sa potassium (K), phosphorus (P), sodium (Na), protein, at fluid.</span><span class="en">Type a food or drink, including how it is prepared when relevant. It will show possible flags for potassium (K), phosphorus (P), sodium (Na), protein, and fluid.</span></p>
+          <form id="foodCheckerForm" class="food-checker-form">
+            <label for="foodCheckerInput"><span class="tl">Pangalan ng pagkain o inumin</span><span class="en">Food or drink name</span></label>
+            <input id="foodCheckerInput" type="text" maxlength="120" required autocomplete="off" placeholder="Hal. instant noodles, saging, adobo / e.g. instant noodles, banana, adobo">
+            <button type="submit" class="food-checker-button"><span class="tl">Suriin</span><span class="en">Check food</span></button>
+          </form>
+          <div id="foodCheckerResult" class="food-checker-result" role="status" aria-live="polite" hidden>
+            <h4 id="foodCheckerName"></h4>
+            <ul id="foodCheckerFlags" class="food-checker-flags"></ul>
+            <p class="food-checker-better"><strong><span class="tl">Mas mabuti:</span><span class="en">Better:</span></strong> <span class="tl" id="foodCheckerBetterTl"></span><span class="en" id="foodCheckerBetterEn"></span></p>
+          </div>
+          <p class="food-checker-disclaimer"><span class="tl">Pagtatantiya ito batay sa mga salitang nakilala—hindi kumpletong nutrition database o eksaktong sukat. Maaaring mag-iba ang laman ayon sa brand, sangkap, serving, at pagluto. Hindi ibig sabihin ng “hindi natukoy” na ligtas o mababa ito. Sundin ang personal na plano ng renal dietitian.</span><span class="en">This is an estimate based on recognized keywords—not a complete nutrition database or exact measurement. Content varies by brand, ingredients, portion, and preparation. “Not identified” does not mean safe or low. Follow your renal dietitian’s personal plan.</span></p>
+        </section>
 
         <div class="card" style="margin-top:16px">
           <h3><span class="tl">Hanapin ang pagkain</span><span class="en">Find a food</span></h3>
@@ -326,5 +340,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <button class="back-top" type="button" id="backToTop" aria-label="Bumalik sa itaas / Back to top"><svg aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
   <script src="app.js"></script>
+  <script src="food-checker.js"></script>
 </body>
 </html>
