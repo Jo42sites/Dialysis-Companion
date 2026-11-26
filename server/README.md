@@ -1,20 +1,19 @@
-# Secure Admin Backend
+# Unit-Based Secure Admin Backend
 
-This is a local-only Express API for administering Dialysis Companion.
-Medical records should remain encrypted and should be backed by a database and
-access-control design before handling real patient data.
+This Express API allows each dialysis unit to register its own account and
+manage only its own patient records. Records are stored in a local SQLite
+database and encrypted with AES-256-GCM.
 
 ## Setup
 
 ```bash
 cd server
 npm install
-npm run hash-password -- "replace-with-a-strong-password"
 cp .env.example .env
 ```
 
-Put the generated hash in `ADMIN_PASSWORD_HASH` and set a unique long random value
-for `JWT_SECRET` in `.env`.
+Set separate, long random values for `JWT_SECRET` and `MEDICAL_DATA_KEY`.
+Do not commit `.env` or `data/`.
 
 ## Run
 
@@ -27,22 +26,28 @@ The server binds only to `127.0.0.1`.
 ## API
 
 ```text
-POST /api/admin/login
-GET  /api/admin/users
-GET  /api/health
+GET    /api/health
+POST   /api/units/register
+POST   /api/units/login
+GET    /api/units/me
+GET    /api/units/records
+POST   /api/units/records
+GET    /api/units/records/:id
+PUT    /api/units/records/:id
+DELETE /api/units/records/:id
 ```
 
-Login:
+Register a unit:
 
 ```bash
-curl -i -X POST http://127.0.0.1:3001/api/admin/login \
+curl -i -X POST http://127.0.0.1:3001/api/units/register \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"your-password"}'
+  -d '{"name":"Sta. Mesa Dialysis Center","slug":"sta-mesa","password":"a-strong-password-2026"}'
 ```
 
-Use the returned token:
+Log in and use the returned token for record routes:
 
 ```bash
-curl -i http://127.0.0.1:3001/api/admin/users \
+curl -i http://127.0.0.1:3001/api/units/records \
   -H "Authorization: Bearer YOUR_JWT"
 ```

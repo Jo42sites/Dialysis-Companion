@@ -10,6 +10,6 @@ module.exports = {
   port: Number(process.env.PORT || 3001),
   jwtSecret: required('JWT_SECRET'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '30m',
-  adminUsername: required('ADMIN_USERNAME'),
-  adminPasswordHash: required('ADMIN_PASSWORD_HASH')
+  medicalDataKey: required('MEDICAL_DATA_KEY'),
+  databasePath: process.env.DATABASE_PATH || './data/dialysis-admin.sqlite'
 };
