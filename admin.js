@@ -76,7 +76,7 @@
     const overviewCards = $('#overviewCards');
     overviewCards.replaceChildren();
     [
-      ['Guide accounts', overview.accounts],
+      ['Legacy guide accounts', overview.accounts],
       ['Dialysis units', overview.units],
       ['Unit staff', overview.staff],
       ['Patient records', overview.records]

@@ -23,14 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-      - name: Configure account and records API
+      - name: Configure records and admin API
         env:
           ADMIN_API_URL: ${{ vars.ADMIN_API_URL }}
         run: |
           mkdir _site
-          cp index.html dialysis.html daily-care.html emergency.html philhealth.html support.html account.html account.css account.js admin.html admin.css admin.js styles.css app.js records.html records.css records.js _site/
+          cp index.html dialysis.html daily-care.html emergency.html philhealth.html support.html account.html account.css interactive-guide.css interactive-guide.js admin.html admin.css admin.js styles.css app.js records.html records.css records.js _site/
           node scripts/configure-admin-api.js _site/records.html
-          node scripts/configure-admin-api.js _site/account.html
           node scripts/configure-admin-api.js _site/admin.html
       - uses: actions/upload-pages-artifact@v3
         with:

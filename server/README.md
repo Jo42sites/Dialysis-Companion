@@ -1,9 +1,10 @@
 # Dialysis Companion API
 
-The FastAPI API supports patient/family accounts, separate dialysis units and
-individual staff accounts, and an optional site-wide administrator. SQLite
-stores account and audit data; patient records and saved care cards are
-encrypted with AES-256-GCM before being written to the database.
+The FastAPI API supports separate dialysis units and individual staff accounts,
+and an optional site-wide administrator. SQLite stores unit and audit data;
+patient records are encrypted with AES-256-GCM before being written to the
+database. The patient/family interactive health guide is browser-only and does
+not send or save lab values or symptom selections.
 
 > **Prototype warning:** this is not a certified clinical system. Do not enter
 > real patient data until your organization has reviewed the deployment,
@@ -35,10 +36,10 @@ python run.py
 ```
 
 The local database is `server/data/dialysis-admin.sqlite` by default. Serve the
-website locally on port 5500 and open `http://127.0.0.1:5500/`. Patient/family
-accounts are available at `/account.html`, site administration at
-`/admin.html`, and the unit-based record book at `/records.html`; do not open
-these pages using a `file://` URL.
+website locally on port 5500 and open `http://127.0.0.1:5500/`. The interactive
+health guide is at `/account.html`, site administration at `/admin.html`, and
+the unit-based record book at `/records.html`; do not open these pages using a
+`file://` URL.
 
 The Python API is compatible with the existing SQLite schema, bcrypt password
 hashes, JWT tokens, and AES-256-GCM encrypted data. Keep the same
@@ -64,22 +65,25 @@ Passwords are stored as bcrypt hashes. MFA uses authenticator codes and
 single-use recovery codes. Tokens expire after 15 minutes; deactivating an
 account or changing its password invalidates existing tokens.
 
-## Patient and family accounts
+## Patient and family interactive guide
 
-Users can create an account with an email address and a password of at least
-12 characters (maximum 72 UTF-8 bytes). The account stores a separately encrypted copy of the user's
-care card and language preference; use **Save this device to my account** and
-**Restore from my account** on the account page to move data between devices.
-Signing up does not automatically upload the browser's card. Account passwords
-are stored as bcrypt hashes. There is currently no email verification or
-password-reset flow; users who lose their password cannot recover their
-account. Disabling an account in the site-admin area revokes its active tokens.
+The health guide provides discussion prompts for hemoglobin, potassium,
+phosphorus, calcium, albumin, and Kt/V, plus conservative symptom next steps.
+Inputs are held only in page memory: they are not saved in local storage and
+are not sent to the API. The guide does not diagnose, set personal targets,
+recommend medication doses, or replace advice from a dialysis team.
+
+Public patient/family account registration, sign-in, and card-sync API routes
+have been removed. The legacy `guide_accounts` database table is retained so
+existing rows and encrypted content are not silently destroyed. If an older
+deployment has account data that should be erased, arrange a database backup
+and explicit, verified deletion separately.
 
 ## Site administration
 
 Configure the admin email and password on the API server (never in GitHub Pages
-files). The admin dashboard can suspend/reactivate patient-family accounts and
-dialysis units, manage unit staff access, and create, view, edit, or delete
+files). The admin dashboard can manage existing legacy guide-account access
+and dialysis units, manage unit staff access, and create, view, edit, or delete
 patient records across all units. Record access and administrative changes are
 written to the `site_admin_audit` table. The latest 200 events are shown in the
 dashboard; the database retains the audit history. Global access expands the
@@ -91,11 +95,6 @@ tokens also expire according to `JWT_EXPIRES_IN`.
 
 ```text
 GET    /api/health
-POST   /api/accounts/register
-POST   /api/accounts/login
-GET    /api/accounts/me
-GET    /api/accounts/me/data
-PUT    /api/accounts/me/data
 POST   /api/site-admin/login
 GET    /api/site-admin/overview
 GET    /api/site-admin/audit

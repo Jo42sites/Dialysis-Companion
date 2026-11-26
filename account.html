@@ -4,89 +4,128 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <meta name="description" content="Create an account to securely save your dialysis care card and language preference.">
-  <meta name="admin-api" content="">
+  <meta name="description" content="An educational dialysis lab and symptom discussion guide for patients and families.">
   <meta name="theme-color" content="#0d6b61">
-  <title>Patient & family account | Dialysis Companion</title>
+  <title>Interactive health guide | Dialysis Companion</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="account.css">
-  <script src="account.js" defer></script>
+  <link rel="stylesheet" href="interactive-guide.css">
+  <script src="interactive-guide.js" defer></script>
 </head>
-<body class="account-page">
+<body class="account-page interactive-guide-page">
   <a class="skip-link" href="#main">Lumaktaw sa nilalaman / Skip to content</a>
   <header class="account-header">
     <a class="brand" href="index.html">
       <span class="account-brand-icon" aria-hidden="true">+</span>
       <span><span class="brand-name">Dialysis Companion</span><span class="brand-sub">Nurse Jo42</span></span>
     </a>
-    <nav aria-label="Account navigation">
-      <a href="index.html">Guide / Gabay</a>
+    <nav aria-label="Guide navigation">
+      <a href="index.html"><span class="tl">Simula</span><span class="en">Home</span></a>
       <a href="records.html">HD staff records</a>
     </nav>
+    <div class="guide-language-switch" role="group" aria-label="Language">
+      <button type="button" data-guide-lang="tl" aria-pressed="true">Tagalog</button>
+      <button type="button" data-guide-lang="en" aria-pressed="false">English</button>
+    </div>
   </header>
 
-  <main id="main" class="account-wrap">
-    <section class="account-hero">
-      <p class="account-eyebrow">YOUR CARE, WITH YOU</p>
-      <h1>Keep your care card close.</h1>
-      <p>Create a private account to save your dialysis card and language preference, then restore them on another device.</p>
-      <div class="privacy-note"><span aria-hidden="true">⌑</span><span>Your saved card is encrypted on the server. It is separate from the clinical records used by dialysis units.</span></div>
+  <main id="main" class="health-guide-wrap">
+    <section class="health-guide-hero">
+      <p class="account-eyebrow"><span class="tl">GABAY PARA SA PASYENTE AT PAMILYA</span><span class="en">PATIENT & FAMILY GUIDE</span></p>
+      <h1><span class="tl">Unawain ang resulta. Alamin ang susunod na hakbang.</span><span class="en">Understand a result. Find a safer next step.</span></h1>
+      <p><span class="tl">Gamitin ang gabay na ito para maghanda ng mga tanong para sa dialysis team at malaman kung kailan dapat humingi agad ng tulong.</span><span class="en">Use this guide to prepare questions for your dialysis team and recognize when to get urgent help.</span></p>
+      <div class="privacy-note">
+        <span aria-hidden="true">⌑</span>
+        <span><span class="tl">Hindi sine-save o ipinapadala ang ilalagay mo rito. Gabay lamang ito, hindi diagnosis o kapalit ng payo ng doktor.</span><span class="en">What you enter is not saved or sent. This is educational guidance, not a diagnosis or a substitute for clinical advice.</span></span>
+      </div>
     </section>
 
-    <section class="account-card" aria-labelledby="accountTitle">
-      <div class="account-card-head">
-        <div>
-          <p class="account-eyebrow">PATIENT & FAMILY</p>
-          <h2 id="accountTitle">Sign in or create an account</h2>
-        </div>
-        <span class="account-mark" aria-hidden="true">♥</span>
-      </div>
-      <p id="accountMessage" class="account-message" role="status" aria-live="polite"></p>
+    <section class="health-guide-emergency" aria-label="Emergency warning">
+      <strong><span class="tl">May malubhang sintomas ngayon?</span><span class="en">Severe symptoms happening now?</span></strong>
+      <span><span class="tl">Tumawag sa 911 para sa pananakit ng dibdib, matinding hirap huminga, pagkawala ng malay, o matinding pagdurugo.</span><span class="en">Call 911 for chest pain, severe trouble breathing, loss of consciousness, or severe bleeding.</span></span>
+      <a href="tel:911">911</a>
+    </section>
 
-      <div id="authView" class="auth-grid">
-        <form id="loginForm" class="auth-form">
-          <h3>Sign in</h3>
-          <label for="loginEmail">Email address</label>
-          <input id="loginEmail" name="email" type="email" autocomplete="email" maxlength="254" required>
-          <label for="loginPassword">Password</label>
-          <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
-          <button class="account-button" type="submit">Sign in</button>
+    <div class="health-guide-grid">
+      <section class="health-tool-card" aria-labelledby="labTitle">
+        <div class="health-tool-heading">
+          <span class="health-tool-icon lab-icon" aria-hidden="true">↗</span>
+          <div>
+            <p class="account-eyebrow"><span class="tl">GABAY SA LAB</span><span class="en">LAB GUIDE</span></p>
+            <h2 id="labTitle"><span class="tl">Pag-usapan ang resulta</span><span class="en">Explore a lab result</span></h2>
+          </div>
+        </div>
+        <p class="tool-intro"><span class="tl">Ilagay ang resulta para makita ang mga paksang maaaring itanong sa iyong care team. Hindi ito ikinukumpara sa generic na “normal range” dahil maaaring iba ang target ng bawat pasyente.</span><span class="en">Enter a result to see topics you might discuss with your care team. It is not compared with a generic “normal range” because targets can differ for each patient.</span></p>
+
+        <form id="labForm" class="health-form">
+          <label for="labTest"><span class="tl">Uri ng resulta</span><span class="en">Lab test</span></label>
+          <select id="labTest" name="labTest" required>
+            <option value="hemoglobin">Hemoglobin (Hb)</option>
+            <option value="potassium">Potassium</option>
+            <option value="phosphorus">Phosphorus</option>
+            <option value="calcium">Calcium</option>
+            <option value="albumin">Albumin</option>
+            <option value="ktv">Kt/V</option>
+          </select>
+
+          <div class="lab-entry-row">
+            <div>
+              <label for="labValue"><span class="tl">Halaga sa resulta</span><span class="en">Result value</span></label>
+              <input id="labValue" name="labValue" type="number" min="0" step="any" inputmode="decimal" autocomplete="off" placeholder="e.g. 10.2" required>
+            </div>
+            <div>
+              <label for="labUnit"><span class="tl">Yunit</span><span class="en">Unit</span></label>
+              <select id="labUnit" name="labUnit" aria-label="Result unit"></select>
+            </div>
+          </div>
+
+          <button class="account-button" type="submit"><span class="tl">Tingnan ang gabay</span><span class="en">Show discussion guide</span></button>
         </form>
 
-        <form id="registerForm" class="auth-form auth-form-accent">
-          <h3>Create account</h3>
-          <label for="registerEmail">Email address</label>
-          <input id="registerEmail" name="email" type="email" autocomplete="email" maxlength="254" required>
-          <label for="registerPassword">Create password</label>
-          <input id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="256" required>
-          <p class="field-help">Use at least 12 characters and no more than 72 UTF-8 bytes. There is no password-reset email yet, so keep it safe.</p>
-          <button class="account-button" type="submit">Create account</button>
-        </form>
-      </div>
-
-      <section id="signedInView" class="sync-panel" hidden>
-        <div class="signed-in-row">
-          <div><span class="account-eyebrow">SIGNED IN</span><strong id="accountEmail"></strong></div>
-          <button id="signOutButton" class="text-button" type="button">Sign out</button>
+        <div id="labResult" class="health-result" role="status" aria-live="polite" hidden>
+          <h3 id="labResultTitle"></h3>
+          <p id="labResultText"></p>
+          <p id="labResultQuestions" class="result-question"></p>
         </div>
-        <p>Save or update the dialysis card on this device, or restore the copy saved in your account. If there is no card on this device, your existing saved card remains unchanged.</p>
-        <div class="sync-actions">
-          <button id="saveDataButton" class="account-button" type="button">Save this device to my account</button>
-          <button id="restoreDataButton" class="account-button account-button-light" type="button">Restore from my account</button>
-        </div>
-        <p class="field-help">Your care card stays on this device unless you choose to save or restore it here.</p>
       </section>
-    </section>
 
-    <section class="account-help">
-      <h2>Need the staff system?</h2>
-      <p>Dialysis-unit staff use the separate HD records portal. Site administrators sign in through the protected admin space.</p>
-      <div class="account-links">
-        <a href="records.html">HD records for staff <span aria-hidden="true">→</span></a>
-        <a href="admin.html">Site administrator sign-in <span aria-hidden="true">→</span></a>
-      </div>
+      <section class="health-tool-card" aria-labelledby="symptomTitle">
+        <div class="health-tool-heading">
+          <span class="health-tool-icon symptom-icon" aria-hidden="true">♡</span>
+          <div>
+            <p class="account-eyebrow"><span class="tl">GABAY SA SINTOMAS</span><span class="en">SYMPTOM GUIDE</span></p>
+            <h2 id="symptomTitle"><span class="tl">Ano ang nararamdaman?</span><span class="en">What are you experiencing?</span></h2>
+          </div>
+        </div>
+        <p class="tool-intro"><span class="tl">Piliin ang mga naaangkop. Kung malubha o mabilis lumalala ang sintomas, huwag maghintay sa online guide.</span><span class="en">Select what applies. If a symptom is severe or rapidly worsening, do not wait for an online guide.</span></p>
+
+        <form id="symptomForm" class="symptom-form">
+          <fieldset>
+            <legend><span class="tl">Pumili ng sintomas</span><span class="en">Select symptoms</span></legend>
+            <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="emergency"><span><span class="tl">Pananakit ng dibdib, matinding hirap huminga, pagkawala ng malay, seizure, o matinding pagdurugo</span><span class="en">Chest pain, severe trouble breathing, loss of consciousness, seizure, or severe bleeding</span></span></label>
+            <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="confusion"><span><span class="tl">Biglaang pagkalito o hirap gisingin</span><span class="en">Sudden confusion or difficult to wake</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="access"><span><span class="tl">Lagnat/panginginig o pamumula, init, pamamaga, o nana sa dialysis access</span><span class="en">Fever/chills or redness, warmth, swelling, or drainage at dialysis access</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="palpitations"><span><span class="tl">Bagong iregular o mabilis na tibok ng puso</span><span class="en">New irregular or racing heartbeat</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="missed"><span><span class="tl">Hindi nakadalo o hindi natapos ang dialysis</span><span class="en">Missed or could not complete dialysis</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="swelling"><span><span class="tl">Bagong pamamaga o mabilis na pagbigat</span><span class="en">New swelling or rapid weight gain</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="common"><span><span class="tl">Pulikat, pagkahilo, pagduduwal, pangangati, o matinding pagkapagod</span><span class="en">Cramps, dizziness, nausea, itching, or unusual fatigue</span></span></label>
+          </fieldset>
+          <button class="account-button" type="submit"><span class="tl">Tingnan ang susunod na hakbang</span><span class="en">Show next steps</span></button>
+        </form>
+
+        <div id="symptomResult" class="health-result" role="status" aria-live="polite" hidden>
+          <h3 id="symptomResultTitle"></h3>
+          <p id="symptomResultText"></p>
+        </div>
+      </section>
+    </div>
+
+    <section class="health-guide-note">
+      <h2><span class="tl">Laging sundin ang planong ibinigay ng iyong dialysis team</span><span class="en">Follow the plan from your dialysis team</span></h2>
+      <p><span class="tl">Huwag baguhin ang gamot, iron/epoetin, fluid limit, pagkain, o dialysis schedule batay lamang sa gabay na ito. Ibahagi agad sa iyong care team ang resultang minarkahang critical at ang anumang bago o lumalalang sintomas.</span><span class="en">Do not change medicines, iron/epoetin, fluid limits, diet, or dialysis schedule based only on this guide. Promptly share critical lab results and any new or worsening symptoms with your care team.</span></p>
     </section>
   </main>
-  <footer class="account-footer"><a href="index.html">Dialysis Companion</a> · Educational support, not a substitute for clinical advice.</footer>
+
+  <footer class="account-footer"><a href="index.html">Dialysis Companion</a> · <span class="tl">Gabay na pang-edukasyon</span><span class="en">Educational guide</span></footer>
 </body>
 </html>

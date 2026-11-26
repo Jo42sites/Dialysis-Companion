@@ -33,7 +33,6 @@ ALLOWED_ROLES = {"admin", "clinician", "viewer"}
 MAX_BODY_BYTES = 1024 * 1024
 UNIT_SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{2,49}$")
 USERNAME_PATTERN = re.compile(r"^[a-zA-Z0-9._-]{3,50}$")
-EMAIL_PATTERN = re.compile(r"^[^@\s]{1,128}@[^@\s]{1,120}\.[^@\s]{2,63}$")
 RECORD_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
 RECOVERY_CODE_PATTERN = re.compile(r"^[a-f0-9]{16}$", re.IGNORECASE)
 
@@ -159,15 +158,6 @@ def valid_password(password: Any) -> bool:
     return isinstance(password, str) and 12 <= len(password) <= 256
 
 
-def valid_guide_password(password: Any) -> bool:
-    if not valid_password(password):
-        return False
-    try:
-        return len(password.encode("utf-8")) <= 72
-    except UnicodeEncodeError:
-        return False
-
-
 def hash_password(password: str, rounds: int = 12) -> str:
     return bcrypt.hashpw(password_bytes(password), bcrypt.gensalt(rounds=rounds)).decode()
 
@@ -214,42 +204,6 @@ def decrypt_record(unit_id: int, encrypted: str) -> Any:
     return json.loads(plaintext)
 
 
-def account_data_key(account_id: int) -> bytes:
-    return hashlib.sha256(
-        config.MEDICAL_DATA_KEY.encode("utf-8")
-        + b":guide-account:"
-        + str(account_id).encode("ascii")
-    ).digest()
-
-
-def encrypt_account_data(account_id: int, data: dict[str, Any]) -> str:
-    nonce = secrets.token_bytes(12)
-    encrypted = AESGCM(account_data_key(account_id)).encrypt(
-        nonce,
-        json.dumps(data, separators=(",", ":"), ensure_ascii=False).encode("utf-8"),
-        b"dialysis-companion:guide-account:v1",
-    )
-    return base64.urlsafe_b64encode(nonce + encrypted).decode("ascii")
-
-
-def decrypt_account_data(account_id: int, encrypted: str) -> dict[str, Any]:
-    try:
-        raw = base64.urlsafe_b64decode(encrypted.encode("ascii"))
-        if len(raw) < 28:
-            raise ValueError("Invalid encrypted account data")
-        plaintext = AESGCM(account_data_key(account_id)).decrypt(
-            raw[:12],
-            raw[12:],
-            b"dialysis-companion:guide-account:v1",
-        )
-        data = json.loads(plaintext)
-    except (ValueError, UnicodeDecodeError, json.JSONDecodeError) as error:
-        raise ValueError("Invalid encrypted account data") from error
-    if not isinstance(data, dict):
-        raise ValueError("Invalid encrypted account data")
-    return data
-
-
 def expiry_delta(value: str) -> timedelta:
     match = re.fullmatch(r"(\d+)([smhd])", value)
     if not match:
@@ -279,17 +233,6 @@ def sign_unit_token(user: sqlite3.Row | dict[str, Any]) -> str:
             "role": user["role"],
             "unitId": user["unit_id"],
             "username": user["username"],
-            "tokenVersion": user["token_version"],
-        },
-        expiry_delta(config.JWT_EXPIRES_IN),
-    )
-
-
-def sign_guide_token(user: sqlite3.Row | dict[str, Any]) -> str:
-    return make_token(
-        {
-            "sub": str(user["id"]),
-            "role": "guide_account",
             "tokenVersion": user["token_version"],
         },
         expiry_delta(config.JWT_EXPIRES_IN),
@@ -461,36 +404,6 @@ def current_unit(
         raise HTTPException(status_code=401, detail="Invalid or expired token") from None
 
 
-def current_guide_account(
-    authorization: str | None = Header(default=None),
-    connection: sqlite3.Connection = Depends(get_database),
-) -> sqlite3.Row:
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Authentication required")
-    try:
-        claims = verify_token(authorization[len("Bearer ") :])
-        if claims.get("role") != "guide_account":
-            raise ValueError("invalid account role")
-        account = connection.execute(
-            """
-            SELECT id, email, is_active, token_version, created_at, last_login_at
-            FROM guide_accounts WHERE id = ?
-            """,
-            (int(claims["sub"]),),
-        ).fetchone()
-        if (
-            not account
-            or not account["is_active"]
-            or account["token_version"] != claims.get("tokenVersion")
-        ):
-            raise HTTPException(status_code=401, detail="Session is no longer valid")
-        return account
-    except HTTPException:
-        raise
-    except (jwt.PyJWTError, KeyError, TypeError, ValueError):
-        raise HTTPException(status_code=401, detail="Invalid or expired token") from None
-
-
 def require_site_admin(
     authorization: str | None = Header(default=None),
 ) -> str:
@@ -573,153 +486,6 @@ def get_admin_unit(connection: sqlite3.Connection, unit_id: int) -> sqlite3.Row:
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
-
-
-@app.post("/api/accounts/register", status_code=201)
-async def register_guide_account(
-    request: Request,
-    connection: sqlite3.Connection = Depends(get_database),
-) -> dict[str, Any]:
-    fail_if_limited(
-        request, "guide_registration", 5, 60 * 60,
-        "Too many account registration attempts. Try again later.",
-    )
-    body = body_object(await read_json(request))
-    email = str(body.get("email") or "").strip().lower()
-    password = body.get("password")
-    if len(email) > 254 or not EMAIL_PATTERN.fullmatch(email):
-        raise HTTPException(status_code=400, detail="Enter a valid email address")
-    if not valid_guide_password(password):
-        raise HTTPException(status_code=400, detail="Password must be 12-256 characters and at most 72 UTF-8 bytes")
-    try:
-        result = connection.execute(
-            "INSERT INTO guide_accounts (email, password_hash) VALUES (?, ?)",
-            (email, hash_password(password)),
-        )
-    except sqlite3.IntegrityError as error:
-        if "UNIQUE" in str(error).upper():
-            raise HTTPException(status_code=409, detail="An account already uses that email") from None
-        raise
-    account = connection.execute(
-        """
-        SELECT id, email, is_active, token_version, created_at, last_login_at
-        FROM guide_accounts WHERE id = ?
-        """,
-        (result.lastrowid,),
-    ).fetchone()
-    return {
-        "token": sign_guide_token(account),
-        "user": safe_guide_account(account),
-        "hasSavedData": False,
-    }
-
-
-@app.post("/api/accounts/login")
-async def login_guide_account(
-    request: Request,
-    connection: sqlite3.Connection = Depends(get_database),
-) -> dict[str, Any]:
-    fail_if_limited(
-        request, "guide_login", 5, 15 * 60,
-        "Too many login attempts. Try again later.",
-    )
-    body = body_object(await read_json(request))
-    email = str(body.get("email") or "").strip().lower()
-    password = body.get("password") if isinstance(body.get("password"), str) else ""
-    account = connection.execute(
-        """
-        SELECT id, email, password_hash, is_active, token_version, created_at,
-          last_login_at, data_ciphertext
-        FROM guide_accounts WHERE email = ? AND is_active = 1
-        """,
-        (email,),
-    ).fetchone()
-    password_hash = account["password_hash"] if account else dummy_password_hash.decode()
-    if not account or not verify_password(password, password_hash):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-    connection.execute(
-        "UPDATE guide_accounts SET last_login_at = datetime('now') WHERE id = ?",
-        (account["id"],),
-    )
-    updated = dict(account)
-    updated["last_login_at"] = connection.execute(
-        "SELECT last_login_at FROM guide_accounts WHERE id = ?", (account["id"],)
-    ).fetchone()["last_login_at"]
-    return {
-        "token": sign_guide_token(updated),
-        "user": safe_guide_account(updated),
-        "hasSavedData": bool(account["data_ciphertext"]),
-    }
-
-
-@app.get("/api/accounts/me")
-def get_guide_account(
-    account: sqlite3.Row = Depends(current_guide_account),
-) -> dict[str, Any]:
-    return {"user": safe_guide_account(account)}
-
-
-@app.get("/api/accounts/me/data")
-def get_guide_account_data(
-    account: sqlite3.Row = Depends(current_guide_account),
-    connection: sqlite3.Connection = Depends(get_database),
-) -> dict[str, Any]:
-    row = connection.execute(
-        "SELECT data_ciphertext FROM guide_accounts WHERE id = ?", (account["id"],)
-    ).fetchone()
-    if not row or not row["data_ciphertext"]:
-        return {"data": None}
-    try:
-        data = decrypt_account_data(account["id"], row["data_ciphertext"])
-    except ValueError:
-        logger.exception("Could not decrypt saved guide account data")
-        raise HTTPException(status_code=500, detail="Saved account data could not be decrypted") from None
-    return {"data": data}
-
-
-@app.put("/api/accounts/me/data")
-async def save_guide_account_data(
-    request: Request,
-    account: sqlite3.Row = Depends(current_guide_account),
-    connection: sqlite3.Connection = Depends(get_database),
-) -> dict[str, bool]:
-    body = body_object(await read_json(request))
-    changes: dict[str, Any] = {}
-    if "card" in body:
-        if not isinstance(body["card"], dict):
-            raise HTTPException(status_code=400, detail="Dialysis card must be a JSON object")
-        changes["card"] = body["card"]
-    if "preferences" in body:
-        preferences = body["preferences"]
-        if (
-            not isinstance(preferences, dict)
-            or any(key != "language" for key in preferences)
-            or preferences.get("language") not in {"tl", "en", "bi"}
-        ):
-            raise HTTPException(status_code=400, detail="Language preference is invalid")
-        changes["preferences"] = preferences
-    if not changes:
-        raise HTTPException(status_code=400, detail="Provide card data or preferences to save")
-
-    existing = connection.execute(
-        "SELECT data_ciphertext FROM guide_accounts WHERE id = ?", (account["id"],)
-    ).fetchone()
-    data: dict[str, Any] = {}
-    if existing and existing["data_ciphertext"]:
-        try:
-            data = decrypt_account_data(account["id"], existing["data_ciphertext"])
-        except ValueError:
-            logger.exception("Could not decrypt saved guide account data")
-            raise HTTPException(status_code=500, detail="Saved account data could not be decrypted") from None
-    data.update(changes)
-    connection.execute(
-        """
-        UPDATE guide_accounts SET data_ciphertext = ?, updated_at = datetime('now')
-        WHERE id = ?
-        """,
-        (encrypt_account_data(account["id"], data), account["id"]),
-    )
-    return {"saved": True}
 
 
 @app.post("/api/site-admin/login")

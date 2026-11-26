@@ -223,7 +223,7 @@ class ApiTests(unittest.TestCase):
         revoked = self.request("GET", "/api/units/records", token=admin["token"])
         self.assertEqual(revoked.status_code, 401)
 
-    def test_patient_account_auth_and_encrypted_card_sync(self):
+    def test_patient_account_and_card_storage_api_is_disabled(self):
         registration = self.request(
             "POST",
             "/api/accounts/register",
@@ -232,71 +232,30 @@ class ApiTests(unittest.TestCase):
                 "password": "Strong-Patient-Password-2026",
             },
         )
-        self.assertEqual(registration.status_code, 201, registration.text)
-        token = registration.json()["token"]
-        duplicate = self.request(
-            "POST",
-            "/api/accounts/register",
-            body={
-                "email": "patient@example.test",
-                "password": "Strong-Patient-Password-2026",
-            },
-        )
-        self.assertEqual(duplicate.status_code, 409)
-
-        saved = self.request(
-            "PUT",
-            "/api/accounts/me/data",
-            token=token,
-            body={
-                "card": {"name": "Private Guide Card", "dialysisDay": "Monday"},
-                "preferences": {"language": "en"},
-            },
-        )
-        self.assertEqual(saved.status_code, 200, saved.text)
-        restored = self.request("GET", "/api/accounts/me/data", token=token)
-        self.assertEqual(
-            restored.json()["data"],
-            {
-                "card": {"name": "Private Guide Card", "dialysisDay": "Monday"},
-                "preferences": {"language": "en"},
-            },
-        )
-        invalid_preferences = self.request(
-            "PUT",
-            "/api/accounts/me/data",
-            token=token,
-            body={"preferences": {"language": "unknown"}},
-        )
-        self.assertEqual(invalid_preferences.status_code, 400)
-
-        connection = connect_database()
-        try:
-            ciphertext = connection.execute(
-                "SELECT data_ciphertext FROM guide_accounts WHERE email = ?",
-                ("patient@example.test",),
-            ).fetchone()["data_ciphertext"]
-            self.assertNotIn("Private Guide Card", ciphertext)
-        finally:
-            connection.close()
-
+        self.assertEqual(registration.status_code, 404)
         login = self.request(
             "POST",
             "/api/accounts/login",
-            body={
-                "email": "patient@example.test",
-                "password": "Strong-Patient-Password-2026",
-            },
+            body={"email": "patient@example.test", "password": "Strong-Patient-Password-2026"},
         )
-        self.assertEqual(login.status_code, 200, login.text)
-        self.assertTrue(login.json()["hasSavedData"])
-        self.assertEqual(login.json()["user"]["email"], "patient@example.test")
-        wrong_password = self.request(
-            "POST",
-            "/api/accounts/login",
-            body={"email": "patient@example.test", "password": "Wrong-Password-2026"},
+        self.assertEqual(login.status_code, 404)
+        saved = self.request(
+            "PUT",
+            "/api/accounts/me/data",
+            body={"card": {"name": "Must not be stored"}},
         )
-        self.assertEqual(wrong_password.status_code, 401)
+        self.assertEqual(saved.status_code, 404)
+        restored = self.request("GET", "/api/accounts/me/data")
+        self.assertEqual(restored.status_code, 404)
+
+        connection = connect_database()
+        try:
+            account_count = connection.execute(
+                "SELECT count(*) AS total FROM guide_accounts"
+            ).fetchone()["total"]
+            self.assertEqual(account_count, 0)
+        finally:
+            connection.close()
 
     def test_site_admin_manages_cross_unit_records_and_revokes_access(self):
         denied = self.request("GET", "/api/site-admin/units")
@@ -377,29 +336,6 @@ class ApiTests(unittest.TestCase):
         )
         self.assertEqual(deleted_record.status_code, 204)
 
-        account = self.request(
-            "POST",
-            "/api/accounts/register",
-            body={
-                "email": "disable-me@example.test",
-                "password": "Strong-Patient-Password-2026",
-            },
-        ).json()
-        accounts = self.request("GET", "/api/site-admin/accounts", token=admin_token)
-        self.assertEqual(accounts.status_code, 200)
-        guide_account = next(
-            row for row in accounts.json()["accounts"] if row["email"] == "disable-me@example.test"
-        )
-        disabled = self.request(
-            "PATCH",
-            f"/api/site-admin/accounts/{guide_account['id']}",
-            token=admin_token,
-            body={"active": False},
-        )
-        self.assertEqual(disabled.status_code, 200)
-        revoked = self.request("GET", "/api/accounts/me", token=account["token"])
-        self.assertEqual(revoked.status_code, 401)
-
         suspended = self.request(
             "PATCH",
             f"/api/site-admin/units/{first_unit['id']}",
@@ -417,7 +353,6 @@ class ApiTests(unittest.TestCase):
         actions = {event["action"] for event in audit.json()["events"]}
         self.assertIn("record.read", actions)
         self.assertIn("record.update", actions)
-        self.assertIn("account.status", actions)
         self.assertIn("unit.status", actions)
 
     def test_health_and_cors(self):

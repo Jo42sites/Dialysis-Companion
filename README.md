@@ -21,10 +21,11 @@ families, with a unit-based hemodialysis (HD) record manager for care teams.
 - **Unit accounts:** each dialysis unit has separate accounts and records.
   Patient record contents are encrypted before being saved in the server's
   SQLite database.
-- **Patient and family accounts:** users can sign up to securely save and
-  restore their dialysis card and language preference across devices.
+- **Interactive health guide:** patients and families can explore lab-result
+  discussion topics and symptom next steps. Inputs stay in the page and are
+  not saved or sent to the server.
 - **Site administration:** a separately configured server-side admin can
-  suspend accounts and units, manage unit access, and view/edit clinical
+  manage legacy accounts and units, manage unit access, and view/edit clinical
   records across units. Admin record access is audited.
 - **Offline guide:** the patient and family guide works without an internet
   connection. The HD record book needs a connection to its API; internet access
@@ -37,7 +38,7 @@ Keep the project files together in one folder:
 | File | Purpose |
 | --- | --- |
 | `index.html`, `dialysis.html`, `daily-care.html`, `emergency.html`, `philhealth.html`, `support.html`, `styles.css`, `app.js` | Patient and family guide |
-| `account.html`, `account.css`, `account.js` | Patient and family sign-up, sign-in, and encrypted card sync |
+| `account.html`, `account.css`, `interactive-guide.css`, `interactive-guide.js` | Browser-only interactive lab and symptom guide |
 | `admin.html`, `admin.css`, `admin.js` | Protected site administration |
 | `records.html`, `records.css`, `records.js` | Private HD patient record book |
 
@@ -46,6 +47,8 @@ records** from the navigation or the guide's main button to open the record
 book. The guide can be hosted as a static site, but the record book also
 requires the FastAPI service in [server/](./server/) to be deployed separately.
 A static host alone cannot create unit accounts or save records.
+The interactive health guide works without an account or API. Lab values and
+symptom selections are not transmitted or retained after leaving the page.
 For local development, set `SITE_ADMIN_EMAIL` and `SITE_ADMIN_PASSWORD` in
 `server/.env` to enable the site-admin area. Use a unique password of 12-72
 UTF-8 bytes; do not commit it. The site-admin page can access and modify
