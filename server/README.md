@@ -68,8 +68,9 @@ account or changing its password invalidates existing tokens.
 ## Patient and family interactive guide
 
 The browser-only guide provides actionable steps for common and custom
-symptoms, plus general education for abnormal hemoglobin, uric acid, potassium,
-phosphorus, calcium, albumin, BUN, glucose, and Kt/V/URR flags. Food
+symptoms, plus general education for hemoglobin, uric acid, potassium,
+phosphorus, calcium, albumin, BUN, and glucose results compared with the
+reference range printed on the patient's report. Food
 suggestions are qualified by the patient's renal meal plan; the guide does not
 prescribe treatment or recommend medication doses. Selections are held only in
 page memory: they are not saved in local storage and are not sent to the API.

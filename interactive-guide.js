@@ -3,6 +3,10 @@
 
   const $ = (selector) => document.querySelector(selector);
   const symptomResult = $('#symptomResult');
+  const labResult = $('#labResult');
+  const labTest = $('#labTest');
+  const labRange = $('#labRange');
+  let latestLab = null;
   const symptomGuidance = {
     lowHb: {
       level: 'general', label: ['mababang hemoglobin (Hb) / anemia', 'low hemoglobin (Hb) / anemia'],
@@ -29,6 +33,14 @@
         ['Kung bahagi ng iyong renal meal plan, pag-usapan ang pagbabawas ng laman-loob gaya ng atay, malalaking portion ng pulang karne, ilang seafood gaya ng dilis/sardinas/shellfish, beer/alcohol, at matatamis na inuming may asukal/fructose.', 'If compatible with your renal meal plan, discuss limiting organ meats such as liver, large portions of red meat, some seafood such as anchovies/sardines/shellfish, beer/alcohol, and sugary drinks with added sugar/fructose.'],
         ['Huwag tuluyang alisin ang protein o dagdagan ang tubig; sundin ang renal dietitian at fluid limit mo. Huwag ihinto ang niresetang gout medicine o uminom ng ibuprofen/naproxen nang walang payo.', 'Do not eliminate protein or increase water; follow your renal dietitian’s advice and fluid limit. Do not stop prescribed gout medicine or take ibuprofen/naproxen without advice.'],
         ['Kung biglang namula, uminit, sumakit, o namaga ang kasukasuan, makipag-ugnayan sa clinician sa araw ding iyon; kailangan ding maalis sa posibilidad ang impeksiyon.', 'If a joint suddenly becomes red, warm, painful, or swollen, contact a clinician the same day; infection may also need to be ruled out.']
+      ]
+    },
+    lowUric: {
+      level: 'general', label: ['mababang uric acid', 'low uric acid'],
+      steps: [
+        ['Ipa-interpret ang resulta kasama ng iyong history at gamot; karaniwang walang kailangang baguhin sa pagkain dahil lamang mababa ito.', 'Ask your care team to interpret it with your history and medicines; a low result alone usually does not call for a diet change.'],
+        ['Huwag dagdagan ang laman-loob, karne, seafood, o alak para itaas ang uric acid.', 'Do not add organ meats, meat, seafood, or alcohol to raise uric acid.'],
+        ['Ituloy ang kasalukuyang kidney meal plan at itanong sa clinician kung kailangan ng follow-up.', 'Continue your current kidney meal plan and ask your clinician whether follow-up is needed.']
       ]
     },
     highPotassium: {
@@ -58,6 +70,14 @@
         ['Ipaalam ang resulta sa care team at itanong kung kailangang repasuhin ang trend o treatment plan.', 'Share the result with your care team and ask whether the trend or treatment plan needs review.']
       ]
     },
+    lowPhosphorus: {
+      level: 'general', label: ['mababang phosphorus/phosphate', 'low phosphorus/phosphate'],
+      steps: [
+        ['Ipa-review ito sa dialysis team; tingnan ang trend, pagkain, at mga gamot/binder kasama nila.', 'Ask your dialysis team to review it with your trend, food intake, and medicines/binders.'],
+        ['Huwag dagdagan ang dairy, nuts, cola, processed foods, o supplement para itaas ito nang walang payo; maaari ring mataas ang mga ito sa potassium, sodium, o fluid.', 'Do not add dairy, nuts, cola, processed foods, or supplements to raise it without advice; these may also be high in potassium, sodium, or fluid.'],
+        ['Huwag itigil o baguhin ang phosphate binder o iba pang gamot nang walang instructions.', 'Do not stop or change a phosphate binder or other medicine without instructions.']
+      ]
+    },
     highCalcium: {
       level: 'general', label: ['mataas na calcium', 'high calcium'],
       steps: [
@@ -83,12 +103,12 @@
         ['Ipaalam kung may sugat na hindi gumagaling, lagnat, o patuloy na kawalan ng gana sa pagkain.', 'Report wounds that are not healing, fever, or ongoing loss of appetite.']
       ]
     },
-    lowAdequacy: {
-      level: 'general', label: ['mababang Kt/V o URR', 'low Kt/V or URR'],
+    highAlbumin: {
+      level: 'general', label: ['mataas na albumin', 'high albumin'],
       steps: [
-        ['Ipa-review sa dialysis team kung ano ang ibig sabihin nito sa iyong schedule at personal na target; huwag baguhin ang oras o dalas ng dialysis nang kusa.', 'Ask your dialysis team what this means for your schedule and personal target; do not change treatment time or frequency on your own.'],
-        ['Dumalo at tapusin ang dialysis sessions ayon sa nakatakda. Kung may na-miss o na-shortened na session, sabihin ito sa team.', 'Attend and complete sessions as scheduled. Tell your team about any missed or shortened session.'],
-        ['Itanong kung dapat suriin ang access, blood-flow readings, o treatment time. Huwag galawin ang access o machine maliban kung sinanay at inutusan.', 'Ask whether access, blood-flow readings, or treatment time should be reviewed. Do not adjust access or the machine unless trained and instructed.']
+        ['Ipa-review ang resulta sa care team kasama ng iba pang labs at fluid status; maaaring makaapekto ang hydration at iba pang kondisyon sa resulta.', 'Ask your care team to review it with other labs and fluid status; hydration and other conditions can affect the result.'],
+        ['Huwag uminom ng dagdag na tubig o magbago ng protein intake para itama ito; sundin ang sarili mong fluid at meal plan.', 'Do not add water or change protein intake to correct it; follow your own fluid and meal plan.'],
+        ['Itanong kung kailangan ulitin o suriin ang trend.', 'Ask whether it should be repeated or reviewed as a trend.']
       ]
     },
     highBun: {
@@ -97,6 +117,14 @@
         ['Ipa-review ang resulta sa dialysis team kasama ng schedule, Kt/V o URR, sintomas, at iba pang resulta.', 'Ask your dialysis team to review this with your schedule, Kt/V or URR, symptoms, and other results.'],
         ['Dumalo at tapusin ang dialysis ayon sa schedule. Huwag magdagdag ng session, magbago ng oras, o magbawas ng protein nang kusa.', 'Attend and complete dialysis as scheduled. Do not add sessions, change treatment time, or reduce protein on your own.'],
         ['Kung may na-miss o na-shortened na session, sabihin ito sa team. Ipaalam ang pagduduwal, pangangati, pagkalito, o matinding pagkapagod.', 'Tell your team about any missed or shortened session. Report nausea, itching, confusion, or unusual fatigue.']
+      ]
+    },
+    lowBun: {
+      level: 'general', label: ['mababang BUN/urea', 'low BUN/urea'],
+      steps: [
+        ['Ipa-review ang resulta kasama ng pagkain, timbang, sintomas, at iba pang labs; hindi ito dapat bigyang-kahulugan nang mag-isa.', 'Ask your care team to review it with food intake, weight, symptoms, and other labs; it should not be interpreted alone.'],
+        ['Huwag bawasan o dagdagan ang protein batay lamang sa BUN. Humingi ng gabay sa renal dietitian kung hirap kumain o pumapayat.', 'Do not reduce or increase protein based only on BUN. Ask a renal dietitian for help if eating is difficult or you are losing weight.'],
+        ['Ituloy ang dialysis at meal plan ayon sa instructions ng team.', 'Continue dialysis and your meal plan as directed by your team.']
       ]
     },
     highGlucose: {
@@ -251,6 +279,28 @@
       ]
     }
   };
+  const labGuidance = {
+    hemoglobin: { label: ['Hemoglobin (Hb)', 'Hemoglobin (Hb)'], below: 'lowHb', above: 'highHb' },
+    potassium: { label: ['Potassium', 'Potassium'], below: 'lowPotassium', above: 'highPotassium' },
+    phosphorus: { label: ['Phosphorus / phosphate', 'Phosphorus / phosphate'], below: 'lowPhosphorus', above: 'highPhosphorus' },
+    calcium: { label: ['Calcium', 'Calcium'], below: 'lowCalcium', above: 'highCalcium' },
+    albumin: { label: ['Albumin', 'Albumin'], below: 'lowAlbumin', above: 'highAlbumin' },
+    uricAcid: { label: ['Uric acid', 'Uric acid'], below: 'lowUric', above: 'highUric' },
+    bun: { label: ['BUN / urea', 'BUN / urea'], below: 'lowBun', above: 'highBun' },
+    glucose: { label: ['Blood glucose / sugar', 'Blood glucose / sugar'], below: 'lowGlucose', above: 'highGlucose' }
+  };
+  const rangeLabels = {
+    tl: { below: 'Mas mababa sa range', within: 'Nasa loob ng range', above: 'Mas mataas sa range' },
+    en: { below: 'Below range', within: 'Within range', above: 'Above range' }
+  };
+  const withinRangeGuidance = {
+    level: 'general',
+    label: ['Resultang nasa reference range', 'Result within the reference range'],
+    steps: [
+      ['Ituloy ang kasalukuyang dialysis, pagkain, fluid, at gamot plan.', 'Continue your current dialysis, food, fluid, and medicine plan.'],
+      ['Ibahagi pa rin ang resulta sa regular na follow-up; maaaring iba ang personal na target ng HD team sa reference range ng laboratoryo.', 'Share the result at routine follow-up; your HD team’s personal target may differ from the laboratory reference range.']
+    ]
+  };
   const text = {
     tl: {
       symptomMissing: 'Pumili muna ng sintomas para makita ang mga mungkahing hakbang.',
@@ -290,11 +340,63 @@
     document.querySelectorAll('[data-guide-lang]').forEach((button) => {
       button.setAttribute('aria-pressed', String(button.dataset.guideLang === selected));
     });
+    document.querySelectorAll('#labTest option, #labRange option').forEach((option) => {
+      option.textContent = option.dataset[selected];
+    });
+    renderLabResult();
     renderSymptomResult();
     if (!latestSymptoms.length && !latestOtherSymptom && !symptomResult.hidden) {
       $('#symptomResultTitle').textContent = text[selected].symptomMissing;
     }
   }
+
+  function createGuidanceDetail(guidance, index, language) {
+    const detail = document.createElement('article');
+    detail.className = 'symptom-detail';
+    const heading = document.createElement('div');
+    heading.className = 'symptom-detail-heading';
+    const label = document.createElement('h4');
+    label.textContent = guidance.label[index];
+    const urgency = document.createElement('span');
+    urgency.className = `urgency-pill urgency-${guidance.level}`;
+    urgency.textContent = text[language].urgency[guidance.level];
+    heading.append(label, urgency);
+    const steps = document.createElement('ul');
+    steps.className = 'recommendation-list';
+    guidance.steps.forEach((step) => {
+      const item = document.createElement('li');
+      item.textContent = step[index];
+      steps.append(item);
+    });
+    detail.append(heading, steps);
+    return detail;
+  }
+
+  function renderLabResult() {
+    if (!latestLab) return;
+    const language = currentLanguage();
+    const index = language === 'tl' ? 0 : 1;
+    const lab = labGuidance[latestLab.test];
+    const guidance = latestLab.range === 'within'
+      ? withinRangeGuidance
+      : symptomGuidance[lab[latestLab.range]];
+    $('#labResultTitle').textContent =
+      `${lab.label[index]} — ${rangeLabels[language][latestLab.range]}`;
+    $('#labResultText').textContent = language === 'tl'
+      ? 'Batay sa reference range na nakalimbag sa iyong report. Hindi ito diagnosis at maaaring iba ang personal na target ng dialysis team.'
+      : 'Based on the reference range printed on your report. This is not a diagnosis, and your dialysis team may use a different personal target.';
+    labResult.dataset.level = guidance.level;
+    $('#labResultDetails').replaceChildren(
+      createGuidanceDetail(guidance, index, language)
+    );
+    labResult.hidden = false;
+  }
+
+  $('#labForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    latestLab = { test: labTest.value, range: labRange.value };
+    renderLabResult();
+  });
 
   let latestSymptoms = [];
   let latestOtherSymptom = '';
@@ -321,27 +423,9 @@
     symptomResult.dataset.level = level;
     $('#symptomResultTitle').textContent = title;
     $('#symptomResultText').textContent = message;
-    const details = selected.map(({ guidance }) => {
-        const detail = document.createElement('article');
-        detail.className = 'symptom-detail';
-        const heading = document.createElement('div');
-        heading.className = 'symptom-detail-heading';
-        const label = document.createElement('h4');
-        label.textContent = guidance.label[index];
-        const urgency = document.createElement('span');
-        urgency.className = `urgency-pill urgency-${guidance.level}`;
-        urgency.textContent = text[language].urgency[guidance.level];
-        heading.append(label, urgency);
-        const steps = document.createElement('ul');
-        steps.className = 'recommendation-list';
-        guidance.steps.forEach((step) => {
-          const item = document.createElement('li');
-          item.textContent = step[index];
-          steps.append(item);
-        });
-        detail.append(heading, steps);
-        return detail;
-    });
+    const details = selected.map(({ guidance }) =>
+      createGuidanceDetail(guidance, index, language)
+    );
     if (latestOtherSymptom) {
       const customDetail = document.createElement('article');
       customDetail.className = 'symptom-detail';
@@ -411,9 +495,12 @@
   setLanguage(initialLanguage);
 
   window.addEventListener('pagehide', () => {
+    $('#labForm').reset();
     $('#symptomForm').reset();
+    latestLab = null;
     latestSymptoms = [];
     latestOtherSymptom = '';
+    labResult.hidden = true;
     symptomResult.hidden = true;
   });
 })();

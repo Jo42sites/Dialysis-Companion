@@ -45,6 +45,14 @@
 .health-tool-heading { display: flex; align-items: center; gap: .85rem; margin-bottom: .85rem; }
 .health-tool-heading .account-eyebrow { margin-bottom: .2rem; }
 .health-tool-heading h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.4rem, 3vw, 1.85rem); line-height: 1.2; }
+.lab-result-tool { margin: .2rem 0 1.2rem; padding: 1rem; border: 1px solid var(--line); border-radius: 15px; background: rgba(242,248,244,.72); }
+.lab-result-tool h3 { margin: 0 0 .25rem; font-family: var(--serif); font-size: 1.15rem; }
+.lab-result-intro { margin: 0 0 .65rem; color: var(--ink-soft); font-size: .8rem; line-height: 1.5; }
+.lab-result-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem .75rem; align-items: end; }
+.lab-result-field label { display: block; margin: 0 0 .25rem; font-size: .78rem; font-weight: 800; }
+.lab-result-field select { width: 100%; min-height: 42px; padding: .55rem .65rem; border: 1px solid var(--line-strong); border-radius: 9px; background: #fff; color: var(--ink); }
+.lab-result-field select:focus { outline: 3px solid rgba(13,107,97,.18); border-color: var(--teal); }
+.lab-result-form .account-button { grid-column: 1 / -1; margin-top: 0; min-height: 42px; }
 .health-tool-icon {
   width: 48px; height: 48px; flex: 0 0 auto; display: grid; place-items: center;
   border-radius: 15px; background: var(--teal-soft); color: var(--teal-dark);
@@ -78,6 +86,7 @@
 .symptom-option.urgent-option { border-color: #efc5bf; background: #fff8f6; }
 .health-result { margin-top: 1rem; padding: .9rem 1rem; border: 1px solid #b7d4cb; border-radius: 14px; background: #f2f8f4; }
 .health-result h3 { margin: 0 0 .4rem; color: var(--teal-dark); font-size: .98rem; }
+.health-result h4 { margin: 0 0 .4rem; color: var(--teal-dark); font-size: .98rem; }
 .health-result p { margin: 0; color: var(--ink-soft); font-size: .84rem; line-height: 1.55; }
 .health-result p + p { margin-top: .55rem; }
 .recommendation-list {
@@ -119,6 +128,8 @@
   .guide-language-switch button { padding: .32rem .5rem; }
   .symptom-form fieldset { grid-template-columns: 1fr; }
   .symptom-group-label { grid-column: 1; }
+  .lab-result-form { grid-template-columns: 1fr; }
+  .lab-result-form .account-button { grid-column: 1; }
   .health-guide-emergency { grid-template-columns: 1fr auto; gap: .4rem .7rem; }
   .health-guide-emergency > span { grid-column: 1; }
   .health-guide-emergency a { grid-column: 2; grid-row: 1 / span 2; }

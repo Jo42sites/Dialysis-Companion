@@ -55,26 +55,47 @@
             <h2 id="symptomTitle"><span class="tl">Ano ang nararamdaman?</span><span class="en">What are you experiencing?</span></h2>
           </div>
         </div>
-        <p class="tool-intro"><span class="tl">Piliin ang lahat ng naaangkop, kabilang ang resultang minarkahang mataas o mababa. Gamitin ang flag ng sarili mong report—hindi nagtatakda ng generic na normal range ang gabay na ito. Kung malubha o mabilis lumalala, huwag maghintay rito.</span><span class="en">Select all that apply, including results flagged high or low. Use the flag on your own report—this guide does not set generic normal ranges. For severe or rapidly worsening symptoms, do not wait here.</span></p>
+        <p class="tool-intro"><span class="tl">Piliin ang nararamdaman o tingnan ang resulta gamit ang reference range sa sarili mong report. Hindi nagbibigay ang gabay na ito ng diagnosis o sariling normal range. Kung malubha o mabilis lumalala, huwag maghintay rito.</span><span class="en">Choose your symptoms or check a result using the reference range on your own report. This guide does not diagnose or provide its own normal ranges. For severe or rapidly worsening symptoms, do not wait here.</span></p>
+
+        <section class="lab-result-tool" aria-labelledby="labResultHeading">
+          <h3 id="labResultHeading"><span class="tl">Resulta sa lab</span><span class="en">Lab result</span></h3>
+          <p class="lab-result-intro"><span class="tl">Pumili lamang ng test na may reference range sa iyong report. Gamitin ang range na nakalimbag doon; maaaring iba ang target ng HD team.</span><span class="en">Choose a test with a reference range on your report. Use the range printed there; your HD team may use a different target.</span></p>
+          <form id="labForm" class="lab-result-form">
+            <div class="lab-result-field">
+              <label for="labTest"><span class="tl">Laboratory test</span><span class="en">Laboratory test</span></label>
+              <select id="labTest" name="labTest" required>
+                <option value="" disabled selected data-tl="Pumili ng test" data-en="Choose a test">Pumili ng test</option>
+                <option value="hemoglobin" data-tl="Hemoglobin (Hb)" data-en="Hemoglobin (Hb)">Hemoglobin (Hb)</option>
+                <option value="potassium" data-tl="Potassium" data-en="Potassium">Potassium</option>
+                <option value="phosphorus" data-tl="Phosphorus / phosphate" data-en="Phosphorus / phosphate">Phosphorus / phosphate</option>
+                <option value="calcium" data-tl="Calcium" data-en="Calcium">Calcium</option>
+                <option value="albumin" data-tl="Albumin" data-en="Albumin">Albumin</option>
+                <option value="uricAcid" data-tl="Uric acid" data-en="Uric acid">Uric acid</option>
+                <option value="bun" data-tl="BUN / urea" data-en="BUN / urea">BUN / urea</option>
+                <option value="glucose" data-tl="Blood glucose / sugar" data-en="Blood glucose / sugar">Blood glucose / sugar</option>
+              </select>
+            </div>
+            <div class="lab-result-field">
+              <label for="labRange"><span class="tl">Kumpara sa range sa report</span><span class="en">Compared with the report’s range</span></label>
+              <select id="labRange" name="labRange" required>
+                <option value="" disabled selected data-tl="Pumili ng range" data-en="Choose a range">Pumili ng range</option>
+                <option value="below" data-tl="Mas mababa sa range" data-en="Below range">Mas mababa sa range</option>
+                <option value="within" data-tl="Nasa loob ng range" data-en="Within range">Nasa loob ng range</option>
+                <option value="above" data-tl="Mas mataas sa range" data-en="Above range">Mas mataas sa range</option>
+              </select>
+            </div>
+            <button class="account-button" type="submit"><span class="tl">Tingnan ang rekomendasyon</span><span class="en">Show recommendations</span></button>
+          </form>
+          <div id="labResult" class="health-result" role="status" aria-live="polite" hidden>
+            <h4 id="labResultTitle"></h4>
+            <p id="labResultText"></p>
+            <div id="labResultDetails" class="symptom-details"></div>
+          </div>
+        </section>
 
         <form id="symptomForm" class="symptom-form">
           <fieldset>
-            <legend><span class="tl">Pumili ng sintomas o resulta</span><span class="en">Select symptoms or findings</span></legend>
-            <p class="symptom-group-label"><span class="tl">Mga resulta sa lab ng HD na minarkahang abnormal</span><span class="en">HD lab results flagged as abnormal</span></p>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowHb"><span><span class="tl">Mababang hemoglobin (Hb) / anemia sa report</span><span class="en">Low hemoglobin (Hb) / anemia on report</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="highHb"><span><span class="tl">Mataas na hemoglobin (Hb) sa report</span><span class="en">High hemoglobin (Hb) on report</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="highUric"><span><span class="tl">Mataas na uric acid sa report</span><span class="en">High uric acid on report</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="highPotassium"><span><span class="tl">Mataas na potassium sa report</span><span class="en">High potassium on report</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowPotassium"><span><span class="tl">Mababang potassium sa report</span><span class="en">Low potassium on report</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="highPhosphorus"><span><span class="tl">Mataas na phosphorus/phosphate sa report</span><span class="en">High phosphorus/phosphate on report</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="highCalcium"><span><span class="tl">Mataas na calcium sa report</span><span class="en">High calcium on report</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowCalcium"><span><span class="tl">Mababang calcium sa report</span><span class="en">Low calcium on report</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowAlbumin"><span><span class="tl">Mababang albumin sa report</span><span class="en">Low albumin on report</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowAdequacy"><span><span class="tl">Mababang Kt/V o URR sa report</span><span class="en">Low Kt/V or URR on report</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="highBun"><span><span class="tl">Mataas na BUN/urea sa report</span><span class="en">High BUN/urea on report</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="highGlucose"><span><span class="tl">Mataas na blood sugar/glucose sa report o meter</span><span class="en">High blood sugar/glucose on report or meter</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowGlucose"><span><span class="tl">Mababang blood sugar/glucose sa report o meter</span><span class="en">Low blood sugar/glucose on report or meter</span></span></label>
-            <p class="symptom-group-label"><span class="tl">Mga sintomas</span><span class="en">Symptoms</span></p>
+            <legend><span class="tl">Gabay sa Sintomas — ano ang nararamdaman?</span><span class="en">Symptom guide — what are you experiencing?</span></legend>
             <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="chest"><span><span class="tl">Pananakit o bigat ng dibdib</span><span class="en">Chest pain or pressure</span></span></label>
             <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="breathing"><span><span class="tl">Matinding hirap huminga</span><span class="en">Severe trouble breathing</span></span></label>
             <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="faint"><span><span class="tl">Nahimatay, seizure, o biglaang pagkalito</span><span class="en">Fainting, seizure, or sudden confusion</span></span></label>
