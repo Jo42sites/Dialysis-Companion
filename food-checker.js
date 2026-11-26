@@ -14,7 +14,7 @@
   const categories = [
     { key: 'highK', labelTl: 'High K', labelEn: 'High K', type: 'risk' },
     { key: 'highP', labelTl: 'High P', labelEn: 'High P', type: 'risk' },
-    { key: 'highNa', labelTl: 'High Na', labelEn: 'High Na', type: 'risk' },
+    { key: 'highNa', labelTl: 'High NA', labelEn: 'High NA', type: 'risk' },
     { key: 'protein', labelTl: 'Pinagmumulan ng protein', labelEn: 'Protein source', type: 'protein' },
     { key: 'fluid', labelTl: 'Fluid / likido', labelEn: 'Fluid', type: 'fluid' }
   ];

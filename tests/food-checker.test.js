@@ -64,7 +64,7 @@ function flagText(item) {
 test('instant noodles flag sodium and phosphorus and suggest a fresh alternative', () => {
   const result = createChecker('Instant noodles');
   const flags = result['#foodCheckerFlags'].children.map(flagText);
-  assert.deepEqual(flags, ['High P', 'High Na']);
+  assert.deepEqual(flags, ['High P', 'High NA']);
   assert.match(result['#foodCheckerBetterTl'].textContent, /sariwa at hindi maalat/);
 });
 

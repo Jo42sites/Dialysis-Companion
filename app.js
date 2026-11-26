@@ -320,7 +320,7 @@
   const foodGrid = $('#foodGrid');
   const foodCount = $('#foodCount');
   if (foodSearch && foodGrid) {
-    const tagLabel = { 'high-k': 'High K', 'high-p': 'High P', 'high-na': 'High Na', protein: 'Protein', fluid: 'Fluid' };
+    const tagLabel = { 'high-k': 'High K', 'high-p': 'High P', 'high-na': 'High NA', protein: 'Protein', fluid: 'Fluid' };
     const renderFoods = () => {
       const q = foodSearch.value.trim().toLowerCase();
       const list = foods.filter((f) => {
