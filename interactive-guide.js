@@ -401,10 +401,20 @@
     labResult.hidden = false;
   }
 
+  $('#labForm').addEventListener('change', (event) => {
+    const changedInput = event.target;
+    if (!changedInput.checked) return;
+    document.querySelectorAll('#labForm input[type="checkbox"][data-test]').forEach((input) => {
+      if (input !== changedInput && input.dataset.test === changedInput.dataset.test) {
+        input.checked = false;
+      }
+    });
+  });
+
   $('#labForm').addEventListener('submit', (event) => {
     event.preventDefault();
     latestLab = Array.from(
-      document.querySelectorAll('#labForm input[type="radio"]:checked'),
+      document.querySelectorAll('#labForm input[type="checkbox"]:checked'),
       (input) => ({ test: input.dataset.test, range: input.value })
     );
     renderLabResult();

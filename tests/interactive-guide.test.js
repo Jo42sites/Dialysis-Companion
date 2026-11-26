@@ -49,6 +49,7 @@ function createGuide() {
     'albumin', 'uricAcid', 'bun', 'glucose'
   ].flatMap((test) => ['below', 'above'].map((range) => {
     const input = new Element();
+    input.type = 'checkbox';
     input.value = range;
     input.dataset.test = test;
     return input;
@@ -65,7 +66,8 @@ function createGuide() {
     querySelector: (selector) => elements[selector],
     querySelectorAll(selector) {
       if (selector === '[data-guide-lang]') return languageButtons;
-      if (selector === '#labForm input[type="radio"]:checked') {
+      if (selector === '#labForm input[type="checkbox"][data-test]') return labInputs;
+      if (selector === '#labForm input[type="checkbox"]:checked') {
         return labInputs.filter((input) => input.checked);
       }
       if (selector === 'input[name="symptom"]:checked') return checkedSymptoms;
@@ -97,6 +99,16 @@ function selectLab(elements, testName, range) {
   );
   assert.ok(input, `${testName} ${range} option exists`);
   input.checked = true;
+  elements['#labForm'].listeners.change({ target: input });
+}
+
+function toggleLab(elements, testName, range) {
+  const input = elements.labInputs.find(
+    (candidate) => candidate.dataset.test === testName && candidate.value === range
+  );
+  assert.ok(input, `${testName} ${range} option exists`);
+  input.checked = !input.checked;
+  elements['#labForm'].listeners.change({ target: input });
 }
 
 function selectAllAdvice(elements) {
@@ -204,11 +216,28 @@ test('every listed laboratory has below and above range guidance', () => {
 test('multiple abnormal lab results show recommendations together', () => {
   const { elements } = createGuide();
   selectLab(elements, 'hemoglobin', 'below');
+  selectLab(elements, 'hemoglobin', 'above');
   selectLab(elements, 'potassium', 'above');
+  assert.equal(elements.labInputs.find((input) =>
+    input.dataset.test === 'hemoglobin' && input.value === 'below'
+  ).checked, false);
   submitLab(elements);
 
   assert.equal(elements['#labResultDetails'].children.length, 2);
   assert.equal(elements['#labResult'].dataset.level, 'same-day');
+});
+
+test('a selected lab choice can be toggled off before submitting', () => {
+  const { elements, languageButtons } = createGuide();
+  languageButtons[1].listeners.click({});
+  toggleLab(elements, 'hemoglobin', 'below');
+  assert.equal(elements.labInputs[0].checked, true);
+  toggleLab(elements, 'hemoglobin', 'below');
+  assert.equal(elements.labInputs[0].checked, false);
+  submitLab(elements);
+
+  assert.match(elements['#labResultTitle'].textContent, /select a result/i);
+  assert.equal(elements['#labResultDetails'].children.length, 0);
 });
 
 test('submitting with no abnormal lab selection prompts the user', () => {
