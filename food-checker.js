@@ -111,31 +111,17 @@
     };
   }
 
-  function renderFlag(category, detected, recognized) {
+  function renderFlag(category, detected) {
+    if (category.type !== 'risk' || !detected[category.key]) return null;
+
     const item = document.createElement('li');
-    item.className = 'food-checker-flag';
-    const positive = detected[category.key];
-    if (positive) {
-      item.classList.add(category.type === 'risk' ? 'flagged' : `${category.type}-flagged`);
-    }
-    let textTl;
-    let textEn;
-    if (positive) {
-      textTl = category.type === 'protein' ? 'May protein' : category.type === 'fluid' ? 'Bilangin sa fluid' : 'Posibleng mataas';
-      textEn = category.type === 'protein' ? 'Protein source' : category.type === 'fluid' ? 'Count as fluid' : 'Potentially high';
-    } else if (recognized) {
-      textTl = 'Walang natukoy';
-      textEn = 'None detected';
-    } else {
-      textTl = 'Hindi matukoy';
-      textEn = 'Unknown';
-    }
+    item.className = 'food-checker-flag flagged';
     const tagalog = document.createElement('span');
     tagalog.className = 'tl';
-    tagalog.textContent = `${category.labelTl}: ${textTl}`;
+    tagalog.textContent = category.labelTl;
     const english = document.createElement('span');
     english.className = 'en';
-    english.textContent = `${category.labelEn}: ${textEn}`;
+    english.textContent = category.labelEn;
     item.append(tagalog, english);
     return item;
   }
@@ -150,9 +136,9 @@
 
     const analysis = analyze(value);
     name.textContent = value;
-    flagsList.replaceChildren(...categories.map((category) =>
-      renderFlag(category, analysis.detected, analysis.recognized)
-    ));
+    flagsList.replaceChildren(...categories
+      .map((category) => renderFlag(category, analysis.detected))
+      .filter(Boolean));
 
     const matchedAdvice = Object.keys(advice)
       .filter((key) => key !== 'general' && key !== 'unknown' && analysis.detected[key])

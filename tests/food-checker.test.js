@@ -58,41 +58,42 @@ function createChecker(food) {
 }
 
 function flagText(item) {
-  return item.children.map((child) => child.textContent).join(' ');
+  return item.children[0]?.textContent || '';
 }
 
 test('instant noodles flag sodium and phosphorus and suggest a fresh alternative', () => {
   const result = createChecker('Instant noodles');
-  const flags = result['#foodCheckerFlags'].children.map(flagText).join('\n');
-  assert.match(flags, /High P: Potentially high/);
-  assert.match(flags, /High Na: Potentially high/);
+  const flags = result['#foodCheckerFlags'].children.map(flagText);
+  assert.deepEqual(flags, ['High P', 'High Na']);
   assert.match(result['#foodCheckerBetterTl'].textContent, /sariwa at hindi maalat/);
 });
 
 test('banana flags potassium in Tagalog', () => {
   const result = createChecker('Saging');
-  assert.match(flagText(result['#foodCheckerFlags'].children[0]), /Posibleng mataas/);
+  assert.deepEqual(result['#foodCheckerFlags'].children.map(flagText), ['High K']);
   assert.match(result['#foodCheckerBetterTl'].textContent, /lower-potassium|mababang-potassium/);
 });
 
-test('known foods show all requested categories and do not claim no flag means safe', () => {
+test('recognized foods show only high nutrient flags without claiming no flag means safe', () => {
   const result = createChecker('Rice');
   const flags = result['#foodCheckerFlags'].children.map(flagText);
-  assert.equal(flags.length, 5);
-  assert.ok(flags.every((item) => item.includes('None detected')));
-  assert.ok(flags.every((item) => !item.includes('No common flag identified')));
+  assert.deepEqual(flags, []);
   assert.match(result['#foodCheckerBetterEn'].textContent, /does not guarantee it is safe/);
 });
 
-test('unknown foods are not assigned false low-risk results', () => {
+test('protein and fluid matches do not create non-high badges', () => {
+  const result = createChecker('Egg');
+  assert.deepEqual(result['#foodCheckerFlags'].children.map(flagText), ['High P']);
+});
+
+test('unknown foods do not get uncertainty badges', () => {
   const result = createChecker('Mystery dish');
-  const flags = result['#foodCheckerFlags'].children.map(flagText);
-  assert.ok(flags.every((item) => item.includes('Unknown')));
+  assert.deepEqual(result['#foodCheckerFlags'].children, []);
   assert.match(result['#foodCheckerBetterEn'].textContent, /cannot be identified/);
 });
 
 test('user-entered food text is rendered as text, not markup', () => {
   const result = createChecker('<img src=x>');
   assert.equal(result['#foodCheckerName'].textContent, '<img src=x>');
-  assert.equal(result['#foodCheckerFlags'].children.length, 5);
+  assert.equal(result['#foodCheckerFlags'].children.length, 0);
 });
