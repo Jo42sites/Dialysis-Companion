@@ -474,8 +474,13 @@ html[data-lang="en"] h4 .en {
 }
 .guide-link-card > p { grid-column: 1 / -1; grid-row: 2; margin: .85rem 0 .75rem; }
 .guide-link-card .card-meta {
-  grid-column: 1 / -1; grid-row: 3; width: 100%; margin: 0;
-  padding-top: .65rem; border-top: 1px solid var(--line); color: var(--guide-accent);
+  display: flex; align-items: center;
+  grid-column: 1 / -1; grid-row: 3; width: 100%; min-height: 34px; margin: 0;
+  padding-top: .55rem; border-top: 1px solid var(--line); color: var(--guide-accent);
+}
+.guide-link-card .card-meta .tl,
+.guide-link-card .card-meta .en {
+  display: inline; margin: 0; line-height: 1.35;
 }
 .guide-link-grid {
   grid-template-columns: repeat(6, minmax(0, 1fr));
