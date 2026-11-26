@@ -4,8 +4,6 @@
   const $ = (selector) => document.querySelector(selector);
   const symptomResult = $('#symptomResult');
   const labResult = $('#labResult');
-  const labTest = $('#labTest');
-  const labRange = $('#labRange');
   let latestLab = null;
   const symptomGuidance = {
     lowHb: {
@@ -290,20 +288,16 @@
     glucose: { label: ['Blood glucose / sugar', 'Blood glucose / sugar'], below: 'lowGlucose', above: 'highGlucose' }
   };
   const rangeLabels = {
-    tl: { below: 'Mas mababa sa range', within: 'Nasa loob ng range', above: 'Mas mataas sa range' },
-    en: { below: 'Below range', within: 'Within range', above: 'Above range' }
-  };
-  const withinRangeGuidance = {
-    level: 'general',
-    label: ['Resultang nasa reference range', 'Result within the reference range'],
-    steps: [
-      ['Ituloy ang kasalukuyang dialysis, pagkain, fluid, at gamot plan.', 'Continue your current dialysis, food, fluid, and medicine plan.'],
-      ['Ibahagi pa rin ang resulta sa regular na follow-up; maaaring iba ang personal na target ng HD team sa reference range ng laboratoryo.', 'Share the result at routine follow-up; your HD team’s personal target may differ from the laboratory reference range.']
-    ]
+    tl: { below: 'Mas mababa sa normal range', above: 'Mas mataas sa normal range' },
+    en: { below: 'Below normal range', above: 'Above normal range' }
   };
   const text = {
     tl: {
       symptomMissing: 'Pumili muna ng sintomas para makita ang mga mungkahing hakbang.',
+      labMissingTitle: 'Pumili muna ng resulta',
+      labMissingText: 'Piliin kung mas mababa o mas mataas sa reference range ang kahit isang resulta sa iyong report.',
+      labResultTitle: 'Mga rekomendasyon sa resulta sa lab',
+      labResultText: 'Gamitin ang reference range sa sarili mong report. Ipaalam agad sa dialysis team ang abnormal o critical na resulta; maaaring iba ang personal na target nila.',
       emergencyTitle: 'Kailangan ng agarang tulong',
       emergencyText: 'Tumawag sa 911 o pumunta sa pinakamalapit na emergency department ngayon. Huwag maghintay ng sagot mula sa online guide. Kung maaari, magpasama sa isang tao.',
       sameDayTitle: 'Makipag-ugnayan agad sa dialysis team',
@@ -314,6 +308,10 @@
     },
     en: {
       symptomMissing: 'Select at least one symptom to see suggested steps.',
+      labMissingTitle: 'Select a result first',
+      labMissingText: 'Choose whether at least one result on your report is below or above its reference range.',
+      labResultTitle: 'Lab result recommendations',
+      labResultText: 'Use the reference range on your own report. Promptly tell your dialysis team about abnormal or critical results; their personal targets may differ.',
       emergencyTitle: 'Get emergency help now',
       emergencyText: 'Call 911 or go to the nearest emergency department now. Do not wait for an online guide. If possible, have someone stay with you.',
       sameDayTitle: 'Contact your dialysis team promptly',
@@ -340,9 +338,6 @@
     document.querySelectorAll('[data-guide-lang]').forEach((button) => {
       button.setAttribute('aria-pressed', String(button.dataset.guideLang === selected));
     });
-    document.querySelectorAll('#labTest option, #labRange option').forEach((option) => {
-      option.textContent = option.dataset[selected];
-    });
     renderLabResult();
     renderSymptomResult();
     if (!latestSymptoms.length && !latestOtherSymptom && !symptomResult.hidden) {
@@ -350,13 +345,13 @@
     }
   }
 
-  function createGuidanceDetail(guidance, index, language) {
+  function createGuidanceDetail(guidance, index, language, title) {
     const detail = document.createElement('article');
     detail.className = 'symptom-detail';
     const heading = document.createElement('div');
     heading.className = 'symptom-detail-heading';
     const label = document.createElement('h4');
-    label.textContent = guidance.label[index];
+    label.textContent = title || guidance.label[index];
     const urgency = document.createElement('span');
     urgency.className = `urgency-pill urgency-${guidance.level}`;
     urgency.textContent = text[language].urgency[guidance.level];
@@ -376,25 +371,42 @@
     if (!latestLab) return;
     const language = currentLanguage();
     const index = language === 'tl' ? 0 : 1;
-    const lab = labGuidance[latestLab.test];
-    const guidance = latestLab.range === 'within'
-      ? withinRangeGuidance
-      : symptomGuidance[lab[latestLab.range]];
-    $('#labResultTitle').textContent =
-      `${lab.label[index]} — ${rangeLabels[language][latestLab.range]}`;
-    $('#labResultText').textContent = language === 'tl'
-      ? 'Batay sa reference range na nakalimbag sa iyong report. Hindi ito diagnosis at maaaring iba ang personal na target ng dialysis team.'
-      : 'Based on the reference range printed on your report. This is not a diagnosis, and your dialysis team may use a different personal target.';
-    labResult.dataset.level = guidance.level;
-    $('#labResultDetails').replaceChildren(
-      createGuidanceDetail(guidance, index, language)
-    );
+    $('#labResultTitle').textContent = latestLab.length
+      ? text[language].labResultTitle
+      : text[language].labMissingTitle;
+    $('#labResultText').textContent = latestLab.length
+      ? text[language].labResultText
+      : text[language].labMissingText;
+    if (latestLab.length) {
+      const urgencyRank = { general: 1, 'same-day': 2, urgent: 3 };
+      const details = latestLab.map(({ test, range }) => {
+        const lab = labGuidance[test];
+        const guidance = symptomGuidance[lab[range]];
+        return createGuidanceDetail(
+          guidance,
+          index,
+          language,
+          `${lab.label[index]} — ${rangeLabels[language][range]}`
+        );
+      });
+      labResult.dataset.level = latestLab.reduce((highest, { test, range }) => {
+        const level = symptomGuidance[labGuidance[test][range]].level;
+        return urgencyRank[level] > urgencyRank[highest] ? level : highest;
+      }, 'general');
+      $('#labResultDetails').replaceChildren(...details);
+    } else {
+      labResult.dataset.level = 'general';
+      $('#labResultDetails').replaceChildren();
+    }
     labResult.hidden = false;
   }
 
   $('#labForm').addEventListener('submit', (event) => {
     event.preventDefault();
-    latestLab = { test: labTest.value, range: labRange.value };
+    latestLab = Array.from(
+      document.querySelectorAll('#labForm input[type="radio"]:checked'),
+      (input) => ({ test: input.dataset.test, range: input.value })
+    );
     renderLabResult();
   });
 

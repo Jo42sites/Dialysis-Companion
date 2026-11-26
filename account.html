@@ -58,33 +58,74 @@
         <p class="tool-intro"><span class="tl">Piliin ang nararamdaman o tingnan ang resulta gamit ang reference range sa sarili mong report. Hindi nagbibigay ang gabay na ito ng diagnosis o sariling normal range. Kung malubha o mabilis lumalala, huwag maghintay rito.</span><span class="en">Choose your symptoms or check a result using the reference range on your own report. This guide does not diagnose or provide its own normal ranges. For severe or rapidly worsening symptoms, do not wait here.</span></p>
 
         <section class="lab-result-tool" aria-labelledby="labResultHeading">
-          <h3 id="labResultHeading"><span class="tl">Resulta sa lab</span><span class="en">Lab result</span></h3>
-          <p class="lab-result-intro"><span class="tl">Pumili lamang ng test na may reference range sa iyong report. Gamitin ang range na nakalimbag doon; maaaring iba ang target ng HD team.</span><span class="en">Choose a test with a reference range on your report. Use the range printed there; your HD team may use a different target.</span></p>
+          <h3 id="labResultHeading"><span class="tl">Mga resulta sa lab ng HD na minarkahang abnormal</span><span class="en">HD lab results marked abnormal</span></h3>
+          <p class="lab-result-intro"><span class="tl">Para sa bawat test, gamitin ang reference range na nakalimbag sa sarili mong report; nagkakaiba ang range bawat laboratoryo at maaaring iba ang target ng HD team. Piliin ang mas mababa o mas mataas, pagkatapos isumite.</span><span class="en">For each test, use the reference range printed on your own report; ranges vary by laboratory and your HD team may use a different target. Select below or above, then submit.</span></p>
           <form id="labForm" class="lab-result-form">
-            <div class="lab-result-field">
-              <label for="labTest"><span class="tl">Laboratory test</span><span class="en">Laboratory test</span></label>
-              <select id="labTest" name="labTest" required>
-                <option value="" disabled selected data-tl="Pumili ng test" data-en="Choose a test">Pumili ng test</option>
-                <option value="hemoglobin" data-tl="Hemoglobin (Hb)" data-en="Hemoglobin (Hb)">Hemoglobin (Hb)</option>
-                <option value="potassium" data-tl="Potassium" data-en="Potassium">Potassium</option>
-                <option value="phosphorus" data-tl="Phosphorus / phosphate" data-en="Phosphorus / phosphate">Phosphorus / phosphate</option>
-                <option value="calcium" data-tl="Calcium" data-en="Calcium">Calcium</option>
-                <option value="albumin" data-tl="Albumin" data-en="Albumin">Albumin</option>
-                <option value="uricAcid" data-tl="Uric acid" data-en="Uric acid">Uric acid</option>
-                <option value="bun" data-tl="BUN / urea" data-en="BUN / urea">BUN / urea</option>
-                <option value="glucose" data-tl="Blood glucose / sugar" data-en="Blood glucose / sugar">Blood glucose / sugar</option>
-              </select>
-            </div>
-            <div class="lab-result-field">
-              <label for="labRange"><span class="tl">Kumpara sa range sa report</span><span class="en">Compared with the report’s range</span></label>
-              <select id="labRange" name="labRange" required>
-                <option value="" disabled selected data-tl="Pumili ng range" data-en="Choose a range">Pumili ng range</option>
-                <option value="below" data-tl="Mas mababa sa range" data-en="Below range">Mas mababa sa range</option>
-                <option value="within" data-tl="Nasa loob ng range" data-en="Within range">Nasa loob ng range</option>
-                <option value="above" data-tl="Mas mataas sa range" data-en="Above range">Mas mataas sa range</option>
-              </select>
-            </div>
-            <button class="account-button" type="submit"><span class="tl">Tingnan ang rekomendasyon</span><span class="en">Show recommendations</span></button>
+            <fieldset class="lab-result-row" data-lab="hemoglobin">
+              <legend>Hemoglobin (Hb)</legend>
+              <p><span class="tl">Gamitin ang reference range sa report.</span><span class="en">Use the reference range on your report.</span></p>
+              <div class="lab-range-choices">
+                <label class="lab-range-choice"><input type="radio" name="lab-hemoglobin" value="below" data-test="hemoglobin"><span class="tl">Mas mababa</span><span class="en">Below</span></label>
+                <label class="lab-range-choice"><input type="radio" name="lab-hemoglobin" value="above" data-test="hemoglobin"><span class="tl">Mas mataas</span><span class="en">Above</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="lab-result-row" data-lab="potassium">
+              <legend>Potassium</legend>
+              <p><span class="tl">Gamitin ang reference range sa report.</span><span class="en">Use the reference range on your report.</span></p>
+              <div class="lab-range-choices">
+                <label class="lab-range-choice"><input type="radio" name="lab-potassium" value="below" data-test="potassium"><span class="tl">Mas mababa</span><span class="en">Below</span></label>
+                <label class="lab-range-choice"><input type="radio" name="lab-potassium" value="above" data-test="potassium"><span class="tl">Mas mataas</span><span class="en">Above</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="lab-result-row" data-lab="phosphorus">
+              <legend>Phosphorus / phosphate</legend>
+              <p><span class="tl">Gamitin ang reference range sa report.</span><span class="en">Use the reference range on your report.</span></p>
+              <div class="lab-range-choices">
+                <label class="lab-range-choice"><input type="radio" name="lab-phosphorus" value="below" data-test="phosphorus"><span class="tl">Mas mababa</span><span class="en">Below</span></label>
+                <label class="lab-range-choice"><input type="radio" name="lab-phosphorus" value="above" data-test="phosphorus"><span class="tl">Mas mataas</span><span class="en">Above</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="lab-result-row" data-lab="calcium">
+              <legend>Calcium</legend>
+              <p><span class="tl">Gamitin ang reference range sa report.</span><span class="en">Use the reference range on your report.</span></p>
+              <div class="lab-range-choices">
+                <label class="lab-range-choice"><input type="radio" name="lab-calcium" value="below" data-test="calcium"><span class="tl">Mas mababa</span><span class="en">Below</span></label>
+                <label class="lab-range-choice"><input type="radio" name="lab-calcium" value="above" data-test="calcium"><span class="tl">Mas mataas</span><span class="en">Above</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="lab-result-row" data-lab="albumin">
+              <legend>Albumin</legend>
+              <p><span class="tl">Gamitin ang reference range sa report.</span><span class="en">Use the reference range on your report.</span></p>
+              <div class="lab-range-choices">
+                <label class="lab-range-choice"><input type="radio" name="lab-albumin" value="below" data-test="albumin"><span class="tl">Mas mababa</span><span class="en">Below</span></label>
+                <label class="lab-range-choice"><input type="radio" name="lab-albumin" value="above" data-test="albumin"><span class="tl">Mas mataas</span><span class="en">Above</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="lab-result-row" data-lab="uricAcid">
+              <legend>Uric acid</legend>
+              <p><span class="tl">Gamitin ang reference range sa report.</span><span class="en">Use the reference range on your report.</span></p>
+              <div class="lab-range-choices">
+                <label class="lab-range-choice"><input type="radio" name="lab-uric-acid" value="below" data-test="uricAcid"><span class="tl">Mas mababa</span><span class="en">Below</span></label>
+                <label class="lab-range-choice"><input type="radio" name="lab-uric-acid" value="above" data-test="uricAcid"><span class="tl">Mas mataas</span><span class="en">Above</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="lab-result-row" data-lab="bun">
+              <legend>BUN / urea</legend>
+              <p><span class="tl">Gamitin ang reference range sa report.</span><span class="en">Use the reference range on your report.</span></p>
+              <div class="lab-range-choices">
+                <label class="lab-range-choice"><input type="radio" name="lab-bun" value="below" data-test="bun"><span class="tl">Mas mababa</span><span class="en">Below</span></label>
+                <label class="lab-range-choice"><input type="radio" name="lab-bun" value="above" data-test="bun"><span class="tl">Mas mataas</span><span class="en">Above</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="lab-result-row" data-lab="glucose">
+              <legend>Blood glucose / sugar</legend>
+              <p><span class="tl">Gamitin ang reference range sa report.</span><span class="en">Use the reference range on your report.</span></p>
+              <div class="lab-range-choices">
+                <label class="lab-range-choice"><input type="radio" name="lab-glucose" value="below" data-test="glucose"><span class="tl">Mas mababa</span><span class="en">Below</span></label>
+                <label class="lab-range-choice"><input type="radio" name="lab-glucose" value="above" data-test="glucose"><span class="tl">Mas mataas</span><span class="en">Above</span></label>
+              </div>
+            </fieldset>
+            <button class="account-button" type="submit"><span class="tl">Tingnan ang mga rekomendasyon</span><span class="en">Show recommendations</span></button>
           </form>
           <div id="labResult" class="health-result" role="status" aria-live="polite" hidden>
             <h4 id="labResultTitle"></h4>

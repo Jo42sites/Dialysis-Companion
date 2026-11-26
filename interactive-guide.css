@@ -48,10 +48,14 @@
 .lab-result-tool { margin: .2rem 0 1.2rem; padding: 1rem; border: 1px solid var(--line); border-radius: 15px; background: rgba(242,248,244,.72); }
 .lab-result-tool h3 { margin: 0 0 .25rem; font-family: var(--serif); font-size: 1.15rem; }
 .lab-result-intro { margin: 0 0 .65rem; color: var(--ink-soft); font-size: .8rem; line-height: 1.5; }
-.lab-result-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem .75rem; align-items: end; }
-.lab-result-field label { display: block; margin: 0 0 .25rem; font-size: .78rem; font-weight: 800; }
-.lab-result-field select { width: 100%; min-height: 42px; padding: .55rem .65rem; border: 1px solid var(--line-strong); border-radius: 9px; background: #fff; color: var(--ink); }
-.lab-result-field select:focus { outline: 3px solid rgba(13,107,97,.18); border-color: var(--teal); }
+.lab-result-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
+.lab-result-row { min-width: 0; margin: 0; padding: .65rem .75rem; border: 1px solid var(--line); border-radius: 11px; background: #fff; }
+.lab-result-row legend { padding: 0 .2rem; color: var(--ink); font-size: .85rem; font-weight: 800; }
+.lab-result-row p { margin: 0 0 .45rem; color: var(--muted); font-size: .72rem; line-height: 1.4; }
+.lab-range-choices { display: flex; flex-wrap: wrap; gap: .4rem; }
+.lab-range-choice { display: inline-flex; align-items: center; gap: .35rem; padding: .3rem .5rem; border: 1px solid var(--line); border-radius: 8px; background: #f9fbfa; color: var(--ink-soft); font-size: .76rem; cursor: pointer; }
+.lab-range-choice input { width: 15px; height: 15px; margin: 0; accent-color: var(--teal); }
+.lab-range-choice:focus-within { outline: 2px solid rgba(13,107,97,.18); border-color: var(--teal); }
 .lab-result-form .account-button { grid-column: 1 / -1; margin-top: 0; min-height: 42px; }
 .health-tool-icon {
   width: 48px; height: 48px; flex: 0 0 auto; display: grid; place-items: center;

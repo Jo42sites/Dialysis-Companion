@@ -15,6 +15,7 @@ class Element {
     this.hidden = true;
     this.textContent = '';
     this.value = '';
+    this.checked = false;
   }
 
   addEventListener(name, callback) {
@@ -38,30 +39,21 @@ class Element {
 
 function createGuide() {
   const ids = [
-    'labForm', 'labTest', 'labRange', 'labResult', 'labResultTitle',
+    'labForm', 'labResult', 'labResultTitle',
     'labResultText', 'labResultDetails', 'symptomResult', 'symptomForm',
     'symptomResultTitle', 'symptomResultText', 'symptomDetails', 'otherSymptom'
   ];
   const elements = Object.fromEntries(ids.map((id) => [`#${id}`, new Element()]));
-  elements['#labTest'].value = 'hemoglobin';
-  elements['#labTest'].options = [
+  const labInputs = [
     'hemoglobin', 'potassium', 'phosphorus', 'calcium',
     'albumin', 'uricAcid', 'bun', 'glucose'
-  ].map((value) => {
-    const option = new Element();
-    option.value = value;
-    option.dataset.tl = value;
-    option.dataset.en = value;
-    return option;
-  });
-  elements['#labRange'].value = 'below';
-  elements['#labRange'].options = ['below', 'within', 'above'].map((value) => {
-    const option = new Element();
-    option.value = value;
-    option.dataset.tl = value;
-    option.dataset.en = value;
-    return option;
-  });
+  ].flatMap((test) => ['below', 'above'].map((range) => {
+    const input = new Element();
+    input.value = range;
+    input.dataset.test = test;
+    return input;
+  }));
+  elements.labInputs = labInputs;
   const languageButtons = ['tl', 'en'].map((language) => {
     const button = new Element();
     button.dataset.guideLang = language;
@@ -73,8 +65,9 @@ function createGuide() {
     querySelector: (selector) => elements[selector],
     querySelectorAll(selector) {
       if (selector === '[data-guide-lang]') return languageButtons;
-      if (selector === '#labTest option') return elements['#labTest'].options;
-      if (selector === '#labRange option') return elements['#labRange'].options;
+      if (selector === '#labForm input[type="radio"]:checked') {
+        return labInputs.filter((input) => input.checked);
+      }
       if (selector === 'input[name="symptom"]:checked') return checkedSymptoms;
       return [];
     },
@@ -98,6 +91,14 @@ function submitLab(elements) {
   elements['#labForm'].listeners.submit({ preventDefault() {} });
 }
 
+function selectLab(elements, testName, range) {
+  const input = elements.labInputs.find(
+    (candidate) => candidate.dataset.test === testName && candidate.value === range
+  );
+  assert.ok(input, `${testName} ${range} option exists`);
+  input.checked = true;
+}
+
 function selectAllAdvice(elements) {
   return elements['#symptomDetails'].children
     .flatMap((detail) => detail.children[1].children)
@@ -115,8 +116,7 @@ function selectLabAdvice(elements) {
 test('low hemoglobin range suggests renal-plan-compatible iron foods and avoids self-treatment', () => {
   const { elements, languageButtons } = createGuide();
   languageButtons[1].listeners.click({});
-  elements['#labTest'].value = 'hemoglobin';
-  elements['#labRange'].value = 'below';
+  selectLab(elements, 'hemoglobin', 'below');
   submitLab(elements);
 
   const advice = selectLabAdvice(elements);
@@ -129,8 +129,7 @@ test('low hemoglobin range suggests renal-plan-compatible iron foods and avoids 
 test('high hemoglobin range does not suggest diet restriction or extra water', () => {
   const { elements, languageButtons } = createGuide();
   languageButtons[1].listeners.click({});
-  elements['#labTest'].value = 'hemoglobin';
-  elements['#labRange'].value = 'above';
+  selectLab(elements, 'hemoglobin', 'above');
   submitLab(elements);
 
   const advice = selectLabAdvice(elements);
@@ -142,8 +141,7 @@ test('high hemoglobin range does not suggest diet restriction or extra water', (
 test('high uric acid range suggests food limits without excessive fluid advice', () => {
   const { elements, languageButtons } = createGuide();
   languageButtons[1].listeners.click({});
-  elements['#labTest'].value = 'uricAcid';
-  elements['#labRange'].value = 'above';
+  selectLab(elements, 'uricAcid', 'above');
   submitLab(elements);
 
   const advice = selectLabAdvice(elements);
@@ -156,8 +154,7 @@ test('high uric acid range suggests food limits without excessive fluid advice',
 test('high potassium range avoids a home food fix and flags emergency symptoms', () => {
   const { elements, languageButtons } = createGuide();
   languageButtons[1].listeners.click({});
-  elements['#labTest'].value = 'potassium';
-  elements['#labRange'].value = 'above';
+  selectLab(elements, 'potassium', 'above');
   submitLab(elements);
 
   const advice = selectLabAdvice(elements);
@@ -169,15 +166,13 @@ test('high potassium range avoids a home food fix and flags emergency symptoms',
 
 test('low dialysis adequacy is not offered as a normal-range laboratory option', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'account.html'), 'utf8');
-  const testOptions = Array.from(html.matchAll(/<option value="([^"]+)"/g), (match) => match[1]);
-  assert.equal(testOptions.some((value) => /ktv|urr|adequacy/i.test(value)), false);
+  assert.doesNotMatch(html, /Kt\/V|URR|adequacy/i);
 });
 
 test('low glucose guidance follows the personal plan and protects someone unable to swallow', () => {
   const { elements, languageButtons } = createGuide();
   languageButtons[1].listeners.click({});
-  elements['#labTest'].value = 'glucose';
-  elements['#labRange'].value = 'below';
+  selectLab(elements, 'glucose', 'below');
   submitLab(elements);
 
   const advice = selectLabAdvice(elements);
@@ -186,22 +181,44 @@ test('low glucose guidance follows the personal plan and protects someone unable
   assert.match(advice, /call 911/i);
 });
 
-test('every listed laboratory has below, within, and above range guidance', () => {
+test('every listed laboratory has below and above range guidance', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'account.html'), 'utf8');
-  const testSelect = html.match(/<select id="labTest"[^>]*>([\s\S]*?)<\/select>/)[1];
-  const tests = Array.from(testSelect.matchAll(/<option value="([^"]+)"/g), (match) => match[1])
-    .filter(Boolean);
+  const tests = Array.from(html.matchAll(/data-lab="([^"]+)"/g), (match) => match[1]);
 
   for (const testName of tests) {
-    for (const range of ['below', 'within', 'above']) {
-      const { elements } = createGuide();
-      elements['#labTest'].value = testName;
-      elements['#labRange'].value = range;
+    for (const range of ['below', 'above']) {
+      const { elements, languageButtons } = createGuide();
+      languageButtons[1].listeners.click({});
+      selectLab(elements, testName, range);
       submitLab(elements);
       assert.equal(elements['#labResult'].hidden, false, `${testName} ${range}`);
+      assert.match(
+        elements['#labResultDetails'].children[0].children[0].children[0].textContent,
+        new RegExp(range, 'i')
+      );
       assert.ok(elements['#labResultDetails'].children[0].children[1].children.length, `${testName} ${range}`);
     }
   }
+});
+
+test('multiple abnormal lab results show recommendations together', () => {
+  const { elements } = createGuide();
+  selectLab(elements, 'hemoglobin', 'below');
+  selectLab(elements, 'potassium', 'above');
+  submitLab(elements);
+
+  assert.equal(elements['#labResultDetails'].children.length, 2);
+  assert.equal(elements['#labResult'].dataset.level, 'same-day');
+});
+
+test('submitting with no abnormal lab selection prompts the user', () => {
+  const { elements, languageButtons } = createGuide();
+  languageButtons[1].listeners.click({});
+  submitLab(elements);
+
+  assert.equal(elements['#labResult'].hidden, false);
+  assert.match(elements['#labResultTitle'].textContent, /select a result/i);
+  assert.equal(elements['#labResultDetails'].children.length, 0);
 });
 
 test('dizziness suggests safe BP checking without recommending extra food or fluids', () => {
