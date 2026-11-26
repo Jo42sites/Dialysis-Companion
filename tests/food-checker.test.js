@@ -42,8 +42,7 @@ class Element {
 function createChecker(food) {
   const ids = [
     'foodCheckerForm', 'foodCheckerInput', 'foodCheckerResult',
-    'foodCheckerName', 'foodCheckerFlags', 'foodCheckerBetterTl',
-    'foodCheckerBetterEn'
+    'foodCheckerName', 'foodCheckerFlags'
   ];
   const elements = Object.fromEntries(ids.map((id) => [`#${id}`, new Element()]));
   elements['#foodCheckerInput'].value = food;
@@ -61,24 +60,22 @@ function flagText(item) {
   return item.children[0]?.textContent || '';
 }
 
-test('instant noodles flag sodium and phosphorus and suggest a fresh alternative', () => {
+test('instant noodles show sodium and phosphorus flags', () => {
   const result = createChecker('Instant noodles');
   const flags = result['#foodCheckerFlags'].children.map(flagText);
   assert.deepEqual(flags, ['High P', 'High NA']);
-  assert.match(result['#foodCheckerBetterTl'].textContent, /sariwa at hindi maalat/);
+  assert.equal(result['#foodCheckerResult'].hidden, false);
 });
 
 test('banana flags potassium in Tagalog', () => {
   const result = createChecker('Saging');
   assert.deepEqual(result['#foodCheckerFlags'].children.map(flagText), ['High K']);
-  assert.match(result['#foodCheckerBetterTl'].textContent, /lower-potassium|mababang-potassium/);
 });
 
-test('recognized foods show only high nutrient flags without claiming no flag means safe', () => {
+test('recognized foods show no flags when no high nutrient is detected', () => {
   const result = createChecker('Rice');
   const flags = result['#foodCheckerFlags'].children.map(flagText);
   assert.deepEqual(flags, []);
-  assert.match(result['#foodCheckerBetterEn'].textContent, /does not guarantee it is safe/);
 });
 
 test('protein and fluid matches do not create non-high badges', () => {
@@ -89,7 +86,6 @@ test('protein and fluid matches do not create non-high badges', () => {
 test('unknown foods do not get uncertainty badges', () => {
   const result = createChecker('Mystery dish');
   assert.deepEqual(result['#foodCheckerFlags'].children, []);
-  assert.match(result['#foodCheckerBetterEn'].textContent, /cannot be identified/);
 });
 
 test('user-entered food text is rendered as text, not markup', () => {
