@@ -3,7 +3,7 @@
 ### Gabay para sa Pamilyang Pilipino · Nurse Jo42
 
 A bilingual Tagalog and English dialysis guide for Filipino patients and their
-families, with a private, local hemodialysis (HD) record book for care teams.
+families, with a unit-based hemodialysis (HD) record manager for care teams.
 
 > **Educational and record-keeping tool only.** It is not a hospital system or
 > an official medical record, and it does not replace advice from a qualified
@@ -18,8 +18,9 @@ families, with a private, local hemodialysis (HD) record book for care teams.
 - **HD patient record book:** password-protected patient profiles and monthly
   monitoring, including measurements, laboratory results, orders, complications,
   medicines, and notes.
-- **Private by design:** records are encrypted and saved in the current browser;
-  they are not sent to a server and do not sync between devices.
+- **Unit accounts:** each dialysis unit has separate accounts and records.
+  Patient record contents are encrypted before being saved in the server's
+  SQLite database.
 - **Works offline:** the guide and record book work without an internet
   connection. Internet access is needed only for PhilHealth/DOH links in the
   guide footer.
@@ -39,9 +40,11 @@ record book can also be hosted together on a static web host.
 
 ## Using the HD record book
 
-On first use, create a password of at least 8 characters. You can optionally
-enter a unit or center name. The record book is set up independently on each
-browser/device.
+On first use, register your unit and its first admin account. Use a password of
+at least 12 characters and enroll an authenticator app. Save the one-time
+recovery codes offline. Admins can add staff accounts with admin, clinician, or
+viewer access. Staff sign in with the unit code, their username, password, and
+an authenticator code.
 
 ### Patient records
 
@@ -81,35 +84,36 @@ original list is retained for reference.
 
 The dashboard summarizes active patients by OPD, IP, and Others. You can search
 and filter records, edit them, and print an individual record (including monthly
-history) or the patient list. Deleting a patient, deleting monthly data, or
-erasing the record book requires re-entering the current password.
+history) or the patient list. Admins and clinicians can edit; viewers are
+read-only. Deletion requires confirmation.
 
 ## Privacy, security, and backups
 
 **Please read this before entering patient information.**
 
-- Patient records are encrypted with **AES-256-GCM** and stored in this
-  browser's `localStorage`. Nothing is sent to a server.
-- Only active-patient counts are stored outside the encrypted records; patient
-  names and clinical details are not included in those counts.
-- The record book locks after 15 minutes of inactivity. Use a trusted, private
-  device and lock the page when it is not in use.
-- At initial setup, save the one-time recovery key **offline and separately
-  from the device**. It can reset a forgotten password without deleting records.
-  Replacing the recovery key invalidates the old one.
-- There is no email or server-based password reset. If you lose both the
-  password and recovery key, you will need an encrypted backup to recover the
-  records; without either, they cannot be opened.
-- Each browser/device has its own record book. To move records, use
-  **Settings → Download backup**, then restore it on the other device using the
-  backup password.
-- **Settings → Other sessions → Log out other tabs** locks other open record
-  book tabs in the same browser. It cannot log out a different device.
+- Patient record contents use **AES-256-GCM** encryption at rest. The server
+  needs the secret `MEDICAL_DATA_KEY` from its environment to decrypt records.
+- Admins can review recent record access and changes in **Settings → Recent
+  access history**. Logs contain staff names, action types, and record IDs, not
+  the record contents.
+- Sign-in requires a password and an authenticator code. Save the one-time
+  recovery codes offline; an admin can reset another staff member's MFA.
+- Tokens expire after 15 minutes. Deactivating a staff account invalidates its
+  active tokens. The page also locks after inactivity.
+- Create encrypted database backups with the commands in [server/README.md](./server/README.md).
+  Keep the backup passphrase separate from the server and test restores.
+- Use HTTPS for both the website and API before connecting from other devices.
+  The included server binds only to localhost by default.
+- **This prototype is not yet a certified clinical system.** Do not enter real
+  patient data until it has been deployed, reviewed, and approved under your
+  organization's security and privacy requirements.
 
 ## Sharing and deployment
 
-To share the complete app, host the project files together on a static web host.
-The **HD records** link expects `records.html` to be available beside the guide.
+The static website needs the Express server in [server/](./server/) to use
+patient records. Configure HTTPS, CORS, secrets, firewall rules, backups, and a
+production rate-limit store before deployment. The **HD records** link expects
+`records.html` to be available beside the guide.
 
 ---
 

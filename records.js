@@ -1,7 +1,6 @@
 /* ============================================================
-   Dialysis Companion — private HD patient records
-   Records are encrypted with AES-256-GCM in this browser.
-   There is no server and no sync.
+   Dialysis Companion — unit-based HD patient records
+   Patient records are encrypted by the server before database storage.
    ============================================================ */
 (function () {
   'use strict';
@@ -31,7 +30,10 @@
     sessionEpoch: '0',
     idleTimer: null,
     unitToken: null,
-    unit: null
+    unit: null,
+    user: null,
+    pendingSetupToken: null,
+    pendingAuth: null
   };
 
   let formComplications = [];
@@ -595,11 +597,75 @@
     if (input) input.value = unit;
   }
 
+  function showMfaSetup(result) {
+    state.pendingSetupToken = result.setupToken;
+    state.pendingAuth = null;
+    $('#setupView').hidden = true;
+    $('#unlockView').hidden = true;
+    $('#mfaSetupView').hidden = false;
+    $('#recoveryCodesView').hidden = true;
+    $('#mfaSecret').textContent = result.secret;
+    $('#mfaSetupForm').hidden = false;
+    $('#mfaCode').value = '';
+    $('#mfaSetupError').textContent = '';
+    setTimeout(() => $('#mfaCode').focus(), 60);
+  }
+
+  async function activateUnit(result) {
+    state.unitToken = result.token;
+    state.unit = result.unit;
+    state.user = result.user;
+    const response = await serverApi('/api/units/records');
+    state.patients = (response.records || []).map((item) => normalizePatient(item.record));
+    $('#unlockForm').reset();
+    $('#setupForm').reset();
+    $('#mfaSetupView').hidden = true;
+    showApp();
+  }
+
+  async function loadAdminSettings() {
+    if (!state.user || state.user.role !== 'admin') return;
+    const [users, auditLog] = await Promise.all([
+      serverApi('/api/units/users'),
+      serverApi('/api/units/audit')
+    ]);
+    $('#staffList').innerHTML = users.users.map((user) => `
+      <div class="set-block">
+        <strong>${esc(user.username)}</strong> · ${esc(user.role)}${user.active ? '' : ' · inactive'}
+        ${user.id === state.user.id || !user.active ? '' : `
+          <button class="link-btn" type="button" data-reset-mfa-user="${Number(user.id)}">Reset MFA</button>
+          <button class="link-btn" type="button" data-deactivate-user="${Number(user.id)}">Deactivate</button>`}
+      </div>`).join('');
+    $('#auditList').innerHTML = auditLog.events.length
+      ? auditLog.events.map((event) => `
+        <div class="set-block">
+          <strong>${esc(event.action)}</strong> · ${esc(event.username)}
+          ${event.record_id ? ` · record ${esc(event.record_id)}` : ''}
+          <small>${esc(event.created_at)}</small>
+        </div>`).join('')
+      : '<p>No recent activity.</p>';
+  }
+
   function showApp() {
     $('#lockScreen').hidden = true;
     $('#app').hidden = false;
     try { state.sessionEpoch = localStorage.getItem(SESSION_KEY) || '0'; } catch (err) { state.sessionEpoch = '0'; }
     loadUnitLabel();
+    const accountLabel = $('#accountLabel');
+    if (accountLabel && state.unit) {
+      accountLabel.textContent = `${state.unit.name} · ${state.user.username} (${state.user.role})`;
+    }
+    const staffSection = $('#staffForm').closest('.set-block');
+    const auditSection = $('#auditList').closest('.set-block');
+    const importSection = $('#legacyImportForm').closest('.set-block');
+    if (staffSection) staffSection.hidden = state.user.role !== 'admin';
+    if (auditSection) auditSection.hidden = state.user.role !== 'admin';
+    if (importSection) importSection.hidden = state.user.role === 'viewer';
+    const canEdit = state.user.role !== 'viewer';
+    $('#addPatientBtn').hidden = !canEdit;
+    $('#emptyAddBtn').hidden = !canEdit;
+    $('#editPatient').hidden = !canEdit;
+    $('#deletePatient').hidden = !canEdit;
     updateCensus();
     updateRecoveryUI();
     render();
@@ -799,6 +865,9 @@
     grid.innerHTML = list.length
       ? list.map(patientCard).join('')
       : '<p class="no-results">No patients match your search.</p>';
+    if (state.user && state.user.role === 'viewer') {
+      grid.querySelectorAll('[data-delete-patient]').forEach((button) => { button.hidden = true; });
+    }
     $('#recCount').textContent = list.length === state.patients.length
       ? state.patients.length + (state.patients.length === 1 ? ' patient' : ' patients')
       : list.length + ' of ' + state.patients.length + ' shown';
@@ -1821,10 +1890,12 @@
       error.textContent = '';
       const unitName = $('#setupUnit').value.trim();
       const slug = $('#setupSlug').value.trim();
+      const username = $('#setupUsername').value.trim();
       const pw = $('#newPw').value;
       const pw2 = $('#newPw2').value;
       if (!unitName) { error.textContent = 'Enter a unit or center name.'; $('#setupUnit').focus(); return; }
       if (!slug) { error.textContent = 'Enter a unit login code.'; $('#setupSlug').focus(); return; }
+      if (!username) { error.textContent = 'Choose an admin username.'; $('#setupUsername').focus(); return; }
       if (pw.length < 12) { error.textContent = 'Use at least 12 characters.'; $('#newPw').focus(); return; }
       if (pw !== pw2) { error.textContent = 'The passwords do not match.'; $('#newPw2').focus(); return; }
       if (!$('#ackPw').checked) { error.textContent = 'Please confirm the unit password acknowledgment.'; return; }
@@ -1834,18 +1905,14 @@
       try {
         const result = await serverApi('/api/units/register', {
           method: 'POST',
-          body: JSON.stringify({ name: unitName, slug, password: pw })
+          body: JSON.stringify({ name: unitName, slug, username, password: pw })
         });
-        state.unitToken = result.token;
-        state.unit = result.unit;
-        state.patients = [];
         try {
           localStorage.setItem(UNIT_SLUG_KEY, result.unit.slug);
           localStorage.setItem(UNIT_KEY, result.unit.name);
         } catch (err) { /* ignore */ }
         $('#setupForm').reset();
-        showApp();
-        toast('Unit account created.');
+        showMfaSetup(result);
       } catch (err) {
         error.textContent = err.message || 'Could not create the unit account.';
       } finally {
@@ -1860,8 +1927,10 @@
       const error = $('#unlockError');
       error.textContent = '';
       const slug = $('#unitSlug').value.trim();
+      const username = $('#unitUsername').value.trim();
       const pw = $('#pw').value;
       if (!slug) { error.textContent = 'Enter your unit login code.'; $('#unitSlug').focus(); return; }
+      if (!username) { error.textContent = 'Enter your username.'; $('#unitUsername').focus(); return; }
       if (!pw) { error.textContent = 'Enter your password.'; return; }
       const btn = $('#unlockBtn');
       btn.disabled = true;
@@ -1869,24 +1938,58 @@
       try {
         const result = await serverApi('/api/units/login', {
           method: 'POST',
-          body: JSON.stringify({ slug, password: pw })
+          body: JSON.stringify({ slug, username, password: pw, code: $('#loginCode').value.trim() })
         });
-        state.unitToken = result.token;
-        state.unit = result.unit;
         try {
           localStorage.setItem(UNIT_SLUG_KEY, result.unit.slug);
           localStorage.setItem(UNIT_KEY, result.unit.name);
         } catch (err) { /* ignore */ }
-        const response = await serverApi('/api/units/records');
-        state.patients = (response.records || []).map((item) => normalizePatient(item.record));
-        $('#unlockForm').reset();
-        showApp();
+        if (result.mfaSetupRequired) showMfaSetup(result);
+        else await activateUnit(result);
       } catch (err) {
         error.textContent = 'Wrong password. Try again.';
         $('#pw').select();
       } finally {
         btn.disabled = false;
         btn.textContent = 'Unlock records';
+      }
+    });
+
+    $('#mfaSetupForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const error = $('#mfaSetupError');
+      error.textContent = '';
+      const button = $('#mfaConfirmBtn');
+      button.disabled = true;
+      try {
+        const result = await serverApi('/api/units/mfa/confirm', {
+          method: 'POST',
+          body: JSON.stringify({
+            setupToken: state.pendingSetupToken,
+            code: $('#mfaCode').value.trim()
+          })
+        });
+        state.pendingAuth = result;
+        $('#recoveryCodes').textContent = result.recoveryCodes.join('\n');
+        $('#mfaSetupForm').hidden = true;
+        $('#recoveryCodesView').hidden = false;
+      } catch (err) {
+        error.textContent = err.message || 'Could not verify the code.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    $('#finishMfaBtn').addEventListener('click', async () => {
+      const result = state.pendingAuth;
+      if (!result) return;
+      try {
+        await activateUnit(result);
+        state.pendingSetupToken = null;
+        state.pendingAuth = null;
+        toast('Two-step sign-in is enabled. Keep recovery codes offline.');
+      } catch (err) {
+        $('#mfaSetupError').textContent = err.message || 'Could not load unit records.';
       }
     });
 
@@ -1961,8 +2064,125 @@
     });
     $('#printListBtn').addEventListener('click', printList);
     $('#lockBtn').addEventListener('click', lockNow);
-    $('#settingsBtn').addEventListener('click', () => { updateRecoveryUI(); $('#settingsDialog').showModal(); });
-    $('#logoutOthers').addEventListener('click', logOutOtherSessions);
+    $('#settingsBtn').addEventListener('click', async () => {
+      $('#settingsDialog').showModal();
+      try {
+        await loadAdminSettings();
+      } catch (err) {
+        toast(err.message || 'Could not load account settings.');
+      }
+    });
+    $('#accountPasswordForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const error = $('#accountPasswordError');
+      error.textContent = '';
+      const next = $('#newAccountPassword').value;
+      if (next.length < 12) { error.textContent = 'Use at least 12 characters.'; return; }
+      if (next !== $('#confirmAccountPassword').value) {
+        error.textContent = 'The new passwords do not match.';
+        return;
+      }
+      try {
+        await serverApi('/api/units/me/password', {
+          method: 'PUT',
+          body: JSON.stringify({
+            currentPassword: $('#currentAccountPassword').value,
+            newPassword: next
+          })
+        });
+        lockNow();
+      } catch (err) {
+        error.textContent = err.message || 'Could not change the password.';
+      }
+    });
+    $('#legacyImportForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const error = $('#legacyImportError');
+      error.textContent = '';
+      const vault = readVault();
+      if (!vault) {
+        error.textContent = 'No older browser record book was found on this device.';
+        return;
+      }
+
+      const button = $('#legacyImportBtn');
+      button.disabled = true;
+      try {
+        const key = await deriveKey($('#legacyPassword').value, fromB64(vault.salt), vault.iter);
+        const plaintext = await crypto.subtle.decrypt(
+          { name: 'AES-GCM', iv: fromB64(vault.iv) }, key, fromB64(vault.data)
+        );
+        const legacyPatients = JSON.parse(decoder.decode(plaintext));
+        if (!Array.isArray(legacyPatients)) throw new Error('Invalid local records');
+        const records = legacyPatients.map((patient) => {
+          const normalized = normalizePatient(patient);
+          return { id: normalized.id, record: normalized };
+        });
+        if (!window.confirm(`Import ${records.length} old patient record(s) into this unit? The local copy will remain on this device.`)) {
+          return;
+        }
+        const result = await serverApi('/api/units/records/import', {
+          method: 'POST',
+          body: JSON.stringify({ records })
+        });
+        const refreshed = await serverApi('/api/units/records');
+        state.patients = (refreshed.records || []).map((item) => normalizePatient(item.record));
+        render();
+        $('#legacyImportForm').reset();
+        toast(`Imported ${result.imported}; already present ${result.skipped}.`);
+      } catch (err) {
+        error.textContent = 'Could not import. Check the old password and try again.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+    $('#staffForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const error = $('#staffError');
+      error.textContent = '';
+      try {
+        await serverApi('/api/units/users', {
+          method: 'POST',
+          body: JSON.stringify({
+            username: $('#staffUsername').value.trim(),
+            password: $('#staffPassword').value,
+            role: $('#staffRole').value
+          })
+        });
+        $('#staffForm').reset();
+        await loadAdminSettings();
+        toast('Staff account created. They must enroll an authenticator at first login.');
+      } catch (err) {
+        error.textContent = err.message || 'Could not create the staff account.';
+      }
+    });
+    $('#staffList').addEventListener('click', async (event) => {
+      const reset = event.target.closest('[data-reset-mfa-user]');
+      if (reset) {
+        if (!window.confirm('Reset MFA for this staff account? They must enroll their authenticator again.')) return;
+        try {
+          await serverApi('/api/units/users/' + encodeURIComponent(reset.dataset.resetMfaUser) + '/reset-mfa', {
+            method: 'POST',
+            body: JSON.stringify({})
+          });
+          toast('MFA reset. The staff member must sign in and enroll again.');
+        } catch (err) {
+          toast(err.message || 'Could not reset MFA.');
+        }
+        return;
+      }
+      const button = event.target.closest('[data-deactivate-user]');
+      if (!button || !window.confirm('Deactivate this staff account?')) return;
+      try {
+        await serverApi('/api/units/users/' + encodeURIComponent(button.dataset.deactivateUser), {
+          method: 'DELETE'
+        });
+        await loadAdminSettings();
+        toast('Staff account deactivated.');
+      } catch (err) {
+        toast(err.message || 'Could not deactivate the account.');
+      }
+    });
 
     /* Lock this tab when another tab logs out sessions or changes authorisation */
     window.addEventListener('storage', (event) => {
@@ -2238,141 +2458,6 @@
     $('#addMonthFooter').addEventListener('click', () => {
       openMonthDialog($('#detailDialog').dataset.id);
     });
-
-    /* Unit label */
-    $('#saveUnit').addEventListener('click', () => {
-      try { localStorage.setItem(UNIT_KEY, $('#unitName').value.trim()); } catch (err) { /* ignore */ }
-      loadUnitLabel();
-      toast('Record book label saved.');
-    });
-
-    /* Change password */
-    $('#pwForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const error = $('#pwError');
-      error.textContent = '';
-      const current = $('#curPw').value;
-      const next = $('#newPwSet').value;
-      const next2 = $('#newPwSet2').value;
-      if (next.length < 8) { error.textContent = 'The new password needs at least 8 characters.'; return; }
-      if (next !== next2) { error.textContent = 'The new passwords do not match.'; return; }
-      const btn = $('#pwSave');
-      btn.disabled = true;
-      btn.textContent = 'Updating…';
-      try {
-        const vault = readVault();
-        const oldKey = await deriveKey(current, fromB64(vault.salt), vault.iter);
-        await crypto.subtle.decrypt({ name: 'AES-GCM', iv: fromB64(vault.iv) }, oldKey, fromB64(vault.data));
-        const saltBytes = crypto.getRandomValues(new Uint8Array(16));
-        const newKey = await deriveKey(next, saltBytes, ITERATIONS);
-        const recovery = await rewrapRecovery(oldKey, newKey);
-        state.key = newKey;
-        state.vault = { v: 1, salt: toB64(saltBytes), iter: ITERATIONS };
-        if (recovery) state.vault.recovery = recovery;
-        await persist();
-        revokeOtherSessions();
-        $('#pwForm').reset();
-        toast('Password updated. Other open tabs were logged out.');
-      } catch (err) {
-        error.textContent = 'The current password is incorrect.';
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Update password';
-      }
-    });
-
-    /* Recovery key */
-    $('#recoveryAction').addEventListener('click', () => {
-      const has = !!(state.vault && state.vault.recovery);
-      if (has && !window.confirm('Replace the current recovery key? The old key will stop working.')) return;
-      showRecoveryCode(prepareRecoveryCode(), (committed) => {
-        updateRecoveryUI();
-        if (committed) toast(has ? 'Recovery key replaced. Store the new one offline.' : 'Recovery key created. Store it offline.');
-      });
-    });
-
-    $('#recoveryAck').addEventListener('change', () => {
-      $('#recoverySave').disabled = !$('#recoveryAck').checked;
-    });
-    $('#recoverySave').addEventListener('click', saveRecoveryKey);
-    $('#recoverySkip').addEventListener('click', skipRecoveryKey);
-    $('#recoveryKeyDialog').addEventListener('cancel', (event) => event.preventDefault());
-
-    $('#copyRecovery').addEventListener('click', async () => {
-      const code = $('#recoveryCodeText').textContent;
-      try {
-        await navigator.clipboard.writeText(code);
-        toast('Recovery key copied.');
-      } catch (err) {
-        toast('Select and copy the recovery key manually.');
-      }
-    });
-
-    $('#downloadRecovery').addEventListener('click', () => {
-      const code = $('#recoveryCodeText').textContent;
-      const text = 'Dialysis Companion — HD patient records\n' +
-        'Recovery key (keep this offline, not on this device):\n' + code + '\n\n' +
-        'Use it on the lock screen: Use recovery key.\n' +
-        'It can reset a forgotten password without deleting records.\n' +
-        'If you replace the recovery key later, this code stops working.\n';
-      const blob = new Blob([text], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'dialysis-records-recovery-key.txt';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1500);
-    });
-
-    $('#recoveryBtn').addEventListener('click', () => {
-      $('#recoverForm').reset();
-      $('#recoverError').textContent = '';
-      $('#recoverDialog').showModal();
-      setTimeout(() => $('#recoverCode').focus(), 60);
-    });
-
-    $('#recoverForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const error = $('#recoverError');
-      error.textContent = '';
-      const code = $('#recoverCode').value.trim();
-      const pw = $('#recoverPw').value;
-      const pw2 = $('#recoverPw2').value;
-      if (!code) { error.textContent = 'Enter your recovery key.'; return; }
-      if (pw.length < 8) { error.textContent = 'The new password needs at least 8 characters.'; return; }
-      if (pw !== pw2) { error.textContent = 'The new passwords do not match.'; return; }
-      const btn = $('#recoverSave');
-      btn.disabled = true;
-      btn.textContent = 'Resetting…';
-      try {
-        await recoverVault(code, pw);
-        $('#recoverForm').reset();
-        $('#recoverDialog').close();
-        showApp();
-        toast('Password reset. Your records are intact; the same recovery key still works.');
-      } catch (err) {
-        error.textContent = 'Invalid recovery key. Nothing was changed.';
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Reset password';
-      }
-    });
-
-    /* Backup / restore / erase */
-    $('#backupBtn').addEventListener('click', downloadBackup);
-    $('#restoreBtn').addEventListener('click', () => $('#restoreFile').click());
-    $('#restoreBtn2').addEventListener('click', () => $('#restoreFile2').click());
-    $('#restoreFile').addEventListener('change', (event) => {
-      restoreBackup(event.target.files[0]);
-      event.target.value = '';
-    });
-    $('#restoreFile2').addEventListener('change', (event) => {
-      restoreBackup(event.target.files[0]);
-      event.target.value = '';
-    });
-    $('#eraseBtn').addEventListener('click', eraseAll);
 
     /* Clear errors while typing */
     $$('form').forEach((form) => {

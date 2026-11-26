@@ -1,10 +1,14 @@
-# Unit-Based Secure Admin Backend
+# Unit-Based Patient Records Server
 
-This Express API allows each dialysis unit to register its own account and
-manage only its own patient records. Records are stored in a local SQLite
-database and encrypted with AES-256-GCM.
+The Express API supports separate dialysis units and individual staff accounts.
+Patient record contents are encrypted with AES-256-GCM before being written to
+SQLite.
 
-## Setup
+> **Prototype warning:** this is not a certified clinical system. Do not enter
+> real patient data until your organization has reviewed the deployment,
+> privacy controls, and applicable requirements.
+
+## Local setup
 
 ```bash
 cd server
@@ -12,16 +16,37 @@ npm install
 cp .env.example .env
 ```
 
-Set separate, long random values for `JWT_SECRET` and `MEDICAL_DATA_KEY`.
-Do not commit `.env` or `data/`.
+Set `JWT_SECRET` and `MEDICAL_DATA_KEY` to separate random values of at least
+32 bytes. Keep `.env` and `data/` private and out of source control. Losing
+`MEDICAL_DATA_KEY` makes encrypted patient records unrecoverable.
 
-## Run
+Start the API:
 
 ```bash
 npm start
 ```
 
-The server binds only to `127.0.0.1`.
+It binds to `127.0.0.1` by default. Serve the website locally on port 5500 and
+open `http://127.0.0.1:5500/records.html`.
+
+## Sign-in and staff
+
+1. Register a unit with a unique unit code, an admin username, and a password
+   of at least 12 characters.
+2. Set up an authenticator app and save the one-time recovery codes offline.
+3. Admins can add staff in the records page's **Settings**. Staff enroll MFA on
+   their first login.
+4. Roles: `admin` manages staff and records; `clinician` can read and edit
+   records; `viewer` can read records only.
+
+Existing unit accounts are migrated with their old unit code as the admin
+username and must enroll MFA at their next login. Older records stored in this
+browser can be imported from **Settings → Import older browser records**; the
+old local copy is not deleted.
+
+Passwords are stored as bcrypt hashes. MFA uses authenticator codes and
+single-use recovery codes. Tokens expire after 15 minutes; deactivating an
+account or changing its password invalidates existing tokens.
 
 ## API
 
@@ -29,25 +54,57 @@ The server binds only to `127.0.0.1`.
 GET    /api/health
 POST   /api/units/register
 POST   /api/units/login
+POST   /api/units/mfa/confirm
 GET    /api/units/me
+PUT    /api/units/me/password
+GET    /api/units/users                 (admin)
+POST   /api/units/users                 (admin)
+DELETE /api/units/users/:id             (admin)
+POST   /api/units/users/:id/reset-mfa   (admin)
+GET    /api/units/audit                 (admin)
 GET    /api/units/records
-POST   /api/units/records
+POST   /api/units/records               (admin/clinician)
+POST   /api/units/records/import        (admin/clinician)
 GET    /api/units/records/:id
-PUT    /api/units/records/:id
-DELETE /api/units/records/:id
+PUT    /api/units/records/:id           (admin/clinician)
+DELETE /api/units/records/:id           (admin/clinician)
 ```
 
-Register a unit:
+Audit entries record staff, action, record ID, and timestamp—not medical record
+contents. The audit log is stored in the same SQLite database and is not
+tamper-proof against a host administrator.
+
+## Encrypted backups
+
+Set `BACKUP_PASSWORD` to a unique passphrase of at least 16 characters using
+your secret manager, then run:
 
 ```bash
-curl -i -X POST http://127.0.0.1:3001/api/units/register \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Sta. Mesa Dialysis Center","slug":"sta-mesa","password":"a-strong-password-2026"}'
+npm run backup -- ./backups/patient-records.dcbackup
 ```
 
-Log in and use the returned token for record routes:
+Backups use scrypt and AES-256-GCM. Keep the backup file and its passphrase
+separate from the server. Test a restore before relying on backups.
+
+Stop the server before restoring:
 
 ```bash
-curl -i http://127.0.0.1:3001/api/units/records \
-  -H "Authorization: Bearer YOUR_JWT"
+npm run restore-backup -- ./backups/patient-records.dcbackup
 ```
+
+Use the same `BACKUP_PASSWORD` that encrypted the file. The restore replaces
+the configured database.
+
+## Production deployment requirements
+
+- Serve both the website and API over HTTPS. In production the API rejects
+  non-HTTPS requests. Behind a reverse proxy, set `TRUST_PROXY` to the exact
+  trusted proxy hop count, and ensure the proxy overwrites forwarded headers.
+- Set `CORS_ORIGIN` to the exact website origin(s); do not use `*`.
+- Keep the API private behind a firewall or trusted network. Do not expose the
+  development server directly to the internet.
+- The default rate-limit store is in memory. Configure a shared persistent
+  rate-limit store before using multiple server instances.
+- Restrict server and backup access, patch dependencies, monitor access, and
+  arrange backup retention and restore drills. The app does not automate
+  backups or key rotation.

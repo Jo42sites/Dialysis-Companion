@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<meta name="description" content="Private hemodialysis patient record book for Dialysis Companion. Records stay encrypted in this browser.">
+<meta name="description" content="Unit-based hemodialysis patient record manager with encrypted server-side storage.">
 <meta name="admin-api" content="http://127.0.0.1:3001">
 <title>HD Patient Records | Dialysis Companion</title>
 <link rel="stylesheet" href="styles.css">
@@ -54,13 +54,17 @@
           <p class="hint">Use 3-50 letters, numbers, or hyphens.</p>
         </div>
         <div class="field">
+          <label for="setupUsername">Admin username</label>
+          <input id="setupUsername" autocomplete="username" placeholder="e.g., unit.admin" required>
+        </div>
+        <div class="field">
           <label for="newPw">Password</label>
           <input id="newPw" type="password" minlength="12" autocomplete="new-password" required>
           <p class="hint">At least 12 characters. Use something only your team knows.</p>
         </div>
         <div class="field">
           <label for="newPw2">Confirm password</label>
-          <input id="newPw2" type="password" minlength="8" autocomplete="new-password" required>
+          <input id="newPw2" type="password" minlength="12" autocomplete="new-password" required>
         </div>
         <label class="ack">
           <input type="checkbox" id="ackPw">
@@ -83,17 +87,45 @@
           <input id="unitSlug" autocomplete="username" required>
         </div>
         <div class="field">
+          <label for="unitUsername">Username</label>
+          <input id="unitUsername" autocomplete="username" required>
+        </div>
+        <div class="field">
           <label for="pw">Password</label>
           <div class="pw-wrap">
             <input id="pw" type="password" autocomplete="current-password" required>
             <button class="pw-toggle" type="button" data-toggle-pw="pw">Show</button>
           </div>
         </div>
+        <div class="field">
+          <label for="loginCode">Authenticator code or unused recovery code</label>
+          <input id="loginCode" autocomplete="one-time-code">
+        </div>
         <p class="form-error" id="unlockError" role="alert"></p>
         <button class="btn btn-primary lock-submit" id="unlockBtn" type="submit">Unlock records</button>
       </form>
       <div class="lock-actions">
         <button class="link-btn" type="button" id="showRegisterBtn">Register a new unit</button>
+      </div>
+    </div>
+
+    <div id="mfaSetupView" hidden>
+      <h1>Set up two-step sign-in</h1>
+      <p class="lock-lede">Add this secret to an authenticator app, then enter its six-digit code.</p>
+      <p class="hint">Keep your authenticator secret and recovery codes private. Do not share screenshots of this page.</p>
+      <p><strong>Authenticator secret</strong><br><code id="mfaSecret"></code></p>
+      <form id="mfaSetupForm" novalidate>
+        <div class="field">
+          <label for="mfaCode">Six-digit code</label>
+          <input id="mfaCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+        </div>
+        <p class="form-error" id="mfaSetupError" role="alert"></p>
+        <button class="btn btn-primary lock-submit" id="mfaConfirmBtn" type="submit">Verify and continue</button>
+      </form>
+      <div id="recoveryCodesView" hidden>
+        <p><strong>Save these recovery codes offline.</strong> Each can be used once if you lose access to your authenticator.</p>
+        <pre id="recoveryCodes"></pre>
+        <button class="btn btn-primary lock-submit" id="finishMfaBtn" type="button">I saved my codes</button>
       </div>
     </div>
 
@@ -134,7 +166,7 @@
       <div>
         <p class="eyebrow">Private record book</p>
         <h1>Hemodialysis patient records</h1>
-        <p class="rec-lede">One record per patient, for your own unit. Data stays in this browser and is encrypted with your password.</p>
+        <p class="rec-lede">One record per patient, for your own unit. Records are encrypted before being saved on the unit's server.</p>
       </div>
     </div>
 
@@ -188,7 +220,7 @@
 
     <p class="rec-footnote">
       <svg class="ic"><use href="#r-lock"/></svg>
-      Encrypted on this device. Download a backup from Settings before changing computers or clearing browser data.
+      Encrypted in the server database. Admins should create and test secure backups regularly.
     </p>
   </main>
 </div>
@@ -946,87 +978,94 @@
   </header>
   <div class="dlg-body">
     <section class="set-block">
-      <h3>Record book label</h3>
-      <p>Shown at the top of this page. Stored only in this browser.</p>
-      <div class="field">
-        <label for="unitName">Unit / center name</label>
-        <input id="unitName" placeholder="e.g., Sta. Mesa Dialysis Center">
-      </div>
-      <button class="btn btn-secondary btn-small" id="saveUnit" type="button">Save label</button>
+      <h3>Signed in</h3>
+      <p id="accountLabel"></p>
     </section>
 
     <section class="set-block">
-      <h3>Recovery key</h3>
-      <p id="recoveryStatus">No recovery key set.</p>
-      <button class="btn btn-secondary btn-small" id="recoveryAction" type="button">Create recovery key</button>
-      <p class="hint" style="margin-top:8px">A recovery key can reset a forgotten password without deleting records. Keep it offline, not on this device.</p>
-    </section>
-
-    <section class="set-block">
-      <h3>Other sessions</h3>
-      <p>Log out other open tabs of this record book on this device. They will need the password again.</p>
-      <button class="btn btn-secondary btn-small" id="logoutOthers" type="button">Log out other tabs</button>
-      <p class="hint" style="margin-top:8px">This works only in this browser. To block re-entry, change the password below.</p>
-    </section>
-
-    <section class="set-block">
-      <h3>Change password</h3>
-      <p>The new password re-encrypts all records on this device.</p>
-      <form id="pwForm" novalidate>
+      <h3>Import older browser records</h3>
+      <p>Imports encrypted-browser records from this device into your unit. Original browser data is not deleted.</p>
+      <form id="legacyImportForm" novalidate>
         <div class="field">
-          <label for="curPw">Current password</label>
-          <input id="curPw" type="password" autocomplete="current-password" required>
+          <label for="legacyPassword">Old record-book password</label>
+          <input id="legacyPassword" type="password" autocomplete="current-password" required>
         </div>
-        <div class="field">
-          <label for="newPwSet">New password</label>
-          <input id="newPwSet" type="password" minlength="8" autocomplete="new-password" required>
-        </div>
-        <div class="field">
-          <label for="newPwSet2">Confirm new password</label>
-          <input id="newPwSet2" type="password" minlength="8" autocomplete="new-password" required>
-        </div>
-        <p class="form-error" id="pwError" role="alert"></p>
-        <button class="btn btn-primary btn-small" id="pwSave" type="submit">Update password</button>
+        <p class="form-error" id="legacyImportError" role="alert"></p>
+        <button class="btn btn-secondary btn-small" id="legacyImportBtn" type="submit">Import records</button>
       </form>
     </section>
 
     <section class="set-block">
-      <h3>Backup</h3>
-      <p>Download an encrypted copy of all records. The backup opens only with its password.</p>
-      <div class="btn-row">
-        <button class="btn btn-secondary btn-small" id="backupBtn" type="button"><svg><use href="#r-download"/></svg>Download backup</button>
-        <button class="btn btn-secondary btn-small" id="restoreBtn2" type="button"><svg><use href="#r-upload"/></svg>Restore backup</button>
-        <input type="file" id="restoreFile2" accept="application/json,.json" hidden>
-      </div>
+      <h3>Change your password</h3>
+      <form id="accountPasswordForm" novalidate>
+        <div class="field">
+          <label for="currentAccountPassword">Current password</label>
+          <input id="currentAccountPassword" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="field">
+          <label for="newAccountPassword">New password (12+ characters)</label>
+          <input id="newAccountPassword" type="password" minlength="12" autocomplete="new-password" required>
+        </div>
+        <div class="field">
+          <label for="confirmAccountPassword">Confirm new password</label>
+          <input id="confirmAccountPassword" type="password" minlength="12" autocomplete="new-password" required>
+        </div>
+        <p class="form-error" id="accountPasswordError" role="alert"></p>
+        <button class="btn btn-secondary btn-small" type="submit">Update password</button>
+      </form>
     </section>
 
-    <section class="set-block danger-zone">
-      <h3>Erase all records</h3>
-      <p>This removes the encrypted records from this browser. Without a backup, they cannot be recovered.</p>
-      <button class="btn btn-danger btn-small" id="eraseBtn" type="button"><svg><use href="#r-trash"/></svg>Erase all records</button>
+    <section class="set-block">
+      <h3>Staff accounts</h3>
+      <p>Admins can add staff and assign access. Clinicians can edit records; viewers can only view them.</p>
+      <div id="staffList" aria-live="polite"></div>
+      <form id="staffForm" novalidate>
+        <div class="field">
+          <label for="staffUsername">New staff username</label>
+          <input id="staffUsername" autocomplete="off" required>
+        </div>
+        <div class="field">
+          <label for="staffPassword">Temporary password (12+ characters)</label>
+          <input id="staffPassword" type="password" minlength="12" autocomplete="new-password" required>
+        </div>
+        <div class="field">
+          <label for="staffRole">Role</label>
+          <select id="staffRole">
+            <option value="clinician">Clinician — view and edit records</option>
+            <option value="viewer">Viewer — view only</option>
+            <option value="admin">Admin — manage staff and records</option>
+          </select>
+        </div>
+        <p class="form-error" id="staffError" role="alert"></p>
+        <button class="btn btn-primary btn-small" id="staffCreateBtn" type="submit">Create staff account</button>
+      </form>
+    </section>
+
+    <section class="set-block">
+      <h3>Recent access history</h3>
+      <div id="auditList" aria-live="polite"></div>
     </section>
 
     <p class="privacy-note">
-      This page is a private, local record book. It is not a hospital system and does not send data online.
-      Use a trusted device, lock it when not in use, and keep an encrypted backup. Clinical judgment remains with the care team.
+      Keep your account private and lock the page when unattended. Clinical judgment remains with the care team.
     </p>
   </div>
 </dialog>
 
 <!-- ============================================================
-     Delete confirmation (password re-entry)
+     Delete confirmation
      ============================================================ -->
 <dialog id="deleteAuthDialog" class="rec-dialog narrow" aria-labelledby="deleteAuthTitle">
   <form id="deleteAuthForm" novalidate>
     <header class="dlg-head">
       <div>
         <p class="eyebrow">Confirm deletion</p>
-        <h2 id="deleteAuthTitle">Retype your password</h2>
+        <h2 id="deleteAuthTitle">Confirm action</h2>
       </div>
       <button class="icon-btn" type="button" data-close aria-label="Close"><svg class="ic"><use href="#r-close"/></svg></button>
     </header>
     <div class="dlg-body">
-      <p class="delete-message" id="deleteAuthMessage">Retype your password to continue.</p>
+      <p class="delete-message" id="deleteAuthMessage">Confirm this action to continue.</p>
       <div class="field">
         <label for="deletePw">Password</label>
         <div class="pw-wrap">
