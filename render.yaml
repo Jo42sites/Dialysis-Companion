@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: dialysis-companion-api
+    runtime: node
+    plan: 0.5c-512mb
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    disk:
+      name: dialysis-companion-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: DATABASE_PATH
+        value: /var/data/dialysis-admin.sqlite
+      - key: TRUST_PROXY
+        value: "1"
+      - key: CORS_ORIGIN
+        value: https://jo42sites.github.io
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MEDICAL_DATA_KEY
+        generateValue: true

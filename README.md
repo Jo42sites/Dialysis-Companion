@@ -21,9 +21,9 @@ families, with a unit-based hemodialysis (HD) record manager for care teams.
 - **Unit accounts:** each dialysis unit has separate accounts and records.
   Patient record contents are encrypted before being saved in the server's
   SQLite database.
-- **Works offline:** the guide and record book work without an internet
-  connection. Internet access is needed only for PhilHealth/DOH links in the
-  guide footer.
+- **Offline guide:** the patient and family guide works without an internet
+  connection. The HD record book needs a connection to its API; internet access
+  is also needed for PhilHealth/DOH links in the guide footer.
 
 ## Open the app
 
@@ -42,12 +42,14 @@ create unit accounts or save records.
 
 For the local record book, start the API as described in
 [server/README.md](./server/README.md) and serve the project on
-`http://127.0.0.1:5500` (do not open the record book as a `file://` URL). For
-the GitHub Pages deployment, set the repository variable `ADMIN_API_URL` to
-the public HTTPS origin of the deployed API and use **GitHub Actions** as the
-Pages build and deployment source. The Pages workflow injects that URL into the
-record book. Configure the API's `CORS_ORIGIN` to the exact website origin,
-such as `https://jo42sites.github.io`.
+`http://127.0.0.1:5500` (do not open the record book as a `file://` URL).
+
+To enable unit accounts on GitHub Pages, deploy the API using the included
+[Render blueprint](./render.yaml). Then set the GitHub Actions repository
+variable `ADMIN_API_URL` to the Render service's HTTPS origin and select
+**GitHub Actions** as the Pages build and deployment source. Run the
+**Deploy GitHub Pages** workflow after setting the variable. The setup details
+are in [server/README.md](./server/README.md).
 
 ## Using the HD record book
 

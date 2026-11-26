@@ -118,3 +118,25 @@ the configured database.
 - Restrict server and backup access, patch dependencies, monitor access, and
   arrange backup retention and restore drills. The app does not automate
   backups or key rotation.
+
+## Deploying this repository on Render
+
+The repository includes a Render Blueprint in `../render.yaml`. In Render,
+create a new **Blueprint** from this GitHub repository and deploy the
+`dialysis-companion-api` service. The blueprint configures the required secrets,
+HTTPS proxy handling, GitHub Pages CORS origin, and a persistent 1 GB disk for
+SQLite. It uses Render's paid 0.5 CPU/512 MB plan; check Render's current
+pricing before deploying.
+
+After the service is live:
+
+1. Copy its public HTTPS origin (for example, `https://your-service.onrender.com`).
+2. In GitHub, open **Settings → Secrets and variables → Actions → Variables**
+   and add `ADMIN_API_URL` with that origin only (no path or trailing slash).
+3. Under **Settings → Pages → Build and deployment**, select **GitHub Actions**.
+4. Run the **Deploy GitHub Pages** workflow. Once it succeeds, reload the Pages
+   site and create the unit account.
+
+The Render blueprint allows the repository's GitHub Pages origin through CORS.
+If you use a custom Pages domain, update `CORS_ORIGIN` on the Render service to
+that exact website origin and redeploy.
