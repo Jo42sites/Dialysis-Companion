@@ -1,8 +1,9 @@
-# Unit-Based Patient Records API
+# Dialysis Companion API
 
-The FastAPI API supports separate dialysis units and individual staff accounts.
-SQLite stores account and audit data; patient record contents are encrypted
-with AES-256-GCM before being written to the database.
+The FastAPI API supports patient/family accounts, separate dialysis units and
+individual staff accounts, and an optional site-wide administrator. SQLite
+stores account and audit data; patient records and saved care cards are
+encrypted with AES-256-GCM before being written to the database.
 
 > **Prototype warning:** this is not a certified clinical system. Do not enter
 > real patient data until your organization has reviewed the deployment,
@@ -21,6 +22,11 @@ cp .env.example .env
 Set `JWT_SECRET` and `MEDICAL_DATA_KEY` to separate random values of at least
 32 bytes. Keep `.env` and `data/` private and out of source control. Losing
 `MEDICAL_DATA_KEY` makes encrypted patient records unrecoverable.
+To enable global site administration, set `SITE_ADMIN_EMAIL` and
+`SITE_ADMIN_PASSWORD`; use a unique password of 12-72 UTF-8 bytes. Leave both
+unset to disable site-admin sign-in. Never put either credential in website
+files or source control. The site administrator can access clinical records
+across all units, so use this account only for authorized administration.
 
 Start the API from the `server/` directory:
 
@@ -29,8 +35,10 @@ python run.py
 ```
 
 The local database is `server/data/dialysis-admin.sqlite` by default. Serve the
-website locally on port 5500 and open `http://127.0.0.1:5500/records.html`; do
-not open it using a `file://` URL.
+website locally on port 5500 and open `http://127.0.0.1:5500/`. Patient/family
+accounts are available at `/account.html`, site administration at
+`/admin.html`, and the unit-based record book at `/records.html`; do not open
+these pages using a `file://` URL.
 
 The Python API is compatible with the existing SQLite schema, bcrypt password
 hashes, JWT tokens, and AES-256-GCM encrypted data. Keep the same
@@ -56,10 +64,52 @@ Passwords are stored as bcrypt hashes. MFA uses authenticator codes and
 single-use recovery codes. Tokens expire after 15 minutes; deactivating an
 account or changing its password invalidates existing tokens.
 
+## Patient and family accounts
+
+Users can create an account with an email address and a password of at least
+12 characters (maximum 72 UTF-8 bytes). The account stores a separately encrypted copy of the user's
+care card and language preference; use **Save this device to my account** and
+**Restore from my account** on the account page to move data between devices.
+Signing up does not automatically upload the browser's card. Account passwords
+are stored as bcrypt hashes. There is currently no email verification or
+password-reset flow; users who lose their password cannot recover their
+account. Disabling an account in the site-admin area revokes its active tokens.
+
+## Site administration
+
+Configure the admin email and password on the API server (never in GitHub Pages
+files). The admin dashboard can suspend/reactivate patient-family accounts and
+dialysis units, manage unit staff access, and create, view, edit, or delete
+patient records across all units. Record access and administrative changes are
+written to the `site_admin_audit` table. The latest 200 events are shown in the
+dashboard; the database retains the audit history. Global access expands the
+normal unit-isolation boundary and should be restricted to the designated
+administrator. Admin credential changes invalidate existing admin tokens;
+tokens also expire according to `JWT_EXPIRES_IN`.
+
 ## API
 
 ```text
 GET    /api/health
+POST   /api/accounts/register
+POST   /api/accounts/login
+GET    /api/accounts/me
+GET    /api/accounts/me/data
+PUT    /api/accounts/me/data
+POST   /api/site-admin/login
+GET    /api/site-admin/overview
+GET    /api/site-admin/audit
+GET    /api/site-admin/accounts
+PATCH  /api/site-admin/accounts/:id
+GET    /api/site-admin/units
+PATCH  /api/site-admin/units/:id
+GET    /api/site-admin/units/:id/staff
+PATCH  /api/site-admin/units/:id/staff/:user_id
+GET    /api/site-admin/units/:id/records
+GET    /api/site-admin/units/:id/records/:record_id
+POST   /api/site-admin/units/:id/records
+PUT    /api/site-admin/units/:id/records/:record_id
+DELETE /api/site-admin/units/:id/records/:record_id
 POST   /api/units/register
 POST   /api/units/login
 POST   /api/units/mfa/confirm

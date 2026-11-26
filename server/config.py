@@ -43,3 +43,9 @@ except ValueError as error:
 if TRUST_PROXY_HOPS < 0:
     raise RuntimeError("TRUST_PROXY must be a non-negative proxy hop count")
 NODE_ENV = os.getenv("NODE_ENV", "development")
+SITE_ADMIN_EMAIL = os.getenv("SITE_ADMIN_EMAIL", "").strip().lower()
+SITE_ADMIN_PASSWORD = os.getenv("SITE_ADMIN_PASSWORD", "")
+if bool(SITE_ADMIN_EMAIL) != bool(SITE_ADMIN_PASSWORD):
+    raise RuntimeError("Set both SITE_ADMIN_EMAIL and SITE_ADMIN_PASSWORD, or leave both unset")
+if SITE_ADMIN_PASSWORD and not 12 <= len(SITE_ADMIN_PASSWORD.encode("utf-8")) <= 72:
+    raise RuntimeError("SITE_ADMIN_PASSWORD must be 12-72 UTF-8 bytes for bcrypt")

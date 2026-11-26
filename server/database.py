@@ -49,6 +49,7 @@ def initialize_database() -> None:
               name TEXT NOT NULL,
               slug TEXT NOT NULL UNIQUE,
               password_hash TEXT NOT NULL,
+              is_active INTEGER NOT NULL DEFAULT 1,
               created_at TEXT NOT NULL DEFAULT (datetime('now')),
               updated_at TEXT NOT NULL DEFAULT (datetime('now'))
             );
@@ -103,9 +104,40 @@ def initialize_database() -> None:
             );
             CREATE INDEX IF NOT EXISTS idx_mfa_recovery_codes_user
               ON mfa_recovery_codes(user_id);
+
+            CREATE TABLE IF NOT EXISTS guide_accounts (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              email TEXT NOT NULL COLLATE NOCASE UNIQUE,
+              password_hash TEXT NOT NULL,
+              data_ciphertext TEXT,
+              is_active INTEGER NOT NULL DEFAULT 1,
+              token_version INTEGER NOT NULL DEFAULT 0,
+              created_at TEXT NOT NULL DEFAULT (datetime('now')),
+              updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+              last_login_at TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS site_admin_audit (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              admin_email TEXT NOT NULL,
+              action TEXT NOT NULL,
+              unit_id INTEGER,
+              account_id INTEGER,
+              record_id TEXT,
+              created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+            CREATE INDEX IF NOT EXISTS idx_site_admin_audit_time
+              ON site_admin_audit(created_at DESC);
             """
         )
 
+        unit_columns = {
+            row["name"] for row in connection.execute("PRAGMA table_info(units)")
+        }
+        if "is_active" not in unit_columns:
+            connection.execute(
+                "ALTER TABLE units ADD COLUMN is_active INTEGER NOT NULL DEFAULT 1"
+            )
         columns = {
             row["name"] for row in connection.execute("PRAGMA table_info(unit_users)")
         }

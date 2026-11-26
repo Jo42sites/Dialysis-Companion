@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tl" data-lang="tl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Create an account to securely save your dialysis care card and language preference.">
+  <meta name="admin-api" content="">
+  <meta name="theme-color" content="#0d6b61">
+  <title>Patient & family account | Dialysis Companion</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="account.css">
+  <script src="account.js" defer></script>
+</head>
+<body class="account-page">
+  <a class="skip-link" href="#main">Lumaktaw sa nilalaman / Skip to content</a>
+  <header class="account-header">
+    <a class="brand" href="index.html">
+      <span class="account-brand-icon" aria-hidden="true">+</span>
+      <span><span class="brand-name">Dialysis Companion</span><span class="brand-sub">Nurse Jo42</span></span>
+    </a>
+    <nav aria-label="Account navigation">
+      <a href="index.html">Guide / Gabay</a>
+      <a href="records.html">HD staff records</a>
+    </nav>
+  </header>
+
+  <main id="main" class="account-wrap">
+    <section class="account-hero">
+      <p class="account-eyebrow">YOUR CARE, WITH YOU</p>
+      <h1>Keep your care card close.</h1>
+      <p>Create a private account to save your dialysis card and language preference, then restore them on another device.</p>
+      <div class="privacy-note"><span aria-hidden="true">⌑</span><span>Your saved card is encrypted on the server. It is separate from the clinical records used by dialysis units.</span></div>
+    </section>
+
+    <section class="account-card" aria-labelledby="accountTitle">
+      <div class="account-card-head">
+        <div>
+          <p class="account-eyebrow">PATIENT & FAMILY</p>
+          <h2 id="accountTitle">Sign in or create an account</h2>
+        </div>
+        <span class="account-mark" aria-hidden="true">♥</span>
+      </div>
+      <p id="accountMessage" class="account-message" role="status" aria-live="polite"></p>
+
+      <div id="authView" class="auth-grid">
+        <form id="loginForm" class="auth-form">
+          <h3>Sign in</h3>
+          <label for="loginEmail">Email address</label>
+          <input id="loginEmail" name="email" type="email" autocomplete="email" maxlength="254" required>
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" name="password" type="password" autocomplete="current-password" required>
+          <button class="account-button" type="submit">Sign in</button>
+        </form>
+
+        <form id="registerForm" class="auth-form auth-form-accent">
+          <h3>Create account</h3>
+          <label for="registerEmail">Email address</label>
+          <input id="registerEmail" name="email" type="email" autocomplete="email" maxlength="254" required>
+          <label for="registerPassword">Create password</label>
+          <input id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="256" required>
+          <p class="field-help">Use at least 12 characters and no more than 72 UTF-8 bytes. There is no password-reset email yet, so keep it safe.</p>
+          <button class="account-button" type="submit">Create account</button>
+        </form>
+      </div>
+
+      <section id="signedInView" class="sync-panel" hidden>
+        <div class="signed-in-row">
+          <div><span class="account-eyebrow">SIGNED IN</span><strong id="accountEmail"></strong></div>
+          <button id="signOutButton" class="text-button" type="button">Sign out</button>
+        </div>
+        <p>Save or update the dialysis card on this device, or restore the copy saved in your account. If there is no card on this device, your existing saved card remains unchanged.</p>
+        <div class="sync-actions">
+          <button id="saveDataButton" class="account-button" type="button">Save this device to my account</button>
+          <button id="restoreDataButton" class="account-button account-button-light" type="button">Restore from my account</button>
+        </div>
+        <p class="field-help">Your care card stays on this device unless you choose to save or restore it here.</p>
+      </section>
+    </section>
+
+    <section class="account-help">
+      <h2>Need the staff system?</h2>
+      <p>Dialysis-unit staff use the separate HD records portal. Site administrators sign in through the protected admin space.</p>
+      <div class="account-links">
+        <a href="records.html">HD records for staff <span aria-hidden="true">→</span></a>
+        <a href="admin.html">Site administrator sign-in <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+  </main>
+  <footer class="account-footer"><a href="index.html">Dialysis Companion</a> · Educational support, not a substitute for clinical advice.</footer>
+</body>
+</html>

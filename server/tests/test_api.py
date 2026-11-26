@@ -9,6 +9,8 @@ os.environ["MEDICAL_DATA_KEY"] = "test-medical-key-" + "y" * 40
 os.environ["DATABASE_PATH"] = str(Path(tempfile.gettempdir()) / f"dc-test-{os.getpid()}.sqlite")
 os.environ["CORS_ORIGIN"] = "http://127.0.0.1:5500"
 os.environ["NODE_ENV"] = "test"
+os.environ["SITE_ADMIN_EMAIL"] = "site-admin@example.test"
+os.environ["SITE_ADMIN_PASSWORD"] = "Strong-Site-Admin-Password-2026"
 Path(os.environ["DATABASE_PATH"]).unlink(missing_ok=True)
 
 import pyotp
@@ -220,6 +222,203 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(changed.status_code, 204)
         revoked = self.request("GET", "/api/units/records", token=admin["token"])
         self.assertEqual(revoked.status_code, 401)
+
+    def test_patient_account_auth_and_encrypted_card_sync(self):
+        registration = self.request(
+            "POST",
+            "/api/accounts/register",
+            body={
+                "email": "Patient@example.test",
+                "password": "Strong-Patient-Password-2026",
+            },
+        )
+        self.assertEqual(registration.status_code, 201, registration.text)
+        token = registration.json()["token"]
+        duplicate = self.request(
+            "POST",
+            "/api/accounts/register",
+            body={
+                "email": "patient@example.test",
+                "password": "Strong-Patient-Password-2026",
+            },
+        )
+        self.assertEqual(duplicate.status_code, 409)
+
+        saved = self.request(
+            "PUT",
+            "/api/accounts/me/data",
+            token=token,
+            body={
+                "card": {"name": "Private Guide Card", "dialysisDay": "Monday"},
+                "preferences": {"language": "en"},
+            },
+        )
+        self.assertEqual(saved.status_code, 200, saved.text)
+        restored = self.request("GET", "/api/accounts/me/data", token=token)
+        self.assertEqual(
+            restored.json()["data"],
+            {
+                "card": {"name": "Private Guide Card", "dialysisDay": "Monday"},
+                "preferences": {"language": "en"},
+            },
+        )
+        invalid_preferences = self.request(
+            "PUT",
+            "/api/accounts/me/data",
+            token=token,
+            body={"preferences": {"language": "unknown"}},
+        )
+        self.assertEqual(invalid_preferences.status_code, 400)
+
+        connection = connect_database()
+        try:
+            ciphertext = connection.execute(
+                "SELECT data_ciphertext FROM guide_accounts WHERE email = ?",
+                ("patient@example.test",),
+            ).fetchone()["data_ciphertext"]
+            self.assertNotIn("Private Guide Card", ciphertext)
+        finally:
+            connection.close()
+
+        login = self.request(
+            "POST",
+            "/api/accounts/login",
+            body={
+                "email": "patient@example.test",
+                "password": "Strong-Patient-Password-2026",
+            },
+        )
+        self.assertEqual(login.status_code, 200, login.text)
+        self.assertTrue(login.json()["hasSavedData"])
+        self.assertEqual(login.json()["user"]["email"], "patient@example.test")
+        wrong_password = self.request(
+            "POST",
+            "/api/accounts/login",
+            body={"email": "patient@example.test", "password": "Wrong-Password-2026"},
+        )
+        self.assertEqual(wrong_password.status_code, 401)
+
+    def test_site_admin_manages_cross_unit_records_and_revokes_access(self):
+        denied = self.request("GET", "/api/site-admin/units")
+        self.assertEqual(denied.status_code, 401)
+        bad_login = self.request(
+            "POST",
+            "/api/site-admin/login",
+            body={"email": "site-admin@example.test", "password": "wrong"},
+        )
+        self.assertEqual(bad_login.status_code, 401)
+        login = self.request(
+            "POST",
+            "/api/site-admin/login",
+            body={
+                "email": "SITE-ADMIN@example.test",
+                "password": "Strong-Site-Admin-Password-2026",
+            },
+        )
+        self.assertEqual(login.status_code, 200, login.text)
+        admin_token = login.json()["token"]
+
+        first, _, _ = self.register_and_enroll("admin-unit-one", "unit.admin")
+        second, _, _ = self.register_and_enroll("admin-unit-two", "unit.admin")
+        first_record = self.request(
+            "POST",
+            "/api/units/records",
+            token=first["token"],
+            body={"id": "admin-patient-one", "name": "Admin Visible One"},
+        )
+        second_record = self.request(
+            "POST",
+            "/api/units/records",
+            token=second["token"],
+            body={"id": "admin-patient-two", "name": "Admin Visible Two"},
+        )
+        self.assertEqual(first_record.status_code, 201)
+        self.assertEqual(second_record.status_code, 201)
+
+        units = self.request("GET", "/api/site-admin/units", token=admin_token).json()["units"]
+        first_unit = next(unit for unit in units if unit["slug"] == "admin-unit-one")
+        second_unit = next(unit for unit in units if unit["slug"] == "admin-unit-two")
+        for unit, record_id, expected_name in (
+            (first_unit, "admin-patient-one", "Admin Visible One"),
+            (second_unit, "admin-patient-two", "Admin Visible Two"),
+        ):
+            listed = self.request(
+                "GET",
+                f"/api/site-admin/units/{unit['id']}/records",
+                token=admin_token,
+            )
+            self.assertEqual(listed.status_code, 200, listed.text)
+            self.assertEqual(listed.json()["records"][0]["patientName"], expected_name)
+            viewed = self.request(
+                "GET",
+                f"/api/site-admin/units/{unit['id']}/records/{record_id}",
+                token=admin_token,
+            )
+            self.assertEqual(viewed.status_code, 200, viewed.text)
+
+        changed = self.request(
+            "PUT",
+            f"/api/site-admin/units/{first_unit['id']}/records/admin-patient-one",
+            token=admin_token,
+            body={"name": "Admin Updated Record"},
+        )
+        self.assertEqual(changed.status_code, 200, changed.text)
+        created = self.request(
+            "POST",
+            f"/api/site-admin/units/{first_unit['id']}/records",
+            token=admin_token,
+            body={"id": "admin-created", "record": {"name": "Created by Admin"}},
+        )
+        self.assertEqual(created.status_code, 201, created.text)
+        deleted_record = self.request(
+            "DELETE",
+            f"/api/site-admin/units/{first_unit['id']}/records/admin-created",
+            token=admin_token,
+        )
+        self.assertEqual(deleted_record.status_code, 204)
+
+        account = self.request(
+            "POST",
+            "/api/accounts/register",
+            body={
+                "email": "disable-me@example.test",
+                "password": "Strong-Patient-Password-2026",
+            },
+        ).json()
+        accounts = self.request("GET", "/api/site-admin/accounts", token=admin_token)
+        self.assertEqual(accounts.status_code, 200)
+        guide_account = next(
+            row for row in accounts.json()["accounts"] if row["email"] == "disable-me@example.test"
+        )
+        disabled = self.request(
+            "PATCH",
+            f"/api/site-admin/accounts/{guide_account['id']}",
+            token=admin_token,
+            body={"active": False},
+        )
+        self.assertEqual(disabled.status_code, 200)
+        revoked = self.request("GET", "/api/accounts/me", token=account["token"])
+        self.assertEqual(revoked.status_code, 401)
+
+        suspended = self.request(
+            "PATCH",
+            f"/api/site-admin/units/{first_unit['id']}",
+            token=admin_token,
+            body={"active": False},
+        )
+        self.assertEqual(suspended.status_code, 200)
+        revoked_unit_token = self.request(
+            "GET", "/api/units/records", token=first["token"]
+        )
+        self.assertEqual(revoked_unit_token.status_code, 401)
+
+        audit = self.request("GET", "/api/site-admin/audit", token=admin_token)
+        self.assertEqual(audit.status_code, 200)
+        actions = {event["action"] for event in audit.json()["events"]}
+        self.assertIn("record.read", actions)
+        self.assertIn("record.update", actions)
+        self.assertIn("account.status", actions)
+        self.assertIn("unit.status", actions)
 
     def test_health_and_cors(self):
         self.assertEqual(self.request("GET", "/api/health").json(), {"status": "ok"})

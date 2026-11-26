@@ -17,7 +17,7 @@ from typing import Any
 import jwt
 import pyotp
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from fastapi import Depends, FastAPI, Header, HTTPException, Request, Response
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -33,6 +33,7 @@ ALLOWED_ROLES = {"admin", "clinician", "viewer"}
 MAX_BODY_BYTES = 1024 * 1024
 UNIT_SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{2,49}$")
 USERNAME_PATTERN = re.compile(r"^[a-zA-Z0-9._-]{3,50}$")
+EMAIL_PATTERN = re.compile(r"^[^@\s]{1,128}@[^@\s]{1,120}\.[^@\s]{2,63}$")
 RECORD_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
 RECOVERY_CODE_PATTERN = re.compile(r"^[a-f0-9]{16}$", re.IGNORECASE)
 
@@ -40,13 +41,16 @@ initialize_database()
 dummy_password_hash = bcrypt.hashpw(
     str(uuid.uuid4()).encode("utf-8"), bcrypt.gensalt(rounds=12)
 )
+site_admin_credential_version = hashlib.sha256(
+    f"{config.SITE_ADMIN_EMAIL}\0{config.SITE_ADMIN_PASSWORD}".encode("utf-8")
+).hexdigest()
 app = FastAPI(title="Dialysis Companion API", docs_url=None, redoc_url=None, openapi_url=None)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=config.CORS_ORIGINS,
     allow_credentials=False,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
 
@@ -155,6 +159,15 @@ def valid_password(password: Any) -> bool:
     return isinstance(password, str) and 12 <= len(password) <= 256
 
 
+def valid_guide_password(password: Any) -> bool:
+    if not valid_password(password):
+        return False
+    try:
+        return len(password.encode("utf-8")) <= 72
+    except UnicodeEncodeError:
+        return False
+
+
 def hash_password(password: str, rounds: int = 12) -> str:
     return bcrypt.hashpw(password_bytes(password), bcrypt.gensalt(rounds=rounds)).decode()
 
@@ -164,6 +177,13 @@ def verify_password(password: str, password_hash: str) -> bool:
         return bcrypt.checkpw(password_bytes(password), password_hash.encode())
     except (ValueError, TypeError):
         return False
+
+
+site_admin_password_hash = (
+    hash_password(config.SITE_ADMIN_PASSWORD)
+    if config.SITE_ADMIN_PASSWORD
+    else dummy_password_hash.decode()
+)
 
 
 def unit_key(unit_id: int) -> bytes:
@@ -192,6 +212,42 @@ def decrypt_record(unit_id: int, encrypted: str) -> Any:
         raise ValueError("Invalid encrypted record")
     plaintext = AESGCM(unit_key(unit_id)).decrypt(nonce, ciphertext + tag, None)
     return json.loads(plaintext)
+
+
+def account_data_key(account_id: int) -> bytes:
+    return hashlib.sha256(
+        config.MEDICAL_DATA_KEY.encode("utf-8")
+        + b":guide-account:"
+        + str(account_id).encode("ascii")
+    ).digest()
+
+
+def encrypt_account_data(account_id: int, data: dict[str, Any]) -> str:
+    nonce = secrets.token_bytes(12)
+    encrypted = AESGCM(account_data_key(account_id)).encrypt(
+        nonce,
+        json.dumps(data, separators=(",", ":"), ensure_ascii=False).encode("utf-8"),
+        b"dialysis-companion:guide-account:v1",
+    )
+    return base64.urlsafe_b64encode(nonce + encrypted).decode("ascii")
+
+
+def decrypt_account_data(account_id: int, encrypted: str) -> dict[str, Any]:
+    try:
+        raw = base64.urlsafe_b64decode(encrypted.encode("ascii"))
+        if len(raw) < 28:
+            raise ValueError("Invalid encrypted account data")
+        plaintext = AESGCM(account_data_key(account_id)).decrypt(
+            raw[:12],
+            raw[12:],
+            b"dialysis-companion:guide-account:v1",
+        )
+        data = json.loads(plaintext)
+    except (ValueError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise ValueError("Invalid encrypted account data") from error
+    if not isinstance(data, dict):
+        raise ValueError("Invalid encrypted account data")
+    return data
 
 
 def expiry_delta(value: str) -> timedelta:
@@ -224,6 +280,29 @@ def sign_unit_token(user: sqlite3.Row | dict[str, Any]) -> str:
             "unitId": user["unit_id"],
             "username": user["username"],
             "tokenVersion": user["token_version"],
+        },
+        expiry_delta(config.JWT_EXPIRES_IN),
+    )
+
+
+def sign_guide_token(user: sqlite3.Row | dict[str, Any]) -> str:
+    return make_token(
+        {
+            "sub": str(user["id"]),
+            "role": "guide_account",
+            "tokenVersion": user["token_version"],
+        },
+        expiry_delta(config.JWT_EXPIRES_IN),
+    )
+
+
+def sign_site_admin_token() -> str:
+    return make_token(
+        {
+            "sub": config.SITE_ADMIN_EMAIL,
+            "email": config.SITE_ADMIN_EMAIL,
+            "role": "site_admin",
+            "credentialVersion": site_admin_credential_version,
         },
         expiry_delta(config.JWT_EXPIRES_IN),
     )
@@ -356,8 +435,10 @@ def current_unit(
             raise HTTPException(status_code=403, detail="Unit access required")
         user = connection.execute(
             """
-            SELECT id, unit_id, username, role, token_version
-            FROM unit_users WHERE id = ? AND is_active = 1
+            SELECT users.id, users.unit_id, users.username, users.role,
+              users.token_version
+            FROM unit_users users JOIN units ON units.id = users.unit_id
+            WHERE users.id = ? AND users.is_active = 1 AND units.is_active = 1
             """,
             (int(claims["sub"]),),
         ).fetchone()
@@ -378,6 +459,56 @@ def current_unit(
         raise
     except (jwt.PyJWTError, KeyError, TypeError, ValueError):
         raise HTTPException(status_code=401, detail="Invalid or expired token") from None
+
+
+def current_guide_account(
+    authorization: str | None = Header(default=None),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> sqlite3.Row:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Authentication required")
+    try:
+        claims = verify_token(authorization[len("Bearer ") :])
+        if claims.get("role") != "guide_account":
+            raise ValueError("invalid account role")
+        account = connection.execute(
+            """
+            SELECT id, email, is_active, token_version, created_at, last_login_at
+            FROM guide_accounts WHERE id = ?
+            """,
+            (int(claims["sub"]),),
+        ).fetchone()
+        if (
+            not account
+            or not account["is_active"]
+            or account["token_version"] != claims.get("tokenVersion")
+        ):
+            raise HTTPException(status_code=401, detail="Session is no longer valid")
+        return account
+    except HTTPException:
+        raise
+    except (jwt.PyJWTError, KeyError, TypeError, ValueError):
+        raise HTTPException(status_code=401, detail="Invalid or expired token") from None
+
+
+def require_site_admin(
+    authorization: str | None = Header(default=None),
+) -> str:
+    if not config.SITE_ADMIN_EMAIL or not config.SITE_ADMIN_PASSWORD:
+        raise HTTPException(status_code=503, detail="Site administrator is not configured")
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Authentication required")
+    try:
+        claims = verify_token(authorization[len("Bearer ") :])
+        if (
+            claims.get("role") != "site_admin"
+            or claims.get("email") != config.SITE_ADMIN_EMAIL
+            or claims.get("credentialVersion") != site_admin_credential_version
+        ):
+            raise ValueError("invalid administrator session")
+        return config.SITE_ADMIN_EMAIL
+    except (jwt.PyJWTError, KeyError, TypeError, ValueError):
+        raise HTTPException(status_code=401, detail="Invalid or expired administrator session") from None
 
 
 def require_admin(unit: dict[str, Any] = Depends(current_unit)) -> dict[str, Any]:
@@ -401,9 +532,557 @@ def row_unit(unit: sqlite3.Row) -> dict[str, Any]:
     return {"id": unit["id"], "name": unit["name"], "slug": unit["slug"]}
 
 
+def safe_guide_account(account: sqlite3.Row | dict[str, Any]) -> dict[str, Any]:
+    return {
+        "id": account["id"],
+        "email": account["email"],
+        "active": bool(account["is_active"]),
+        "createdAt": account["created_at"],
+        "lastLoginAt": account["last_login_at"],
+    }
+
+
+def site_admin_audit(
+    connection: sqlite3.Connection,
+    admin_email: str,
+    action: str,
+    *,
+    unit_id: int | None = None,
+    account_id: int | None = None,
+    record_id: str | None = None,
+) -> None:
+    connection.execute(
+        """
+        INSERT INTO site_admin_audit
+          (admin_email, action, unit_id, account_id, record_id)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (admin_email, action, unit_id, account_id, record_id),
+    )
+
+
+def get_admin_unit(connection: sqlite3.Connection, unit_id: int) -> sqlite3.Row:
+    unit = connection.execute(
+        "SELECT id, name, slug, is_active FROM units WHERE id = ?", (unit_id,)
+    ).fetchone()
+    if not unit:
+        raise HTTPException(status_code=404, detail="Dialysis unit not found")
+    return unit
+
+
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.post("/api/accounts/register", status_code=201)
+async def register_guide_account(
+    request: Request,
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, Any]:
+    fail_if_limited(
+        request, "guide_registration", 5, 60 * 60,
+        "Too many account registration attempts. Try again later.",
+    )
+    body = body_object(await read_json(request))
+    email = str(body.get("email") or "").strip().lower()
+    password = body.get("password")
+    if len(email) > 254 or not EMAIL_PATTERN.fullmatch(email):
+        raise HTTPException(status_code=400, detail="Enter a valid email address")
+    if not valid_guide_password(password):
+        raise HTTPException(status_code=400, detail="Password must be 12-256 characters and at most 72 UTF-8 bytes")
+    try:
+        result = connection.execute(
+            "INSERT INTO guide_accounts (email, password_hash) VALUES (?, ?)",
+            (email, hash_password(password)),
+        )
+    except sqlite3.IntegrityError as error:
+        if "UNIQUE" in str(error).upper():
+            raise HTTPException(status_code=409, detail="An account already uses that email") from None
+        raise
+    account = connection.execute(
+        """
+        SELECT id, email, is_active, token_version, created_at, last_login_at
+        FROM guide_accounts WHERE id = ?
+        """,
+        (result.lastrowid,),
+    ).fetchone()
+    return {
+        "token": sign_guide_token(account),
+        "user": safe_guide_account(account),
+        "hasSavedData": False,
+    }
+
+
+@app.post("/api/accounts/login")
+async def login_guide_account(
+    request: Request,
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, Any]:
+    fail_if_limited(
+        request, "guide_login", 5, 15 * 60,
+        "Too many login attempts. Try again later.",
+    )
+    body = body_object(await read_json(request))
+    email = str(body.get("email") or "").strip().lower()
+    password = body.get("password") if isinstance(body.get("password"), str) else ""
+    account = connection.execute(
+        """
+        SELECT id, email, password_hash, is_active, token_version, created_at,
+          last_login_at, data_ciphertext
+        FROM guide_accounts WHERE email = ? AND is_active = 1
+        """,
+        (email,),
+    ).fetchone()
+    password_hash = account["password_hash"] if account else dummy_password_hash.decode()
+    if not account or not verify_password(password, password_hash):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    connection.execute(
+        "UPDATE guide_accounts SET last_login_at = datetime('now') WHERE id = ?",
+        (account["id"],),
+    )
+    updated = dict(account)
+    updated["last_login_at"] = connection.execute(
+        "SELECT last_login_at FROM guide_accounts WHERE id = ?", (account["id"],)
+    ).fetchone()["last_login_at"]
+    return {
+        "token": sign_guide_token(updated),
+        "user": safe_guide_account(updated),
+        "hasSavedData": bool(account["data_ciphertext"]),
+    }
+
+
+@app.get("/api/accounts/me")
+def get_guide_account(
+    account: sqlite3.Row = Depends(current_guide_account),
+) -> dict[str, Any]:
+    return {"user": safe_guide_account(account)}
+
+
+@app.get("/api/accounts/me/data")
+def get_guide_account_data(
+    account: sqlite3.Row = Depends(current_guide_account),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, Any]:
+    row = connection.execute(
+        "SELECT data_ciphertext FROM guide_accounts WHERE id = ?", (account["id"],)
+    ).fetchone()
+    if not row or not row["data_ciphertext"]:
+        return {"data": None}
+    try:
+        data = decrypt_account_data(account["id"], row["data_ciphertext"])
+    except ValueError:
+        logger.exception("Could not decrypt saved guide account data")
+        raise HTTPException(status_code=500, detail="Saved account data could not be decrypted") from None
+    return {"data": data}
+
+
+@app.put("/api/accounts/me/data")
+async def save_guide_account_data(
+    request: Request,
+    account: sqlite3.Row = Depends(current_guide_account),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, bool]:
+    body = body_object(await read_json(request))
+    changes: dict[str, Any] = {}
+    if "card" in body:
+        if not isinstance(body["card"], dict):
+            raise HTTPException(status_code=400, detail="Dialysis card must be a JSON object")
+        changes["card"] = body["card"]
+    if "preferences" in body:
+        preferences = body["preferences"]
+        if (
+            not isinstance(preferences, dict)
+            or any(key != "language" for key in preferences)
+            or preferences.get("language") not in {"tl", "en", "bi"}
+        ):
+            raise HTTPException(status_code=400, detail="Language preference is invalid")
+        changes["preferences"] = preferences
+    if not changes:
+        raise HTTPException(status_code=400, detail="Provide card data or preferences to save")
+
+    existing = connection.execute(
+        "SELECT data_ciphertext FROM guide_accounts WHERE id = ?", (account["id"],)
+    ).fetchone()
+    data: dict[str, Any] = {}
+    if existing and existing["data_ciphertext"]:
+        try:
+            data = decrypt_account_data(account["id"], existing["data_ciphertext"])
+        except ValueError:
+            logger.exception("Could not decrypt saved guide account data")
+            raise HTTPException(status_code=500, detail="Saved account data could not be decrypted") from None
+    data.update(changes)
+    connection.execute(
+        """
+        UPDATE guide_accounts SET data_ciphertext = ?, updated_at = datetime('now')
+        WHERE id = ?
+        """,
+        (encrypt_account_data(account["id"], data), account["id"]),
+    )
+    return {"saved": True}
+
+
+@app.post("/api/site-admin/login")
+async def login_site_admin(request: Request) -> dict[str, str]:
+    fail_if_limited(
+        request, "site_admin_login", 5, 15 * 60,
+        "Too many administrator login attempts. Try again later.",
+    )
+    if not config.SITE_ADMIN_EMAIL or not config.SITE_ADMIN_PASSWORD:
+        raise HTTPException(status_code=503, detail="Site administrator is not configured")
+    body = body_object(await read_json(request))
+    email = str(body.get("email") or "").strip().lower()
+    password = body.get("password") if isinstance(body.get("password"), str) else ""
+    email_matches = hmac.compare_digest(email, config.SITE_ADMIN_EMAIL)
+    password_matches = verify_password(password, site_admin_password_hash)
+    if not email_matches or not password_matches:
+        raise HTTPException(status_code=401, detail="Invalid administrator email or password")
+    return {"token": sign_site_admin_token(), "email": config.SITE_ADMIN_EMAIL}
+
+
+@app.get("/api/site-admin/overview")
+def site_admin_overview(
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, int]:
+    totals = connection.execute(
+        """
+        SELECT
+          (SELECT count(*) FROM guide_accounts) AS accounts,
+          (SELECT count(*) FROM units) AS units,
+          (SELECT count(*) FROM unit_users) AS staff,
+          (SELECT count(*) FROM patient_records) AS records
+        """
+    ).fetchone()
+    site_admin_audit(connection, admin_email, "overview.read")
+    return dict(totals)
+
+
+@app.get("/api/site-admin/audit")
+def site_admin_audit_log(
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, Any]:
+    events = connection.execute(
+        """
+        SELECT events.action, events.unit_id, units.name AS unit_name,
+          events.account_id, events.record_id, events.created_at
+        FROM site_admin_audit events
+        LEFT JOIN units ON units.id = events.unit_id
+        ORDER BY events.id DESC LIMIT 200
+        """
+    ).fetchall()
+    site_admin_audit(connection, admin_email, "audit.read")
+    return {"events": [dict(event) for event in events]}
+
+
+@app.get("/api/site-admin/accounts")
+def site_admin_accounts(
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, Any]:
+    accounts = connection.execute(
+        """
+        SELECT id, email, is_active, created_at, last_login_at
+        FROM guide_accounts ORDER BY created_at DESC LIMIT 500
+        """
+    ).fetchall()
+    site_admin_audit(connection, admin_email, "accounts.list")
+    return {"accounts": [safe_guide_account(account) for account in accounts]}
+
+
+@app.patch("/api/site-admin/accounts/{account_id}")
+async def update_site_admin_account(
+    account_id: int,
+    request: Request,
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, bool]:
+    body = body_object(await read_json(request))
+    active = body.get("active")
+    if not isinstance(active, bool):
+        raise HTTPException(status_code=400, detail="Active must be true or false")
+    updated = connection.execute(
+        """
+        UPDATE guide_accounts SET is_active = ?, token_version = token_version + 1,
+          updated_at = datetime('now') WHERE id = ?
+        """,
+        (int(active), account_id),
+    )
+    if not updated.rowcount:
+        raise HTTPException(status_code=404, detail="Account not found")
+    site_admin_audit(
+        connection, admin_email, "account.status", account_id=account_id
+    )
+    return {"active": active}
+
+
+@app.get("/api/site-admin/units")
+def site_admin_units(
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, Any]:
+    units = connection.execute(
+        """
+        SELECT units.id, units.name, units.slug, units.is_active,
+          (SELECT count(*) FROM unit_users WHERE unit_id = units.id) AS staff_count,
+          (SELECT count(*) FROM patient_records WHERE unit_id = units.id) AS record_count
+        FROM units ORDER BY units.name COLLATE NOCASE LIMIT 500
+        """
+    ).fetchall()
+    site_admin_audit(connection, admin_email, "units.list")
+    return {
+        "units": [
+            {
+                "id": unit["id"],
+                "name": unit["name"],
+                "slug": unit["slug"],
+                "active": bool(unit["is_active"]),
+                "staffCount": unit["staff_count"],
+                "recordCount": unit["record_count"],
+            }
+            for unit in units
+        ]
+    }
+
+
+@app.patch("/api/site-admin/units/{unit_id}")
+async def update_site_admin_unit(
+    unit_id: int,
+    request: Request,
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, bool]:
+    body = body_object(await read_json(request))
+    active = body.get("active")
+    if not isinstance(active, bool):
+        raise HTTPException(status_code=400, detail="Active must be true or false")
+    get_admin_unit(connection, unit_id)
+    with immediate_transaction(connection):
+        connection.execute(
+            """
+            UPDATE units SET is_active = ?, updated_at = datetime('now') WHERE id = ?
+            """,
+            (int(active), unit_id),
+        )
+        if not active:
+            connection.execute(
+                "UPDATE unit_users SET token_version = token_version + 1 WHERE unit_id = ?",
+                (unit_id,),
+            )
+        site_admin_audit(
+            connection, admin_email, "unit.status", unit_id=unit_id
+        )
+    return {"active": active}
+
+
+@app.get("/api/site-admin/units/{unit_id}/staff")
+def site_admin_staff(
+    unit_id: int,
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, Any]:
+    get_admin_unit(connection, unit_id)
+    staff = connection.execute(
+        """
+        SELECT id, username, role, is_active, created_at
+        FROM unit_users WHERE unit_id = ? ORDER BY username COLLATE NOCASE
+        """,
+        (unit_id,),
+    ).fetchall()
+    site_admin_audit(connection, admin_email, "unit.staff.list", unit_id=unit_id)
+    return {
+        "staff": [
+            {
+                "id": user["id"],
+                "username": user["username"],
+                "role": user["role"],
+                "active": bool(user["is_active"]),
+                "createdAt": user["created_at"],
+            }
+            for user in staff
+        ]
+    }
+
+
+@app.patch("/api/site-admin/units/{unit_id}/staff/{user_id}")
+async def update_site_admin_staff(
+    unit_id: int,
+    user_id: int,
+    request: Request,
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, bool]:
+    body = body_object(await read_json(request))
+    active = body.get("active")
+    if not isinstance(active, bool):
+        raise HTTPException(status_code=400, detail="Active must be true or false")
+    get_admin_unit(connection, unit_id)
+    updated = connection.execute(
+        """
+        UPDATE unit_users SET is_active = ?, token_version = token_version + 1
+        WHERE id = ? AND unit_id = ?
+        """,
+        (int(active), user_id, unit_id),
+    )
+    if not updated.rowcount:
+        raise HTTPException(status_code=404, detail="Unit staff account not found")
+    site_admin_audit(
+        connection, admin_email, "unit.staff.status",
+        unit_id=unit_id, account_id=user_id,
+    )
+    return {"active": active}
+
+
+@app.get("/api/site-admin/units/{unit_id}/records")
+def site_admin_records(
+    unit_id: int,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, Any]:
+    get_admin_unit(connection, unit_id)
+    total = connection.execute(
+        "SELECT count(*) AS total FROM patient_records WHERE unit_id = ?",
+        (unit_id,),
+    ).fetchone()["total"]
+    rows = connection.execute(
+        """
+        SELECT id, ciphertext, created_at, updated_at FROM patient_records
+        WHERE unit_id = ? ORDER BY updated_at DESC LIMIT ? OFFSET ?
+        """,
+        (unit_id, limit, offset),
+    ).fetchall()
+    try:
+        records = []
+        for row in rows:
+            record = decrypt_record(unit_id, row["ciphertext"])
+            if not isinstance(record, dict):
+                raise ValueError("Invalid patient record")
+            records.append(
+                {
+                    "id": row["id"],
+                    "patientName": record.get("name") or record.get("patientName") or "—",
+                    "createdAt": row["created_at"],
+                    "updatedAt": row["updated_at"],
+                }
+            )
+    except (ValueError, json.JSONDecodeError):
+        logger.exception("Could not decrypt a patient record for site admin")
+        raise HTTPException(status_code=500, detail="A patient record could not be decrypted") from None
+    site_admin_audit(connection, admin_email, "records.list", unit_id=unit_id)
+    return {"records": records, "total": total, "limit": limit, "offset": offset}
+
+
+@app.get("/api/site-admin/units/{unit_id}/records/{record_id}")
+def site_admin_record(
+    unit_id: int,
+    record_id: str,
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, Any]:
+    get_admin_unit(connection, unit_id)
+    row = connection.execute(
+        """
+        SELECT id, ciphertext, created_at, updated_at FROM patient_records
+        WHERE id = ? AND unit_id = ?
+        """,
+        (record_id, unit_id),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Patient record not found")
+    try:
+        record = decrypt_record(unit_id, row["ciphertext"])
+    except (ValueError, json.JSONDecodeError):
+        logger.exception("Could not decrypt a patient record for site admin")
+        raise HTTPException(status_code=500, detail="Patient record could not be decrypted") from None
+    site_admin_audit(
+        connection, admin_email, "record.read", unit_id=unit_id, record_id=record_id
+    )
+    return {
+        "id": row["id"],
+        "record": record,
+        "createdAt": row["created_at"],
+        "updatedAt": row["updated_at"],
+    }
+
+
+@app.post("/api/site-admin/units/{unit_id}/records", status_code=201)
+async def site_admin_create_record(
+    unit_id: int,
+    request: Request,
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, Any]:
+    get_admin_unit(connection, unit_id)
+    body = body_object(await read_json(request))
+    record_id = body.get("id")
+    record = body.get("record")
+    if not isinstance(record_id, str) or not RECORD_ID_PATTERN.fullmatch(record_id):
+        raise HTTPException(status_code=400, detail="Record ID is invalid")
+    if not isinstance(record, dict):
+        raise HTTPException(status_code=400, detail="Record data must be a JSON object")
+    record = {**record, "id": record_id}
+    try:
+        connection.execute(
+            "INSERT INTO patient_records (id, unit_id, ciphertext) VALUES (?, ?, ?)",
+            (record_id, unit_id, encrypt_record(unit_id, record)),
+        )
+    except sqlite3.IntegrityError:
+        raise HTTPException(status_code=409, detail="Record ID already exists") from None
+    site_admin_audit(
+        connection, admin_email, "record.create", unit_id=unit_id, record_id=record_id
+    )
+    return {"id": record_id, "record": record}
+
+
+@app.put("/api/site-admin/units/{unit_id}/records/{record_id}")
+async def site_admin_update_record(
+    unit_id: int,
+    record_id: str,
+    request: Request,
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> dict[str, Any]:
+    get_admin_unit(connection, unit_id)
+    record = await read_json(request)
+    if not isinstance(record, dict):
+        raise HTTPException(status_code=400, detail="Record data must be a JSON object")
+    record = {**record, "id": record_id}
+    updated = connection.execute(
+        """
+        UPDATE patient_records SET ciphertext = ?, updated_at = datetime('now')
+        WHERE id = ? AND unit_id = ?
+        """,
+        (encrypt_record(unit_id, record), record_id, unit_id),
+    )
+    if not updated.rowcount:
+        raise HTTPException(status_code=404, detail="Patient record not found")
+    site_admin_audit(
+        connection, admin_email, "record.update", unit_id=unit_id, record_id=record_id
+    )
+    return {"id": record_id, "record": record}
+
+
+@app.delete("/api/site-admin/units/{unit_id}/records/{record_id}", status_code=204)
+def site_admin_delete_record(
+    unit_id: int,
+    record_id: str,
+    admin_email: str = Depends(require_site_admin),
+    connection: sqlite3.Connection = Depends(get_database),
+) -> Response:
+    get_admin_unit(connection, unit_id)
+    deleted = connection.execute(
+        "DELETE FROM patient_records WHERE id = ? AND unit_id = ?",
+        (record_id, unit_id),
+    )
+    if not deleted.rowcount:
+        raise HTTPException(status_code=404, detail="Patient record not found")
+    site_admin_audit(
+        connection, admin_email, "record.delete", unit_id=unit_id, record_id=record_id
+    )
+    return Response(status_code=204)
 
 
 @app.post("/api/units/register", status_code=201)
@@ -487,6 +1166,7 @@ async def login(
         SELECT users.*, units.slug, units.name AS unit_name
         FROM unit_users users JOIN units ON units.id = users.unit_id
         WHERE units.slug = ? AND users.username = ? AND users.is_active = 1
+          AND units.is_active = 1
         """,
         (slug, username),
     ).fetchone()

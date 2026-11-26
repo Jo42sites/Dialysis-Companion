@@ -1,6 +1,6 @@
 /* ============================================================
    Dialysis Companion — interactions
-   All personal data stays in this browser's localStorage.
+   Personal data stays local unless the user explicitly syncs the care card.
    ============================================================ */
 (function () {
   'use strict';

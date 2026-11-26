@@ -24,3 +24,7 @@ services:
         generateValue: true
       - key: MEDICAL_DATA_KEY
         generateValue: true
+      - key: SITE_ADMIN_EMAIL
+        sync: false
+      - key: SITE_ADMIN_PASSWORD
+        sync: false

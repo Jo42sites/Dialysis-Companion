@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Protected site administration for Dialysis Companion.">
+  <meta name="admin-api" content="">
+  <meta name="theme-color" content="#0d6b61">
+  <title>Site administration | Dialysis Companion</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="account.css">
+  <link rel="stylesheet" href="admin.css">
+  <script src="admin.js" defer></script>
+</head>
+<body class="account-page admin-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="account-header">
+    <a class="brand" href="index.html">
+      <span class="account-brand-icon" aria-hidden="true">+</span>
+      <span><span class="brand-name">Dialysis Companion</span><span class="brand-sub">Site administration</span></span>
+    </a>
+    <nav aria-label="Administration navigation">
+      <a href="index.html">Guide</a>
+      <a href="account.html">Patient accounts</a>
+    </nav>
+  </header>
+
+  <main id="main" class="admin-wrap">
+    <section class="admin-heading">
+      <p class="account-eyebrow">RESTRICTED ACCESS</p>
+      <h1>Site administration</h1>
+      <p>Manage guide accounts and dialysis units. Authorized administrators can access clinical records across all units.</p>
+    </section>
+
+    <p id="adminMessage" class="admin-message" role="status" aria-live="polite"></p>
+
+    <section id="adminLoginPanel" class="account-card admin-login" aria-labelledby="adminLoginTitle">
+      <div class="account-card-head">
+        <div><p class="account-eyebrow">SITE ADMINISTRATOR</p><h2 id="adminLoginTitle">Sign in</h2></div>
+        <span class="account-mark" aria-hidden="true">⌑</span>
+      </div>
+      <form id="adminLoginForm" class="admin-login-form">
+        <label for="adminEmail">Administrator email</label>
+        <input id="adminEmail" name="email" type="email" autocomplete="username" maxlength="254" required>
+        <label for="adminPassword">Password</label>
+        <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+        <button class="account-button" type="submit">Sign in securely</button>
+      </form>
+      <p class="field-help">Credentials are configured on the API server. They are never stored in this website.</p>
+    </section>
+
+    <section id="adminDashboard" hidden>
+      <div class="admin-bar">
+        <div><span class="account-eyebrow">SIGNED IN AS</span><strong id="adminIdentity"></strong></div>
+        <button id="adminSignOut" class="text-button" type="button">Sign out</button>
+      </div>
+
+      <section id="overviewCards" class="overview-grid" aria-label="Site overview"></section>
+
+      <div class="admin-columns">
+        <section class="admin-panel">
+          <div class="panel-heading"><div><p class="account-eyebrow">PATIENT & FAMILY</p><h2>Guide accounts</h2></div></div>
+          <p class="admin-help">Suspend an account to revoke its active sign-in sessions. No care-card content is shown here.</p>
+          <div class="table-scroll">
+            <table><thead><tr><th>Email</th><th>Status</th><th>Action</th></tr></thead><tbody id="accountRows"></tbody></table>
+          </div>
+        </section>
+
+        <section class="admin-panel">
+          <div class="panel-heading"><div><p class="account-eyebrow">DIALYSIS CENTERS</p><h2>Units & staff</h2></div></div>
+          <label for="unitSelect">Choose a unit</label>
+          <select id="unitSelect"><option value="">Loading units…</option></select>
+          <div id="unitSummary" class="unit-summary"></div>
+          <div class="staff-heading"><h3>Staff accounts</h3></div>
+          <div class="table-scroll">
+            <table><thead><tr><th>Username</th><th>Role</th><th>Status</th><th>Action</th></tr></thead><tbody id="staffRows"></tbody></table>
+          </div>
+        </section>
+      </div>
+
+      <section class="admin-panel records-admin">
+        <div class="panel-heading"><div><p class="account-eyebrow">CLINICAL RECORDS</p><h2>Cross-unit record access</h2></div></div>
+        <p class="admin-help">Patient records are sensitive clinical information. Every list, view, edit, and deletion is recorded in the site-admin audit log.</p>
+        <div class="record-tools">
+          <button id="previousPage" class="text-button" type="button">Previous</button>
+          <span id="recordPageLabel">Select a unit</span>
+          <button id="nextPage" class="text-button" type="button">Next</button>
+        </div>
+        <div class="table-scroll">
+          <table><thead><tr><th>Record ID</th><th>Patient</th><th>Last updated</th><th>Action</th></tr></thead><tbody id="recordRows"></tbody></table>
+        </div>
+        <div class="record-editor">
+          <div class="staff-heading"><h3 id="recordEditorTitle">Create a record</h3></div>
+          <div class="record-create">
+            <label for="newRecordId">New record ID</label>
+            <input id="newRecordId" maxlength="128" autocomplete="off" placeholder="Letters, numbers, _ or -">
+            <label for="newRecordJson">Record JSON</label>
+            <textarea id="newRecordJson" rows="4" spellcheck="false">{}</textarea>
+            <button id="createRecordButton" class="account-button" type="button">Create record</button>
+          </div>
+          <div id="editRecordPanel" hidden>
+            <label for="editRecordJson">Selected record data (JSON)</label>
+            <textarea id="editRecordJson" rows="16" spellcheck="false"></textarea>
+            <div class="record-actions">
+              <button id="saveRecordButton" class="account-button" type="button">Save changes</button>
+              <button id="deleteRecordButton" class="danger-button" type="button">Delete record</button>
+              <button id="closeRecordButton" class="text-button" type="button">Close</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-panel">
+        <div class="panel-heading"><div><p class="account-eyebrow">SECURITY</p><h2>Administrator activity</h2></div></div>
+        <p class="admin-help">Recent access and change events. The latest 200 events are retained in this view.</p>
+        <div class="table-scroll">
+          <table><thead><tr><th>Time</th><th>Action</th><th>Unit</th><th>Record / account ID</th></tr></thead><tbody id="auditRows"></tbody></table>
+        </div>
+      </section>
+    </section>
+  </main>
+  <footer class="account-footer"><a href="index.html">Dialysis Companion</a> · Protect patient information and follow your organization’s privacy policies.</footer>
+</body>
+</html>
