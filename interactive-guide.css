@@ -57,6 +57,7 @@
   border: 1px solid var(--line-strong); border-radius: 10px;
   background: #fff; color: var(--ink);
 }
+.lab-flag-text { font-weight: 750; }
 .health-form select:focus, .health-form input:focus, .symptom-option input:focus-visible {
   outline: 3px solid rgba(13,107,97,.18); border-color: var(--teal);
 }
@@ -76,6 +77,20 @@
 .health-result h3 { margin: 0 0 .4rem; color: var(--teal-dark); font-size: .98rem; }
 .health-result p { margin: 0; color: var(--ink-soft); font-size: .84rem; line-height: 1.55; }
 .health-result p + p { margin-top: .55rem; }
+.recommendation-list {
+  display: grid; gap: .45rem; margin: .65rem 0 0; padding-left: 1.2rem;
+  color: var(--ink-soft); font-size: .84rem; line-height: 1.55;
+}
+.recommendation-list li { padding-left: .1rem; }
+.symptom-details { display: grid; gap: .7rem; margin-top: .85rem; }
+.symptom-detail { padding: .75rem .85rem; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.82); }
+.symptom-detail-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: .7rem; }
+.symptom-detail-heading h4 { margin: 0; color: var(--ink); font-size: .9rem; }
+.urgency-pill { flex: 0 0 auto; padding: .2rem .5rem; border-radius: 999px; background: var(--teal-soft); color: var(--teal-dark); font-size: .68rem; font-weight: 850; }
+.urgency-urgent { background: #ffe2dc; color: #8f2118; }
+.urgency-same-day { background: #fff0c8; color: #805000; }
+.guide-sources { margin-top: .7rem !important; }
+.guide-sources a { color: var(--teal-dark); font-weight: 700; }
 .health-result[data-level="urgent"] { border-color: #e8a79e; background: #fff1ee; }
 .health-result[data-level="urgent"] h3 { color: #8f2118; }
 .health-result[data-level="same-day"] { border-color: #efcd8f; background: #fff8e9; }

@@ -67,11 +67,13 @@ account or changing its password invalidates existing tokens.
 
 ## Patient and family interactive guide
 
-The health guide provides discussion prompts for hemoglobin, potassium,
-phosphorus, calcium, albumin, and Kt/V, plus conservative symptom next steps.
-Inputs are held only in page memory: they are not saved in local storage and
-are not sent to the API. The guide does not diagnose, set personal targets,
-recommend medication doses, or replace advice from a dialysis team.
+The health guide provides lab-specific suggestions for hemoglobin, potassium,
+phosphorus, calcium, albumin, and Kt/V, plus actionable symptom next steps.
+Food suggestions are qualified by the patient's renal meal plan; the guide
+does not prescribe treatment or recommend medication doses. Inputs are held
+only in page memory: they are not saved in local storage and are not sent to
+the API. The guide does not diagnose, set personal targets, or replace advice
+from a dialysis team.
 
 Public patient/family account registration, sign-in, and card-sync API routes
 have been removed. The legacy `guide_accounts` database table is retained so

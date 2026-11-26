@@ -55,7 +55,7 @@
             <h2 id="labTitle"><span class="tl">Pag-usapan ang resulta</span><span class="en">Explore a lab result</span></h2>
           </div>
         </div>
-        <p class="tool-intro"><span class="tl">Ilagay ang resulta para makita ang mga paksang maaaring itanong sa iyong care team. Hindi ito ikinukumpara sa generic na “normal range” dahil maaaring iba ang target ng bawat pasyente.</span><span class="en">Enter a result to see topics you might discuss with your care team. It is not compared with a generic “normal range” because targets can differ for each patient.</span></p>
+        <p class="tool-intro"><span class="tl">Ilagay ang resulta at kung paano ito minarkahan sa report o care plan. Makakakita ka ng praktikal na mungkahi at mga tanong para sa team. Hindi ito diagnosis: magkakaiba ang target, units, at meal plan ng bawat pasyente.</span><span class="en">Enter the result and how it is flagged on your report or care plan for practical suggestions and questions to ask your team. This is not a diagnosis: targets, units, and meal plans differ.</span></p>
 
         <form id="labForm" class="health-form">
           <label for="labTest"><span class="tl">Uri ng resulta</span><span class="en">Lab test</span></label>
@@ -66,6 +66,14 @@
             <option value="calcium">Calcium</option>
             <option value="albumin">Albumin</option>
             <option value="ktv">Kt/V</option>
+          </select>
+
+          <label for="labFlag"><span class="tl">Paano ito minarkahan sa report o care plan?</span><span class="en">How is it flagged on your report or care plan?</span></label>
+          <select id="labFlag" name="labFlag">
+            <option value="unsure" data-tl="Hindi sigurado" data-en="Not sure">Hindi sigurado</option>
+            <option value="low" data-tl="Mababa / below target" data-en="Low / below target">Mababa / below target</option>
+            <option value="high" data-tl="Mataas / above target" data-en="High / above target">Mataas / above target</option>
+            <option value="target" data-tl="Nasa target" data-en="Within target">Nasa target</option>
           </select>
 
           <div class="lab-entry-row">
@@ -84,8 +92,10 @@
 
         <div id="labResult" class="health-result" role="status" aria-live="polite" hidden>
           <h3 id="labResultTitle"></h3>
+          <p id="labFlagText" class="lab-flag-text"></p>
           <p id="labResultText"></p>
           <p id="labResultQuestions" class="result-question"></p>
+          <ul id="labRecommendations" class="recommendation-list"></ul>
         </div>
       </section>
 
@@ -102,13 +112,20 @@
         <form id="symptomForm" class="symptom-form">
           <fieldset>
             <legend><span class="tl">Pumili ng sintomas</span><span class="en">Select symptoms</span></legend>
-            <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="emergency"><span><span class="tl">Pananakit ng dibdib, matinding hirap huminga, pagkawala ng malay, seizure, o matinding pagdurugo</span><span class="en">Chest pain, severe trouble breathing, loss of consciousness, seizure, or severe bleeding</span></span></label>
-            <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="confusion"><span><span class="tl">Biglaang pagkalito o hirap gisingin</span><span class="en">Sudden confusion or difficult to wake</span></span></label>
+            <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="chest"><span><span class="tl">Pananakit o bigat ng dibdib</span><span class="en">Chest pain or pressure</span></span></label>
+            <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="breathing"><span><span class="tl">Matinding hirap huminga</span><span class="en">Severe trouble breathing</span></span></label>
+            <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="faint"><span><span class="tl">Nahimatay, seizure, o biglaang pagkalito</span><span class="en">Fainting, seizure, or sudden confusion</span></span></label>
+            <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="bleeding"><span><span class="tl">Matinding pagdurugo o hindi humihintong pagdurugo sa access</span><span class="en">Severe bleeding or bleeding from access that will not stop</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="dizzy"><span><span class="tl">Nahihilo o parang mahihimatay</span><span class="en">Dizziness or feeling faint</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="highBP"><span><span class="tl">Mataas na blood pressure ayon sa aking care plan</span><span class="en">Blood pressure is high according to my care plan</span></span></label>
             <label class="symptom-option"><input type="checkbox" name="symptom" value="access"><span><span class="tl">Lagnat/panginginig o pamumula, init, pamamaga, o nana sa dialysis access</span><span class="en">Fever/chills or redness, warmth, swelling, or drainage at dialysis access</span></span></label>
             <label class="symptom-option"><input type="checkbox" name="symptom" value="palpitations"><span><span class="tl">Bagong iregular o mabilis na tibok ng puso</span><span class="en">New irregular or racing heartbeat</span></span></label>
             <label class="symptom-option"><input type="checkbox" name="symptom" value="missed"><span><span class="tl">Hindi nakadalo o hindi natapos ang dialysis</span><span class="en">Missed or could not complete dialysis</span></span></label>
             <label class="symptom-option"><input type="checkbox" name="symptom" value="swelling"><span><span class="tl">Bagong pamamaga o mabilis na pagbigat</span><span class="en">New swelling or rapid weight gain</span></span></label>
-            <label class="symptom-option"><input type="checkbox" name="symptom" value="common"><span><span class="tl">Pulikat, pagkahilo, pagduduwal, pangangati, o matinding pagkapagod</span><span class="en">Cramps, dizziness, nausea, itching, or unusual fatigue</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="cramps"><span><span class="tl">Pulikat habang o pagkatapos ng dialysis</span><span class="en">Cramps during or after dialysis</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="nausea"><span><span class="tl">Pagduduwal o pagsusuka</span><span class="en">Nausea or vomiting</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="itch"><span><span class="tl">Pangangati</span><span class="en">Itching</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="fatigue"><span><span class="tl">Hindi pangkaraniwang pagkapagod o panghihina</span><span class="en">Unusual tiredness or weakness</span></span></label>
           </fieldset>
           <button class="account-button" type="submit"><span class="tl">Tingnan ang susunod na hakbang</span><span class="en">Show next steps</span></button>
         </form>
@@ -116,6 +133,7 @@
         <div id="symptomResult" class="health-result" role="status" aria-live="polite" hidden>
           <h3 id="symptomResultTitle"></h3>
           <p id="symptomResultText"></p>
+          <div id="symptomDetails" class="symptom-details"></div>
         </div>
       </section>
     </div>
@@ -123,6 +141,11 @@
     <section class="health-guide-note">
       <h2><span class="tl">Laging sundin ang planong ibinigay ng iyong dialysis team</span><span class="en">Follow the plan from your dialysis team</span></h2>
       <p><span class="tl">Huwag baguhin ang gamot, iron/epoetin, fluid limit, pagkain, o dialysis schedule batay lamang sa gabay na ito. Ibahagi agad sa iyong care team ang resultang minarkahang critical at ang anumang bago o lumalalang sintomas.</span><span class="en">Do not change medicines, iron/epoetin, fluid limits, diet, or dialysis schedule based only on this guide. Promptly share critical lab results and any new or worsening symptoms with your care team.</span></p>
+      <p class="guide-sources"><span class="tl">Karagdagang impormasyon:</span><span class="en">More information:</span>
+        <a href="https://www.niddk.nih.gov/health-information/kidney-disease/anemia" target="_blank" rel="noopener noreferrer">NIDDK: Anemia in CKD</a> ·
+        <a href="https://www.kidney.org/kidney-topics/anemia-ckd" target="_blank" rel="noopener noreferrer">National Kidney Foundation: Anemia in CKD</a> ·
+        <a href="https://www.niddk.nih.gov/health-information/kidney-disease/kidney-failure/hemodialysis" target="_blank" rel="noopener noreferrer">NIDDK: Hemodialysis</a>
+      </p>
     </section>
   </main>
 

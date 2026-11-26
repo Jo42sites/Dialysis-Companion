@@ -21,9 +21,9 @@ families, with a unit-based hemodialysis (HD) record manager for care teams.
 - **Unit accounts:** each dialysis unit has separate accounts and records.
   Patient record contents are encrypted before being saved in the server's
   SQLite database.
-- **Interactive health guide:** patients and families can explore lab-result
-  discussion topics and symptom next steps. Inputs stay in the page and are
-  not saved or sent to the server.
+- **Interactive health guide:** patients and families can explore practical
+  lab-specific suggestions and symptom next steps, including kidney-diet-aware
+  cautions. Inputs stay in the page and are not saved or sent to the server.
 - **Site administration:** a separately configured server-side admin can
   manage legacy accounts and units, manage unit access, and view/edit clinical
   records across units. Admin record access is audited.
