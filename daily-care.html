@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="tl" data-lang="tl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Practical dialysis guidance about food, fluids, medicines, and lab results.">
+  <meta name="theme-color" content="#0d6b61">
+  <title>Food, medicines and labs | Dialysis Companion</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Lumaktaw sa nilalaman / Skip to content</a>
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-kidney" viewBox="0 0 24 24"><path d="M8.7 3.2C5.6 3.2 3.5 6 3.5 9.4c0 4.2 2.3 6.6 4.7 8.1 1.4.9 1.9 2.1 1.5 3.3 2.3.2 3.8-1.3 3.8-3.3 0-1.6-.8-2.9-2.2-4C9.7 12.4 9 11.1 9 9.5c0-1.6.9-2.9 1.9-3.9-.7-1.5-1.4-2.4-2.2-2.4Z"/><path d="M15.3 3.2c3.1 0 5.2 2.8 5.2 6.2 0 4.2-2.3 6.6-4.7 8.1-1.4.9-1.9 2.1-1.5 3.3-2.3.2-3.8-1.3-3.8-3.3 0-1.6.8-2.9 2.2-4 1.6-1.3 2.3-2.6 2.3-4.2 0-1.6-.9-2.9-1.9-3.9.7-1.5 1.4-2.4 2.2-2.4Z"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.8s6.2 6.8 6.2 10.4a6.2 6.2 0 0 1-12.4 0C5.8 9.6 12 2.8 12 2.8Z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 19 6v5.2c0 4.4-2.9 7.8-7 9.8-4.1-2-7-5.4-7-9.8V6l7-3Z"/><path d="m9.2 12 1.9 1.9 3.8-3.8"/></symbol>
+    <symbol id="i-plate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="3.2"/><path d="M4 4v5M2.5 4v3.5a1.5 1.5 0 0 0 3 0V4M4 9v11"/></symbol>
+    <symbol id="i-pill" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="M8.2 8.2 15.8 15.8"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L5.5 17a2 2 0 0 0 1.8 3h9.4a2 2 0 0 0 1.8-3L14 9V3"/><path d="M7.5 15h9"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 21 20H3L12 3Z"/><path d="M12 9v5M12 17.5v.1"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h12a2 2 0 0 1 2 2v12H6a2.5 2.5 0 0 1-2.5-2.5v-9Z"/><path d="M3.5 8h16M16 12h4v4h-4a2 2 0 0 1 0-4Z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20v-1.4A5.5 5.5 0 0 1 9 13h1a5.5 5.5 0 0 1 5.5 5.5V20M15.5 5.5a3 3 0 0 1 0 5.8M17 13.2a5.5 5.5 0 0 1 3.5 5.1V20"/></symbol>
+    <symbol id="i-stethoscope" viewBox="0 0 24 24"><path d="M5 3v5a4 4 0 0 0 8 0V3M5 3H3.5M13 3h1.5M9 12v3a5 5 0 0 0 10 0v-2"/><circle cx="19" cy="10" r="2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4.5 12.5 5 5 10-11"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M7 3.5 9.5 3l2 5-2 1.5a13 13 0 0 0 5 5L16 12.5l5 2-.5 2.5A2.5 2.5 0 0 1 18 19C10.8 18.4 5.6 13.2 5 6a2.5 2.5 0 0 1 2-2.5Z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M7.5 3v4M16.5 3v4M3.5 9h17M8 13h.1M12 13h.1M16 13h.1M8 16.5h.1M12 16.5h.1"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 8.6c0 5.2-8.8 10.6-8.8 10.6S3.2 13.8 3.2 8.6A4.6 4.6 0 0 1 12 6.2a4.6 4.6 0 0 1 8.8 2.4Z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22V4.5Z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M8 6h8M8 10h6"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.1"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12M11 12V4.5a1.5 1.5 0 0 1 3 0V12M14 12V6a1.5 1.5 0 0 1 3 0v7.5c0 4-2.5 7-6.5 7S4 18 4 14v-3a1.5 1.5 0 0 1 3 0v3"/></symbol>
+    <symbol id="i-ear" viewBox="0 0 24 24"><path d="M7 9a5 5 0 0 1 10 0c0 3-2 4.5-3 5.5-.8.8-1 1.5-1 2.5a3 3 0 0 1-6 0"/><path d="M10 9a2 2 0 0 1 4 0c0 1.4-1 2-1.6 2.6"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9a4 4 0 0 1 8 0"/><path d="M12 9l2-2"/></symbol>
+  </svg>
+  <div class="utility-bar">
+    <div class="wrap utility-inner">
+      <div class="utility-note">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="long"><span class="tl">Gabay na pang-edukasyon</span><span class="en">Educational guide only</span></span>
+        <span class="short"><span class="tl">Gabay</span><span class="en">Guide</span></span>
+        <span class="sr-only">Hindi ito kapalit ng payo ng doktor.</span>
+      </div>
+      <div class="utility-actions">
+        <button class="util-btn" type="button" id="printGuide" title="Print this guide"><span class="tl">I-print</span><span class="en">Print</span></button>
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" data-set-lang="tl" aria-pressed="true">Tagalog</button>
+          <button type="button" data-set-lang="en" aria-pressed="false">English</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="index.html#top" aria-label="Dialysis Companion home">
+        <span class="brand-mark" aria-hidden="true"><svg><use href="#i-kidney"/></svg></span>
+        <span><span class="brand-name">Dialysis Companion</span><span class="brand-sub">Nurse Jo42</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Pangunahing menu / Main menu">
+        <a href="index.html"><span class="tl">Simula</span><span class="en">Home</span></a>
+        <a href="dialysis.html"><span class="tl">Dialysis</span><span class="en">Dialysis</span></a>
+        <a href="daily-care.html" aria-current="page"><span class="tl">Pagkain at kalusugan</span><span class="en">Food & health</span></a>
+        <a href="emergency.html"><span class="tl">Emergency</span><span class="en">Emergency</span></a>
+        <a href="philhealth.html"><span class="tl">PhilHealth</span><span class="en">PhilHealth</span></a>
+        <a href="support.html"><span class="tl">Suporta at card</span><span class="en">Support & card</span></a>
+        <a href="records.html">HD records</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <a class="header-cta" href="tel:911"><svg aria-hidden="true" style="width:15px;height:15px"><use href="#i-phone"/></svg>911</a>
+        <button class="menu-toggle" type="button" id="menuToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Buksan ang menu / Open menu"><svg aria-hidden="true"><use href="#i-menu"/></svg></button>
+      </div>
+    </div>
+    <div class="mobile-menu" id="mobileMenu" hidden>
+      <div class="mobile-menu-grid">
+        <a href="index.html"><span class="tl">Simula</span><span class="en">Home</span></a>
+        <a href="dialysis.html"><span class="tl">Dialysis</span><span class="en">Dialysis</span></a>
+        <a href="daily-care.html" aria-current="page"><span class="tl">Pagkain at kalusugan</span><span class="en">Food & health</span></a>
+        <a href="emergency.html"><span class="tl">Emergency</span><span class="en">Emergency</span></a>
+        <a href="philhealth.html"><span class="tl">PhilHealth</span><span class="en">PhilHealth</span></a>
+        <a href="support.html"><span class="tl">Suporta at card</span><span class="en">Support & card</span></a>
+        <a href="records.html">HD patient records</a>
+      </div>
+      <div class="mobile-menu-foot">
+        <span class="menu-lang"><span class="tl">Wika</span><span class="en">Language</span></span>
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" data-set-lang="tl" aria-pressed="true">Tagalog</button>
+          <button type="button" data-set-lang="en" aria-pressed="false">English</button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero subpage-hero" id="top">
+      <div class="wrap"><div class="hero-grid"><div>
+        <div class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span><span class="tl">Gabay sa dialysis</span><span class="en">Dialysis guide</span></div>
+        <h1><span class="tl">Pagkain, gamot at labs</span><span class="en">Food, medicines and labs</span></h1>
+        <p class="hero-lede"><span class="tl">Gabay sa pagkain, fluid limit, mga gamot, at pag-unawa sa iyong lab results.</span><span class="en">Guidance on food, fluid limits, medicines, and understanding your lab results.</span></p>
+        <p class="hero-note"><svg aria-hidden="true"><use href="#i-info"/></svg><span><span class="tl">Hindi ito kapalit ng payo ng nephrologist o dialysis team.</span><span class="en">This does not replace advice from your nephrologist or dialysis team.</span></span></p>
+      </div></div></div>
+    </section>
+  <nav class="section-nav" aria-label="Mga seksyon / Sections">
+    <div class="wrap section-nav-inner">
+      <a href="#food"><span class="tl">Pagkain at tubig</span><span class="en">Food and fluid</span></a>
+      <a href="#meds"><span class="tl">Gamot at labs</span><span class="en">Medicines and labs</span></a>
+    </div>
+  </nav>
+
+    <section class="section tint" id="food">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-num" aria-hidden="true">04</div>
+          <div>
+            <div class="kicker"><span class="tl">Kain at inumin</span><span class="en">Food and fluid</span></div>
+            <h2><span class="tl">Pagkain at tubig</span><span class="en">Food and fluid</span></h2>
+            <p class="section-lede">
+              <span class="tl">Walang iisang diet para sa lahat. Depende ang payo sa labs, timbang, gamot, at uri ng dialysis. Layunin: sapat na sustansya, ligtas na potassium at phosphorus, at kontroladong asin at likido.</span>
+              <span class="en">There is no single diet for everyone. Advice depends on labs, weight, medicines, and dialysis type. The goal: enough nutrition, safe potassium and phosphorus, and controlled salt and fluid.</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="plate-figure">
+          <svg class="plate-svg" viewBox="0 0 300 240" role="img" aria-label="Halimbawang pinggan na may protein, gulay, kanin, prutas, at tubig">
+            <circle cx="118" cy="120" r="96" fill="#fffdf8" stroke="#c9c1ae" stroke-width="1.5"/>
+            <circle cx="118" cy="120" r="82" fill="#f7f2e7"/>
+            <path d="M118 120V38a82 82 0 0 0-82 82Z" fill="#e6f4ea"/>
+            <path d="M118 120h82a82 82 0 0 0-82-82Z" fill="#fff1cf"/>
+            <path d="M118 120v82a82 82 0 0 0 82-82Z" fill="#fbe8df"/>
+            <path d="M118 120H36a82 82 0 0 0 82 82Z" fill="#e2f0eb"/>
+            <circle cx="118" cy="120" r="82" fill="none" stroke="#c9c1ae" stroke-width="1.5"/>
+            <circle cx="118" cy="120" r="27" fill="#fffdf8" stroke="#ded8c8"/>
+            <text x="118" y="121" text-anchor="middle" font-size="8" fill="#64756f" font-family="Arial, sans-serif" class="tl">PINGGAN</text>
+            <text x="118" y="121" text-anchor="middle" font-size="8" fill="#64756f" font-family="Arial, sans-serif" class="en">PLATE</text>
+            <text x="83" y="82" text-anchor="middle" font-size="9" font-weight="bold" fill="#17312e" font-family="Arial, sans-serif" class="tl">Gulay</text>
+            <text x="83" y="82" text-anchor="middle" font-size="9" font-weight="bold" fill="#17312e" font-family="Arial, sans-serif" class="en">Vegetables</text>
+            <text x="153" y="82" text-anchor="middle" font-size="9" font-weight="bold" fill="#17312e" font-family="Arial, sans-serif" class="tl">Kanin</text>
+            <text x="153" y="82" text-anchor="middle" font-size="9" font-weight="bold" fill="#17312e" font-family="Arial, sans-serif" class="en">Rice</text>
+            <text x="153" y="164" text-anchor="middle" font-size="9" font-weight="bold" fill="#17312e" font-family="Arial, sans-serif">Protein</text>
+            <text x="83" y="164" text-anchor="middle" font-size="9" font-weight="bold" fill="#17312e" font-family="Arial, sans-serif" class="tl">Prutas</text>
+            <text x="83" y="164" text-anchor="middle" font-size="9" font-weight="bold" fill="#17312e" font-family="Arial, sans-serif" class="en">Fruit</text>
+            <path d="M244 66h42l-5 82a11 11 0 0 1-11 10h-10a11 11 0 0 1-11-10Z" fill="#dbeafe" opacity=".75" stroke="#9db8d6" stroke-width="1.2"/>
+            <text x="265" y="112" text-anchor="middle" font-size="9" font-weight="bold" fill="#38534f" font-family="Arial, sans-serif" class="tl">Tubig</text>
+            <text x="265" y="112" text-anchor="middle" font-size="9" font-weight="bold" fill="#38534f" font-family="Arial, sans-serif" class="en">Fluid</text>
+            <text x="265" y="126" text-anchor="middle" font-size="7" fill="#64756f" font-family="Arial, sans-serif" class="tl">bilangin</text>
+            <text x="265" y="126" text-anchor="middle" font-size="7" fill="#64756f" font-family="Arial, sans-serif" class="en">count</text>
+          </svg>
+          <div>
+            <h3 class="plate-title"><span class="tl">Simpleng plate check</span><span class="en">A simple plate check</span></h3>
+            <ul class="plate-legend">
+              <li><span class="dot protein"></span><span><strong>Protein</strong><span class="tl">Isda, itlog, manok; huwag bawasan nang wala sa payo.</span><span class="en">Fish, egg, chicken; do not cut back without advice.</span></span></li>
+              <li><span class="dot veg"></span><span><strong><span class="tl">Gulay</span><span class="en">Vegetables</span></strong><span class="tl">Banlawan at pakuluan; itapon ang tubig.</span><span class="en">Rinse and boil; discard the water.</span></span></li>
+              <li><span class="dot rice"></span><span><strong><span class="tl">Kanin</span><span class="en">Rice</span></strong><span class="tl">Sukatin ang serving ayon sa plano.</span><span class="en">Measure the portion per your plan.</span></span></li>
+              <li><span class="dot fruit"></span><span><strong><span class="tl">Prutas at tubig</span><span class="en">Fruit and fluid</span></strong><span class="tl">Maliit na serving; bilangin ang likido.</span><span class="en">Small serving; count the fluid.</span></span></li>
+            </ul>
+            <p class="table-note"><span class="tl">Halimbawa lamang ito. Sundin ang plano ng inyong dietitian.</span><span class="en">This is only an example. Follow your dietitian’s plan.</span></p>
+          </div>
+        </div>
+
+        <div class="nutrient-grid">
+          <div class="nutrient"><span class="nutrient-dot sodium"></span><strong>Sodium</strong><p><span class="tl">Limitahan ang tuyo, patis, at processed food. Nagpapataas ng BP at uhaw.</span><span class="en">Limit dried fish, fish sauce, and processed food. Raises BP and thirst.</span></p></div>
+          <div class="nutrient"><span class="nutrient-dot potassium"></span><strong>Potassium</strong><p><span class="tl">Depende sa lab. Iwasan ang salt substitute at sobrang sabaw ng gulay.</span><span class="en">Depends on labs. Avoid salt substitutes and excess vegetable broth.</span></p></div>
+          <div class="nutrient"><span class="nutrient-dot phosphorus"></span><strong>Phosphorus</strong><p><span class="tl">Iwasan ang cola at processed meat. Inumin ang binder kasabay ng pagkain.</span><span class="en">Avoid cola and processed meat. Take binders with meals.</span></p></div>
+          <div class="nutrient"><span class="nutrient-dot protein"></span><strong>Protein</strong><p><span class="tl">Huwag magbawas nang wala sa payo; kailangan ito sa lakas at laban sa infection.</span><span class="en">Do not cut back without advice; it supports strength and infection defense.</span></p></div>
+        </div>
+
+        
+
+        <div class="card" style="margin-top:16px">
+          <h3><span class="tl">Hanapin ang pagkain</span><span class="en">Find a food</span></h3>
+          <p><span class="tl">I-search ang karaniwang pagkaing Pinoy at tingnan ang pangkalahatang paalala. Hindi ito kapalit ng plano ng dietitian.</span><span class="en">Search common Filipino foods and see general notes. This does not replace your dietitian’s plan.</span></p>
+          <div class="food-tools">
+            <div class="field">
+              <label for="foodSearch"><span class="tl">Maghanap</span><span class="en">Search</span></label>
+              <input id="foodSearch" type="search" placeholder="e.g., dried fish, banana, kangkong…" autocomplete="off">
+            </div>
+            <div class="field filter">
+              <label for="foodFilter"><span class="tl">Salain</span><span class="en">Filter</span></label>
+              <select id="foodFilter">
+                <option value="all" data-tl="Lahat" data-en="All">All</option>
+                <option value="high-k" data-tl="Mataas sa potassium" data-en="High potassium (K)">High potassium (K)</option>
+                <option value="high-p" data-tl="Mataas sa phosphorus" data-en="High phosphorus (P)">High phosphorus (P)</option>
+                <option value="high-na" data-tl="Mataas sa sodium" data-en="High sodium (Na)">High sodium (Na)</option>
+                <option value="protein" data-tl="Magandang protein" data-en="Good protein">Good protein</option>
+                <option value="fluid" data-tl="Likido" data-en="Fluid">Fluid</option>
+              </select>
+            </div>
+          </div>
+          <div class="food-legend" aria-label="Legend">
+            <span class="badge k">High K</span>
+            <span class="badge p">High P</span>
+            <span class="badge na">High Na</span>
+            <span class="badge protein">Protein</span>
+            <span class="badge fluid">Fluid</span>
+          </div>
+          <p class="food-count" id="foodCount" aria-live="polite"></p>
+          <p class="food-scroll-note"><span class="tl">I-scroll ang listahan o mag-search.</span><span class="en">Scroll the list or search.</span></p>
+          <div class="food-grid" id="foodGrid"></div>
+          <p class="table-note"><span class="tl">Ang “high” ay pangkalahatang babala, hindi eksaktong sukat. Ang serving, paraan ng pagluto, at latest labs ang pagbatayan. Tanungin ang dietitian bago magbawas ng pagkain.</span><span class="en">“High” is a general warning, not an exact measure. Serving size, cooking method, and latest labs matter. Ask your dietitian before removing foods.</span></p>
+        </div>
+
+        <div class="callout warning" style="margin-top:16px">
+          <div class="callout-label"><span class="tl">Babala</span><span class="en">Warning</span></div>
+          <p><span class="tl">Huwag gumamit ng “salt substitute” o “low-sodium salt” — kadalasan ito ay mataas sa potassium. Iwasan din ang herbal detox at kidney cleanse.</span><span class="en">Do not use “salt substitute” or “low-sodium salt” — these are often high in potassium. Also avoid herbal detox and kidney cleanses.</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="meds">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="section-num" aria-hidden="true">05</div>
+          <div>
+            <div class="kicker"><span class="tl">Gamot at numero</span><span class="en">Medicines and numbers</span></div>
+            <h2><span class="tl">Gamot at labs</span><span class="en">Medicines and labs</span></h2>
+            <p class="section-lede">
+              <span class="tl">Maraming gamot ang may espesyal na dosis kapag may kidney failure. Huwag mag-adjust nang sarili. Dalhin ang lahat ng gamot at supplement sa bawat check-up.</span>
+              <span class="en">Many medicines need special dosing in kidney failure. Do not adjust on your own. Bring all medicines and supplements to every check-up.</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-4">
+          <div class="card icon-card compact-card">
+            <span class="icon-badge"><svg><use href="#i-pill"/></svg></span>
+            <h3><span class="tl">Phosphate binders</span><span class="en">Phosphate binders</span></h3>
+            <p><span class="tl">Kasabay ng pagkain o meryenda. Walang pagkain, kadalasang walang bisa.</span><span class="en">Take with meals or snacks. Without food, they usually do not work.</span></p>
+          </div>
+          <div class="card icon-card compact-card">
+            <span class="icon-badge coral"><svg><use href="#i-heart"/></svg></span>
+            <h3><span class="tl">BP at puso</span><span class="en">BP and heart</span></h3>
+            <p><span class="tl">Ipaalam ang hilo o mababang BP. May gamot na hinohold bago ang dialysis.</span><span class="en">Report dizziness or low BP. Some medicines are held before dialysis.</span></p>
+          </div>
+          <div class="card icon-card compact-card">
+            <span class="icon-badge gold"><svg><use href="#i-drop"/></svg></span>
+            <h3><span class="tl">Anemia</span><span class="en">Anemia</span></h3>
+            <p><span class="tl">EPO at iron ayon sa reseta; kailangan ng CBC at iron tests.</span><span class="en">EPO and iron as prescribed; CBC and iron tests are needed.</span></p>
+          </div>
+          <div class="card icon-card compact-card">
+            <span class="icon-badge green"><svg><use href="#i-flask"/></svg></span>
+            <h3><span class="tl">Vitamin D at buto</span><span class="en">Vitamin D and bone</span></h3>
+            <p><span class="tl">Para sa calcium, phosphorus, at PTH. Huwag magdagdag nang wala sa payo.</span><span class="en">For calcium, phosphorus, and PTH. Do not add extra without advice.</span></p>
+          </div>
+        </div>
+
+        <div class="callout warning" style="margin-top:16px">
+          <div class="callout-label"><span class="tl">Babala sa gamot</span><span class="en">Medicine warning</span></div>
+          <p><span class="tl">Iwasan ang NSAIDs gaya ng ibuprofen at mefenamic acid maliban kung sinabi ng doktor. Huwag uminom ng herbal, “kidney cleanse,” o gamot ng kaibigan. Ipaalam ang lahat ng gamot at allergy.</span><span class="en">Avoid NSAIDs such as ibuprofen and mefenamic acid unless your doctor says otherwise. Do not take herbal products, “kidney cleanses,” or a friend’s medicine. Report all medicines and allergies.</span></p>
+        </div>
+
+        <h3 class="subhead"><span class="tl">Apat na numerong dapat mong malaman</span><span class="en">Four numbers to know</span></h3>
+        <div class="grid grid-4">
+          <div class="stat"><span class="big">K</span><span class="label"><span class="tl">Potassium — mataas ay delikado sa puso</span><span class="en">Potassium — high is dangerous for the heart</span></span></div>
+          <div class="stat"><span class="big">P</span><span class="label"><span class="tl">Phosphorus — buto at ugat; binder sa pagkain</span><span class="en">Phosphorus — bones and vessels; binder with meals</span></span></div>
+          <div class="stat"><span class="big">Hgb</span><span class="label"><span class="tl">Hemoglobin — anemia at pagod</span><span class="en">Hemoglobin — anemia and fatigue</span></span></div>
+          <div class="stat"><span class="big">Kt/V</span><span class="label"><span class="tl">Sapat na dialysis; karaniwang target ≥1.2</span><span class="en">Dialysis adequacy; usual target ≥1.2</span></span></div>
+        </div>
+        <p class="table-note"><span class="tl">Iba-iba ang target sa bawat pasyente at laboratory. Itanong ang inyong numero at trend, hindi lang isang resulta.</span><span class="en">Targets vary by patient and laboratory. Ask about your numbers and trends, not just one result.</span></p>
+
+        <details class="accordion" style="margin-top:14px">
+          <summary>Kailan ang mga labs? / When are labs done?</summary>
+          <div class="accordion-body">
+            <ul class="compact-list">
+              <li><span class="tl"><strong>Bawat session:</strong> timbang pagdating bago ang dialysis, BP, at pagtingin sa access.</span><span class="en"><strong>Every session:</strong> arrival weight before dialysis, BP, and access check.</span></li>
+              <li><span class="tl"><strong>Buwanan:</strong> CBC, potassium, phosphorus, calcium, albumin, at BUN/creatinine ayon sa unit.</span><span class="en"><strong>Monthly:</strong> CBC, potassium, phosphorus, calcium, albumin, and BUN/creatinine per unit.</span></li>
+              <li><span class="tl"><strong>Bawat 3–6 buwan:</strong> PTH, iron studies, at Kt/V/URR.</span><span class="en"><strong>Every 3–6 months:</strong> PTH, iron studies, and Kt/V/URR.</span></li>
+              <li><span class="tl"><strong>Taunan:</strong> hepatitis screening, vaccine review, at transplant discussion.</span><span class="en"><strong>Yearly:</strong> hepatitis screening, vaccine review, and transplant discussion.</span></li>
+            </ul>
+          </div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <h3>Dialysis Companion</h3>
+          <p class="footer-sub">Nurse Jo42</p>
+          <p><span class="tl">Isang gabay na pang-edukasyon para sa mga pasyenteng may kidney failure at sa kanilang pamilya. Hindi ito opisyal na portal ng ospital o gobyerno.</span><span class="en">An educational guide for people living with kidney failure and their families. This is not an official hospital or government portal.</span></p>
+          <p><span class="tl">Huling na-update: Nobyembre 2026. I-verify ang mga rate at patakaran sa PhilHealth at sa inyong dialysis unit.</span><span class="en">Last updated: November 2026. Verify rates and policies with PhilHealth and your dialysis unit.</span></p>
+        </div>
+        <div>
+          <h3><span class="tl">Mga pinagkunan</span><span class="en">Sources</span></h3>
+          <ul style="list-style:none;padding:0">
+            <li><a href="https://www.philhealth.gov.ph/benefits/" target="_blank" rel="noopener">PhilHealth Benefits</a></li>
+            <li><a href="https://www.philhealth.gov.ph/" target="_blank" rel="noopener">PhilHealth Member Portal</a></li>
+            <li><a href="https://www.doh.gov.ph/" target="_blank" rel="noopener">Department of Health</a></li>
+            <li><a href="https://nkti.gov.ph/" target="_blank" rel="noopener">National Kidney and Transplant Institute</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3><span class="tl">Mabilis na link</span><span class="en">Quick links</span></h3>
+          <ul style="list-style:none;padding:0">
+            <li><a href="emergency.html"><span class="tl">Emergency guide</span><span class="en">Emergency guide</span></a></li>
+            <li><a href="philhealth.html">PhilHealth</a></li>
+            <li><a href="support.html#care-plan"><span class="tl">Aking dialysis card</span><span class="en">My dialysis card</span></a></li>
+            <li><a href="records.html">Staff: HD patient records</a></li>
+            <li><a href="tel:911">Call 911</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Dialysis Companion. <span class="tl">Para sa mga pasyenteng Pilipino.</span><span class="en">For Filipino patients.</span></span>
+        <div class="footer-links"><a href="#top"><span class="tl">Bumalik sa itaas</span><span class="en">Back to top</span></a><a href="#main"><span class="tl">Nilalaman</span><span class="en">Contents</span></a></div>
+      </div>
+    </div>
+  </footer>
+
+  <div class="print-area" id="printArea" aria-hidden="true"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <button class="back-top" type="button" id="backToTop" aria-label="Bumalik sa itaas / Back to top"><svg aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -382,7 +382,7 @@
         '<p>' + bi(data.textTl, data.textEn) + '</p>' +
         '<div class="actions">' +
           (data.level === 'red' ? '<a class="btn btn-danger btn-small" href="tel:911">' + bi('Tumawag sa 911', 'Call 911') + '</a>' : '') +
-          '<a class="btn btn-secondary btn-small" href="#care-plan">' + bi('Buksan ang aking card', 'Open my card') + '</a>' +
+          '<a class="btn btn-secondary btn-small" href="support.html#care-plan">' + bi('Buksan ang aking card', 'Open my card') + '</a>' +
         '</div>';
       symptomResult.focus({ preventScroll: true });
     });

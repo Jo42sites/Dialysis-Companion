@@ -31,14 +31,14 @@ Keep the project files together in one folder:
 
 | File | Purpose |
 | --- | --- |
-| `index.html`, `styles.css`, `app.js` | Patient and family guide |
+| `index.html`, `dialysis.html`, `daily-care.html`, `emergency.html`, `philhealth.html`, `support.html`, `styles.css`, `app.js` | Patient and family guide |
 | `records.html`, `records.css`, `records.js` | Private HD patient record book |
 
-Open `index.html` in a browser to read the guide. Choose **HD records** from the
-navigation or the guide's main button to open the record book. The guide can be
-hosted as a static site, but the record book also requires the FastAPI service in
-[server/](./server/) to be deployed separately. A static host alone cannot
-create unit accounts or save records.
+Open `index.html` in a browser to find the focused guide pages. Choose **HD
+records** from the navigation or the guide's main button to open the record
+book. The guide can be hosted as a static site, but the record book also
+requires the FastAPI service in [server/](./server/) to be deployed separately.
+A static host alone cannot create unit accounts or save records.
 
 For the local record book, start the API as described in
 [server/README.md](./server/README.md) and serve the project on
