@@ -79,7 +79,8 @@ test('known foods show all requested categories and do not claim no flag means s
   const result = createChecker('Rice');
   const flags = result['#foodCheckerFlags'].children.map(flagText);
   assert.equal(flags.length, 5);
-  assert.ok(flags.every((item) => item.includes('No common flag identified')));
+  assert.ok(flags.every((item) => item.includes('None detected')));
+  assert.ok(flags.every((item) => !item.includes('No common flag identified')));
   assert.match(result['#foodCheckerBetterEn'].textContent, /does not guarantee it is safe/);
 });
 

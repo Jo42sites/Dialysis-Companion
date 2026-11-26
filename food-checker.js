@@ -124,8 +124,8 @@
       textTl = category.type === 'protein' ? 'May protein' : category.type === 'fluid' ? 'Bilangin sa fluid' : 'Posibleng mataas';
       textEn = category.type === 'protein' ? 'Protein source' : category.type === 'fluid' ? 'Count as fluid' : 'Potentially high';
     } else if (recognized) {
-      textTl = 'Walang natukoy na karaniwang flag';
-      textEn = 'No common flag identified';
+      textTl = 'Walang natukoy';
+      textEn = 'None detected';
     } else {
       textTl = 'Hindi matukoy';
       textEn = 'Unknown';
