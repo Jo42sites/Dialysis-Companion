@@ -476,6 +476,7 @@ html[data-lang="en"] h4 .en {
 .guide-link-card > p { grid-column: 1 / -1; grid-row: 2; margin: .65rem 0 0; }
 .guide-link-grid {
   grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-rows: minmax(168px, 1fr);
   gap: 16px;
 }
 .guide-link-card:nth-child(4) { grid-column: 2 / span 2; }
@@ -956,7 +957,10 @@ details.accordion[open] summary { background: var(--teal-soft); }
   .hero-card { bottom: 0; }
   .section-head { grid-template-columns: minmax(0, 1fr); }
   .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .guide-link-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .guide-link-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(168px, 1fr);
+  }
   .guide-link-card:nth-child(4) { grid-column: auto; }
   .guide-link-card:nth-child(5) {
     grid-column: 1 / -1; width: calc(50% - 8px); justify-self: center;
