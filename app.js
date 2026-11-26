@@ -316,7 +316,7 @@
     { nTl: 'Bawang, luya, at calamansi', nEn: 'Garlic, ginger, and calamansi', tags: [], noteTl: 'Mababang sodium na pampalasa. Gamiting kapalit ng asin.', noteEn: 'Low-sodium flavoring. Use instead of salt.', swapTl: 'Gawing marinade o sawsawan.', swapEn: 'Use as a marinade or dip.' }
   ];
 
-  const foodSearch = $('#foodSearch');
+  const foodSearch = $('#foodCheckerInput');
   const foodFilter = $('#foodFilter');
   const foodGrid = $('#foodGrid');
   const foodCount = $('#foodCount');

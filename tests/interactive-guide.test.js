@@ -350,9 +350,9 @@ test('custom symptom text alone is enough to get guidance', () => {
   assert.match(elements['#symptomResultText'].textContent, /Sundin|Follow/);
 });
 
-test('the separate lab-guide heading is absent while lab-range selection remains in symptom guide', () => {
+test('the labs and symptoms heading labels the guide with lab-range selection', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'account.html'), 'utf8');
-  assert.doesNotMatch(html, /GABAY SA LAB|LAB GUIDE/i);
+  assert.match(html, /Gabay sa Labs at Sintomas/i);
   assert.match(html, /id="labForm"/);
   assert.match(html, /value="below"/);
   assert.match(html, /value="above"/);

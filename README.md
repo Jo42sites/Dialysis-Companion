@@ -43,7 +43,7 @@ Keep the project files together in one folder:
 | File | Purpose |
 | --- | --- |
 | `index.html`, `dialysis.html`, `daily-care.html`, `emergency.html`, `philhealth.html`, `support.html`, `styles.css`, `app.js` | Patient and family guide |
-| `account.html`, `account.css`, `interactive-guide.css`, `interactive-guide.js` | Browser-only interactive symptom and selected lab-finding guide |
+| `account.html`, `account.css`, `interactive-guide.css`, `interactive-guide.js` | Browser-only interactive labs and symptoms guide |
 | `admin.html`, `admin.css`, `admin.js` | Protected site administration |
 | `records.html`, `records.css`, `records.js` | Private HD patient record book |
 
