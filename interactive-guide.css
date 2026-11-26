@@ -56,6 +56,14 @@
 .symptom-option input:focus-visible {
   outline: 3px solid rgba(13,107,97,.18); border-color: var(--teal);
 }
+.other-symptom-label { display: block; margin: .9rem 0 .3rem; font-size: .83rem; font-weight: 800; }
+.symptom-form textarea {
+  display: block; width: 100%; min-height: 84px; padding: .7rem .75rem;
+  border: 1px solid var(--line-strong); border-radius: 10px;
+  background: #fff; color: var(--ink); font: inherit; resize: vertical;
+}
+.symptom-form textarea:focus { outline: 3px solid rgba(13,107,97,.18); border-color: var(--teal); }
+.other-symptom-hint { margin: .35rem 0 .5rem; color: var(--muted); font-size: .75rem; }
 .health-tool-card .account-button { width: 100%; }
 .symptom-form fieldset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem; margin: 0; padding: 0; border: 0; }
 .symptom-form legend { margin-bottom: .55rem; }

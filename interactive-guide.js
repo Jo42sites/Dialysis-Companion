@@ -31,6 +31,91 @@
         ['Kung biglang namula, uminit, sumakit, o namaga ang kasukasuan, makipag-ugnayan sa clinician sa araw ding iyon; kailangan ding maalis sa posibilidad ang impeksiyon.', 'If a joint suddenly becomes red, warm, painful, or swollen, contact a clinician the same day; infection may also need to be ruled out.']
       ]
     },
+    highPotassium: {
+      level: 'same-day', label: ['mataas na potassium', 'high potassium'],
+      steps: [
+        ['Sundin ang instructions ng report o dialysis team; tawagan sila ngayon para sa payo, lalo na kung critical ang flag. Maaaring makaapekto ang potassium sa tibok ng puso.', 'Follow the report or dialysis team’s instructions; call them today for advice, especially if flagged critical. Potassium can affect heart rhythm.'],
+        ['Huwag gumamit ng salt substitute o “low-sodium salt” na may potassium chloride. Huwag gumawa ng malawakang pagbabago sa pagkain maliban kung ito ang payo ng renal dietitian.', 'Avoid salt substitutes or “low-sodium salt” containing potassium chloride. Do not make major diet changes unless advised by your renal dietitian.'],
+        ['Huwag lumiban o paikliin ang dialysis; huwag baguhin ang gamot o schedule nang kusa.', 'Do not miss or shorten dialysis; do not change medicines or your schedule on your own.'],
+        ['Bagong iregular na tibok, matinding panghihina, sakit ng dibdib, o hirap huminga: tumawag sa 911.', 'New irregular heartbeat, severe weakness, chest pain, or trouble breathing: call 911.']
+      ]
+    },
+    lowPotassium: {
+      level: 'same-day', label: ['mababang potassium', 'low potassium'],
+      steps: [
+        ['Ipaalam sa dialysis team ngayon at itanong kung kailangang ulitin o suriin ang resulta at gamot.', 'Tell your dialysis team today and ask whether the result or medicines need review.'],
+        ['Huwag dagdagan ang saging, orange, kamatis, o potassium supplement para “itaas” ito nang walang tiyak na payo; maaari itong maging delikado sa HD.', 'Do not add bananas, oranges, tomatoes, or potassium supplements to “raise” it without specific advice; this can be dangerous in HD.'],
+        ['Sundin ang dialysis at pagkain plan. Ipaalam agad ang pulikat, pamamanhid, panghihina, o palpitations.', 'Follow your dialysis and meal plan. Promptly report cramps, tingling, weakness, or palpitations.'],
+        ['Matinding panghihina, iregular na tibok, pagkahimatay, sakit ng dibdib, o hirap huminga: emergency help ngayon.', 'Severe weakness, irregular heartbeat, fainting, chest pain, or trouble breathing: get emergency help now.']
+      ]
+    },
+    highPhosphorus: {
+      level: 'general', label: ['mataas na phosphorus/phosphate', 'high phosphorus/phosphate'],
+      steps: [
+        ['Suriin ang ingredient list para sa phosphate additives (madalas may “phos” sa pangalan); itanong sa renal dietitian ang praktikal na pamalit.', 'Check ingredient lists for phosphate additives (often containing “phos”); ask a renal dietitian for practical swaps.'],
+        ['Kung may phosphate binder ka, inumin lamang ayon sa eksaktong instructions ng team, kabilang ang timing sa pagkain. Huwag magdoble o magbago ng dose.', 'If you take a phosphate binder, use it only as directed by your team, including timing with meals. Do not double or change the dose.'],
+        ['Huwag basta alisin ang karne, isda, itlog, o ibang protein; tulungan ka ng dietitian na bawasan ang additives habang nakakakuha pa rin ng sapat na nutrisyon.', 'Do not simply remove meat, fish, eggs, or other protein; a dietitian can help reduce additives while maintaining adequate nutrition.'],
+        ['Ipaalam ang resulta sa care team at itanong kung kailangang repasuhin ang trend o treatment plan.', 'Share the result with your care team and ask whether the trend or treatment plan needs review.']
+      ]
+    },
+    highCalcium: {
+      level: 'general', label: ['mataas na calcium', 'high calcium'],
+      steps: [
+        ['Ipa-review ito sa dialysis team/clinician kasama ng albumin, phosphorus, at mga kaugnay na gamot.', 'Ask your dialysis team/clinician to review it with albumin, phosphorus, and related medicines.'],
+        ['Huwag magsimula o magdagdag ng calcium, vitamin D, antacid, o supplement; huwag ihinto ang niresetang gamot nang walang instructions.', 'Do not start or add calcium, vitamin D, antacids, or supplements; do not stop prescribed medicine without instructions.'],
+        ['Ipaalam ang pagduduwal, constipation, matinding uhaw, o pagkalito. Kung biglaan o malubha ang pagkalito/panghihina, humingi agad ng emergency help.', 'Report nausea, constipation, unusual thirst, or confusion. For sudden or severe confusion/weakness, get emergency help now.']
+      ]
+    },
+    lowCalcium: {
+      level: 'general', label: ['mababang calcium', 'low calcium'],
+      steps: [
+        ['Tawagan ang dialysis team/clinician para sa interpretasyon kasama ng albumin at phosphorus; maaaring kailangan ang follow-up.', 'Contact your dialysis team/clinician for interpretation alongside albumin and phosphorus; follow-up may be needed.'],
+        ['Huwag uminom ng calcium o vitamin D supplement o magbago ng pagkain/gamot para itama ito nang walang instructions.', 'Do not take calcium or vitamin D supplements or change food/medicines to correct it without instructions.'],
+        ['Ipaalam ang pamamanhid o pangingilig sa labi/daliri at pulikat. Seizure, matinding muscle spasm, hirap huminga, o pagkalito: emergency help ngayon.', 'Report numbness or tingling around the lips/fingers and cramps. Seizure, severe muscle spasm, trouble breathing, or confusion: get emergency help now.']
+      ]
+    },
+    lowAlbumin: {
+      level: 'general', label: ['mababang albumin', 'low albumin'],
+      steps: [
+        ['Itanong sa team kung may inflammation, impeksiyon, o ibang dahilan; hindi albumin lang ang sukatan ng nutrisyon.', 'Ask your care team about inflammation, infection, or other causes; albumin alone does not measure nutrition.'],
+        ['Kung hirap kumain o pumapayat, humingi ng tulong sa renal dietitian. Pumili lamang ng protein at dagdag na pagkain na pasok sa iyong HD plan.', 'If eating is difficult or you are losing weight, ask a renal dietitian for help. Choose protein and extra foods that fit your HD plan.'],
+        ['Huwag basta dagdagan ang protein powder, nutritional drink, o supplement; maaaring marami itong potassium, phosphorus, sodium, o fluid.', 'Do not simply add protein powder, nutrition drinks, or supplements; they may contain significant potassium, phosphorus, sodium, or fluid.'],
+        ['Ipaalam kung may sugat na hindi gumagaling, lagnat, o patuloy na kawalan ng gana sa pagkain.', 'Report wounds that are not healing, fever, or ongoing loss of appetite.']
+      ]
+    },
+    lowAdequacy: {
+      level: 'general', label: ['mababang Kt/V o URR', 'low Kt/V or URR'],
+      steps: [
+        ['Ipa-review sa dialysis team kung ano ang ibig sabihin nito sa iyong schedule at personal na target; huwag baguhin ang oras o dalas ng dialysis nang kusa.', 'Ask your dialysis team what this means for your schedule and personal target; do not change treatment time or frequency on your own.'],
+        ['Dumalo at tapusin ang dialysis sessions ayon sa nakatakda. Kung may na-miss o na-shortened na session, sabihin ito sa team.', 'Attend and complete sessions as scheduled. Tell your team about any missed or shortened session.'],
+        ['Itanong kung dapat suriin ang access, blood-flow readings, o treatment time. Huwag galawin ang access o machine maliban kung sinanay at inutusan.', 'Ask whether access, blood-flow readings, or treatment time should be reviewed. Do not adjust access or the machine unless trained and instructed.']
+      ]
+    },
+    highBun: {
+      level: 'general', label: ['mataas na BUN/urea', 'high BUN/urea'],
+      steps: [
+        ['Ipa-review ang resulta sa dialysis team kasama ng schedule, Kt/V o URR, sintomas, at iba pang resulta.', 'Ask your dialysis team to review this with your schedule, Kt/V or URR, symptoms, and other results.'],
+        ['Dumalo at tapusin ang dialysis ayon sa schedule. Huwag magdagdag ng session, magbago ng oras, o magbawas ng protein nang kusa.', 'Attend and complete dialysis as scheduled. Do not add sessions, change treatment time, or reduce protein on your own.'],
+        ['Kung may na-miss o na-shortened na session, sabihin ito sa team. Ipaalam ang pagduduwal, pangangati, pagkalito, o matinding pagkapagod.', 'Tell your team about any missed or shortened session. Report nausea, itching, confusion, or unusual fatigue.']
+      ]
+    },
+    highGlucose: {
+      level: 'general', label: ['mataas na blood sugar/glucose', 'high blood sugar/glucose'],
+      steps: [
+        ['Kung may diabetes plan ka, sundin iyon sa pag-ulit ng sukat at kung kailan tatawag. Itala ang reading, oras, pagkain, at gamot.', 'If you have a diabetes plan, follow it for rechecking and when to call. Record the reading, time, food, and medicines.'],
+        ['Inumin lamang ang gamot ayon sa niresetang schedule; huwag magdagdag ng insulin o dose nang walang instructions.', 'Take medicines only as prescribed; do not add insulin or extra doses without instructions.'],
+        ['Tawagan ang care team kung mataas pa rin ayon sa iyong plan, may sakit, o hindi malinaw ang susunod na hakbang. Huwag dagdagan ang tubig kung lampas iyon sa fluid limit.', 'Contact your care team if it remains high by your plan, you feel ill, or next steps are unclear. Do not increase water beyond your fluid limit.'],
+        ['Pagsusuka, malalim/mabilis na paghinga, pagkalito, o matinding antok: humingi agad ng emergency help.', 'Vomiting, deep/rapid breathing, confusion, or severe drowsiness: get emergency help now.']
+      ]
+    },
+    lowGlucose: {
+      level: 'same-day', label: ['mababang blood sugar/glucose', 'low blood sugar/glucose'],
+      steps: [
+        ['Kung may diabetes plan ka, sundin ang nakasulat na hakbang para sa low sugar at ulitin ang sukat ayon sa plan. Huwag manghula ng pagkain o dose.', 'If you have a diabetes plan, follow its written low-sugar steps and recheck as directed. Do not guess at food or medicine doses.'],
+        ['Kung walang malay, nagse-seizure, o hindi ligtas lumunok, huwag magbigay ng pagkain/inumin sa bibig; tumawag sa 911.', 'If unconscious, having a seizure, or unable to swallow safely, give nothing by mouth; call 911.'],
+        ['Kung hindi bumubuti ayon sa iyong plan, bumabalik, o hindi alam ang gagawin, humingi agad ng tulong sa caregiver at tumawag sa care team/911 ayon sa tindi.', 'If it does not improve as directed, returns, or you are unsure what to do, get help from a caregiver and contact your care team/911 depending on severity.']
+      ]
+    },
     chest: {
       level: 'urgent', label: ['pananakit o bigat ng dibdib', 'chest pain or pressure'],
       steps: [
@@ -206,14 +291,15 @@
       button.setAttribute('aria-pressed', String(button.dataset.guideLang === selected));
     });
     renderSymptomResult();
-    if (!latestSymptoms.length && !symptomResult.hidden) {
+    if (!latestSymptoms.length && !latestOtherSymptom && !symptomResult.hidden) {
       $('#symptomResultTitle').textContent = text[selected].symptomMissing;
     }
   }
 
   let latestSymptoms = [];
+  let latestOtherSymptom = '';
   function renderSymptomResult() {
-    if (!latestSymptoms.length) return;
+    if (!latestSymptoms.length && !latestOtherSymptom) return;
     const language = currentLanguage();
     const index = language === 'tl' ? 0 : 1;
     const urgencyRank = { urgent: 3, 'same-day': 2, general: 1 };
@@ -221,7 +307,7 @@
       .map((symptom) => ({ key: symptom, guidance: symptomGuidance[symptom] }))
       .filter(({ guidance }) => guidance)
       .sort((a, b) => urgencyRank[b.guidance.level] - urgencyRank[a.guidance.level]);
-    const level = selected[0].guidance.level;
+    const level = selected.length ? selected[0].guidance.level : 'general';
     const title = level === 'urgent'
       ? text[language].emergencyTitle
       : level === 'same-day'
@@ -235,8 +321,7 @@
     symptomResult.dataset.level = level;
     $('#symptomResultTitle').textContent = title;
     $('#symptomResultText').textContent = message;
-    $('#symptomDetails').replaceChildren(
-      ...selected.map(({ guidance }) => {
+    const details = selected.map(({ guidance }) => {
         const detail = document.createElement('article');
         detail.className = 'symptom-detail';
         const heading = document.createElement('div');
@@ -256,8 +341,43 @@
         });
         detail.append(heading, steps);
         return detail;
-      })
-    );
+    });
+    if (latestOtherSymptom) {
+      const customDetail = document.createElement('article');
+      customDetail.className = 'symptom-detail';
+      const heading = document.createElement('div');
+      heading.className = 'symptom-detail-heading';
+      const label = document.createElement('h4');
+      label.textContent = language === 'tl'
+        ? `Iba pang sintomas: ${latestOtherSymptom}`
+        : `Other symptom: ${latestOtherSymptom}`;
+      heading.append(label);
+      const steps = document.createElement('ul');
+      steps.className = 'recommendation-list';
+      const customSteps = language === 'tl'
+        ? [
+            'Itigil muna ang ginagawa at umupo o humiga sa ligtas na lugar. Magpasama; huwag magmaneho kung nanghihina, nahihilo, o masama ang pakiramdam.',
+            'Kung ligtas at alam gamitin ang monitor, sukatin at itala ang blood pressure o temperatura. Isulat kung kailan nagsimula at kung kaugnay ng dialysis, pagkain, o gamot.',
+            'Sundin ang kasalukuyang fluid, pagkain, gamot, at dialysis plan. Huwag uminom o kumain ng dagdag o magpalit ng gamot batay lamang sa online guide.',
+            'Tawagan ang dialysis team ngayon kung bago, nagpapatuloy, lumalala, o nangyari habang/nagkatapos ng dialysis.',
+            'Tumawag sa 911 para sa sakit ng dibdib, matinding hirap huminga, pagkahimatay, seizure, biglaang pagkalito o panghihina/pamamanhid, matinding pagdurugo, o mabilis na paglala.'
+          ]
+        : [
+            'Pause activity and sit or lie somewhere safe. Ask someone to stay with you; do not drive if weak, dizzy, or unwell.',
+            'If safe and you know how to use the monitor, check and record blood pressure or temperature. Note when it started and any relation to dialysis, food, or medicine.',
+            'Follow your current fluid, food, medicine, and dialysis plan. Do not add food or fluids or change medicines based only on an online guide.',
+            'Call your dialysis team today if it is new, persistent, worsening, or happened during/after dialysis.',
+            'Call 911 for chest pain, severe trouble breathing, fainting, seizure, sudden confusion or weakness/numbness, severe bleeding, or rapid worsening.'
+          ];
+      customSteps.forEach((step) => {
+        const item = document.createElement('li');
+        item.textContent = step;
+        steps.append(item);
+      });
+      customDetail.append(heading, steps);
+      details.push(customDetail);
+    }
+    $('#symptomDetails').replaceChildren(...details);
     symptomResult.hidden = false;
   }
 
@@ -267,7 +387,8 @@
       document.querySelectorAll('input[name="symptom"]:checked'),
       (input) => input.value
     );
-    if (!latestSymptoms.length) {
+    latestOtherSymptom = $('#otherSymptom').value.trim();
+    if (!latestSymptoms.length && !latestOtherSymptom) {
       symptomResult.dataset.level = 'general';
       $('#symptomResultTitle').textContent = text[currentLanguage()].symptomMissing;
       $('#symptomResultText').textContent = '';
@@ -292,6 +413,7 @@
   window.addEventListener('pagehide', () => {
     $('#symptomForm').reset();
     latestSymptoms = [];
+    latestOtherSymptom = '';
     symptomResult.hidden = true;
   });
 })();

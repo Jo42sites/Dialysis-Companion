@@ -22,9 +22,10 @@ families, with a unit-based hemodialysis (HD) record manager for care teams.
   Patient record contents are encrypted before being saved in the server's
   SQLite database.
 - **Interactive symptom guide:** patients and families can explore practical
-  next steps for common symptoms and selected abnormal Hb/uric-acid results,
-  with kidney-diet-aware cautions. Selections stay in the page and are not
-  saved or sent to the server.
+  next steps for common symptoms, custom symptom descriptions, and abnormal
+  hemoglobin, uric acid, electrolyte, mineral, albumin, BUN, glucose, and
+  dialysis-adequacy results, with kidney-diet-aware cautions. Selections stay
+  in the page and are not saved or sent to the server.
 - **Site administration:** a separately configured server-side admin can
   manage legacy accounts and units, manage unit access, and view/edit clinical
   records across units. Admin record access is audited.

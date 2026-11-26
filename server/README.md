@@ -67,12 +67,13 @@ account or changing its password invalidates existing tokens.
 
 ## Patient and family interactive guide
 
-The browser-only guide provides actionable symptom next steps and general
-education for low/high hemoglobin and high uric acid flags. Food suggestions
-are qualified by the patient's renal meal plan; the guide does not prescribe
-treatment or recommend medication doses. Selections are held only in page
-memory: they are not saved in local storage and are not sent to the API. The
-guide does not diagnose, set personal targets, or replace advice from a
+The browser-only guide provides actionable steps for common and custom
+symptoms, plus general education for abnormal hemoglobin, uric acid, potassium,
+phosphorus, calcium, albumin, BUN, glucose, and Kt/V/URR flags. Food
+suggestions are qualified by the patient's renal meal plan; the guide does not
+prescribe treatment or recommend medication doses. Selections are held only in
+page memory: they are not saved in local storage and are not sent to the API.
+The guide does not diagnose, set personal targets, or replace advice from a
 dialysis team.
 
 Public patient/family account registration, sign-in, and card-sync API routes

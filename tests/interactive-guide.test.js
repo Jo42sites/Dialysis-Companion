@@ -14,6 +14,7 @@ class Element {
     this.attributes = {};
     this.hidden = true;
     this.textContent = '';
+    this.value = '';
   }
 
   addEventListener(name, callback) {
@@ -36,7 +37,7 @@ class Element {
 }
 
 function createGuide() {
-  const ids = ['symptomResult', 'symptomForm', 'symptomResultTitle', 'symptomResultText', 'symptomDetails'];
+  const ids = ['symptomResult', 'symptomForm', 'symptomResultTitle', 'symptomResultText', 'symptomDetails', 'otherSymptom'];
   const elements = Object.fromEntries(ids.map((id) => [`#${id}`, new Element()]));
   const languageButtons = ['tl', 'en'].map((language) => {
     const button = new Element();
@@ -113,6 +114,43 @@ test('high uric acid suggests reasonable food limits without excessive fluid adv
   assert.match(advice, /do not eliminate protein or increase water/i);
 });
 
+test('high potassium advice avoids a home food fix and flags emergency symptoms', () => {
+  const { elements, checkedSymptoms, languageButtons } = createGuide();
+  languageButtons[1].listeners.click({});
+  checkedSymptoms.push({ value: 'highPotassium' });
+  submit(elements);
+
+  const advice = selectAllAdvice(elements);
+  assert.match(advice, /potassium can affect heart rhythm/i);
+  assert.match(advice, /avoid salt substitutes/i);
+  assert.match(advice, /do not make major diet changes/i);
+  assert.match(advice, /call 911/i);
+});
+
+test('low phosphorus-adequacy guidance does not recommend changing dialysis independently', () => {
+  const { elements, checkedSymptoms, languageButtons } = createGuide();
+  languageButtons[1].listeners.click({});
+  checkedSymptoms.push({ value: 'lowAdequacy' });
+  submit(elements);
+
+  const advice = selectAllAdvice(elements);
+  assert.match(advice, /attend and complete sessions/i);
+  assert.match(advice, /do not change treatment time or frequency/i);
+  assert.match(advice, /ask whether access/i);
+});
+
+test('low glucose guidance follows the personal plan and protects someone unable to swallow', () => {
+  const { elements, checkedSymptoms, languageButtons } = createGuide();
+  languageButtons[1].listeners.click({});
+  checkedSymptoms.push({ value: 'lowGlucose' });
+  submit(elements);
+
+  const advice = selectAllAdvice(elements);
+  assert.match(advice, /follow its written low-sugar steps/i);
+  assert.match(advice, /give nothing by mouth/i);
+  assert.match(advice, /call 911/i);
+});
+
 test('dizziness suggests safe BP checking without recommending extra food or fluids', () => {
   const { elements, checkedSymptoms, languageButtons } = createGuide();
   languageButtons[1].listeners.click({});
@@ -158,6 +196,29 @@ test('every selectable symptom or lab finding has a recommendation', () => {
   submit(elements);
 
   assert.equal(elements['#symptomDetails'].children.length, values.length);
+});
+
+test('custom symptom gets safe general guidance and is rendered as plain text', () => {
+  const { elements, languageButtons } = createGuide();
+  languageButtons[1].listeners.click({});
+  elements['#otherSymptom'].value = '<img src=x onerror=alert(1)>';
+  submit(elements);
+
+  assert.equal(elements['#symptomResult'].dataset.level, 'general');
+  assert.match(elements['#symptomDetails'].children[0].children[0].children[0].textContent, /<img/);
+  const advice = selectAllAdvice(elements);
+  assert.match(advice, /check and record blood pressure or temperature/i);
+  assert.match(advice, /call your dialysis team today/i);
+  assert.match(advice, /call 911/i);
+});
+
+test('custom symptom text alone is enough to get guidance', () => {
+  const { elements } = createGuide();
+  elements['#otherSymptom'].value = 'itchy skin';
+  submit(elements);
+
+  assert.equal(elements['#symptomDetails'].children.length, 1);
+  assert.match(elements['#symptomResultText'].textContent, /Sundin|Follow/);
 });
 
 test('the separate lab guide has been removed', () => {

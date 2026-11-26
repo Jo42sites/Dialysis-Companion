@@ -60,10 +60,20 @@
         <form id="symptomForm" class="symptom-form">
           <fieldset>
             <legend><span class="tl">Pumili ng sintomas o resulta</span><span class="en">Select symptoms or findings</span></legend>
-            <p class="symptom-group-label"><span class="tl">Mga resulta sa lab na minarkahang abnormal</span><span class="en">Lab results flagged as abnormal</span></p>
+            <p class="symptom-group-label"><span class="tl">Mga resulta sa lab ng HD na minarkahang abnormal</span><span class="en">HD lab results flagged as abnormal</span></p>
             <label class="symptom-option"><input type="checkbox" name="symptom" value="lowHb"><span><span class="tl">Mababang hemoglobin (Hb) / anemia sa report</span><span class="en">Low hemoglobin (Hb) / anemia on report</span></span></label>
             <label class="symptom-option"><input type="checkbox" name="symptom" value="highHb"><span><span class="tl">Mataas na hemoglobin (Hb) sa report</span><span class="en">High hemoglobin (Hb) on report</span></span></label>
             <label class="symptom-option"><input type="checkbox" name="symptom" value="highUric"><span><span class="tl">Mataas na uric acid sa report</span><span class="en">High uric acid on report</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="highPotassium"><span><span class="tl">Mataas na potassium sa report</span><span class="en">High potassium on report</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowPotassium"><span><span class="tl">Mababang potassium sa report</span><span class="en">Low potassium on report</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="highPhosphorus"><span><span class="tl">Mataas na phosphorus/phosphate sa report</span><span class="en">High phosphorus/phosphate on report</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="highCalcium"><span><span class="tl">Mataas na calcium sa report</span><span class="en">High calcium on report</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowCalcium"><span><span class="tl">Mababang calcium sa report</span><span class="en">Low calcium on report</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowAlbumin"><span><span class="tl">Mababang albumin sa report</span><span class="en">Low albumin on report</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowAdequacy"><span><span class="tl">Mababang Kt/V o URR sa report</span><span class="en">Low Kt/V or URR on report</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="highBun"><span><span class="tl">Mataas na BUN/urea sa report</span><span class="en">High BUN/urea on report</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="highGlucose"><span><span class="tl">Mataas na blood sugar/glucose sa report o meter</span><span class="en">High blood sugar/glucose on report or meter</span></span></label>
+            <label class="symptom-option"><input type="checkbox" name="symptom" value="lowGlucose"><span><span class="tl">Mababang blood sugar/glucose sa report o meter</span><span class="en">Low blood sugar/glucose on report or meter</span></span></label>
             <p class="symptom-group-label"><span class="tl">Mga sintomas</span><span class="en">Symptoms</span></p>
             <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="chest"><span><span class="tl">Pananakit o bigat ng dibdib</span><span class="en">Chest pain or pressure</span></span></label>
             <label class="symptom-option urgent-option"><input type="checkbox" name="symptom" value="breathing"><span><span class="tl">Matinding hirap huminga</span><span class="en">Severe trouble breathing</span></span></label>
@@ -83,6 +93,9 @@
             <label class="symptom-option"><input type="checkbox" name="symptom" value="pale"><span><span class="tl">Kapansin-pansing pamumutla</span><span class="en">Noticeably pale skin</span></span></label>
             <label class="symptom-option"><input type="checkbox" name="symptom" value="joint"><span><span class="tl">Biglaang masakit, mapula, mainit, o namamagang kasukasuan (posibleng gout flare)</span><span class="en">Sudden painful, red, warm, or swollen joint (possible gout flare)</span></span></label>
           </fieldset>
+          <label class="other-symptom-label" for="otherSymptom"><span class="tl">Iba pang nararamdaman? I-type dito</span><span class="en">Something else? Describe it here</span></label>
+          <textarea id="otherSymptom" name="otherSymptom" rows="3" maxlength="180" placeholder="Hal. pamamanhid / e.g., numbness"></textarea>
+          <p class="other-symptom-hint"><span class="tl">Para sa inilagay na sintomas, magbibigay ang gabay ng pangkalahatang hakbang lamang—hindi diagnosis.</span><span class="en">For a custom symptom, the guide gives general safety steps only—not a diagnosis.</span></p>
           <button class="account-button" type="submit"><span class="tl">Tingnan ang susunod na hakbang</span><span class="en">Show next steps</span></button>
         </form>
 
@@ -99,7 +112,9 @@
       <p><span class="tl">Huwag baguhin ang gamot, iron/epoetin, fluid limit, pagkain, o dialysis schedule batay lamang sa gabay na ito. Ibahagi agad sa care team ang abnormal o critical na resulta at anumang bago o lumalalang sintomas.</span><span class="en">Do not change medicines, iron/epoetin, fluid limits, diet, or dialysis schedule based only on this guide. Promptly share abnormal or critical results and any new or worsening symptoms with your care team.</span></p>
       <p class="guide-sources"><span class="tl">Karagdagang impormasyon:</span><span class="en">More information:</span>
         <a href="https://www.niddk.nih.gov/health-information/kidney-disease/anemia" target="_blank" rel="noopener noreferrer">NIDDK: Anemia in CKD</a> ·
-        <a href="https://www.kidney.org/kidney-topics/gout-and-kidney-disease" target="_blank" rel="noopener noreferrer">National Kidney Foundation: Gout and Kidney Disease</a>
+        <a href="https://www.kidney.org/kidney-topics/gout-and-kidney-disease" target="_blank" rel="noopener noreferrer">National Kidney Foundation: Gout and Kidney Disease</a> ·
+        <a href="https://www.niddk.nih.gov/health-information/kidney-disease/kidney-failure/hemodialysis/eating-nutrition" target="_blank" rel="noopener noreferrer">NIDDK: Eating & Nutrition for Hemodialysis</a> ·
+        <a href="https://www.kidney.org/kidney-topics/phosphorus-and-your-ckd-diet" target="_blank" rel="noopener noreferrer">National Kidney Foundation: Phosphorus and CKD Diet</a>
       </p>
     </section>
   </main>
