@@ -218,3 +218,42 @@ After the service is live:
 The Render blueprint allows the repository's GitHub Pages origin through CORS.
 If you use a custom Pages domain, update `CORS_ORIGIN` on the Render service to
 that exact website origin and redeploy.
+
+## Deploying this repository on Coolify
+
+The root `Dockerfile` builds this FastAPI service (it previously built a
+throwaway Node demo and served no data). The static website is still deployed
+separately to GitHub Pages.
+
+In Coolify, on the application resource:
+
+1. **Configuration → Build**: keep the Dockerfile build strategy with
+   `/Dockerfile`, and set *Ports Exposes* to `3000`.
+2. **Persistent Storage**: add a volume with mount path `/var/data`. Without it
+   the SQLite database is recreated empty on every redeploy.
+3. **Environment Variables**: set
+   - `MEDICAL_DATA_KEY` — 32+ random bytes (`openssl rand -base64 48`). Back this
+     up: losing it makes encrypted patient records unrecoverable.
+   - `JWT_SECRET` — 32+ random bytes.
+   - `DATABASE_PATH=/var/data/dialysis-admin.sqlite`
+   - `HOST=0.0.0.0`, `PORT=3000`
+   - `CORS_ORIGIN=https://jo42sites.github.io` (or your Pages origin)
+   - `TRUST_PROXY=1`, `NODE_ENV=production`
+4. **Healthcheck**: path `/api/health`, port `3000`.
+5. **Deploy**, then open `https://<api-domain>/api/health`. It must return
+   `{"status":"ok"}`.
+
+In GitHub, set the Actions variable `ADMIN_API_URL` to the API's HTTPS origin
+(for example `https://api.example.com`) and re-run the Pages workflow so
+`records.html` and `admin.html` receive the `admin-api` meta tag. Without it the
+site stays in browser-only vault mode.
+
+`NODE_ENV=production` rejects `/api` requests that do not arrive over HTTPS
+(everything except `/api/health`), so the API needs a TLS-terminated domain. The
+generated `*.sslip.io` hostname is HTTP-only and resolves to a private address;
+it is fine for `/api/health` checks on the LAN but cannot serve the site across
+devices.
+
+Patient records are encrypted at rest with `MEDICAL_DATA_KEY`; the SQLite file
+itself is not. Use `server/backup.py` with `backup_crypto.py` for encrypted
+backups and store them off the server.
