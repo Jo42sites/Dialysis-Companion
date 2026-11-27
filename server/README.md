@@ -257,3 +257,20 @@ devices.
 Patient records are encrypted at rest with `MEDICAL_DATA_KEY`; the SQLite file
 itself is not. Use `server/backup.py` with `backup_crypto.py` for encrypted
 backups and store them off the server.
+
+The API runs as uid `10001`, not root. Coolify's Docker volumes inherit that
+ownership from the image. If you switch to a host bind mount, run
+`chown -R 10001:10001 <host-path>` first or SQLite will fail to open.
+
+### Backups
+
+`backup.py` writes an encrypted snapshot (`.dcbackup`) and needs
+`BACKUP_PASSWORD` (16+ characters) in the environment. Add a Coolify scheduled
+task, for example daily:
+
+```
+python backup.py /var/data/backups/records-$(date +%F).dcbackup
+```
+
+Files written to the app volume die with the server, so copy them offsite
+(`restore_backup.py` reverses the format). Test a restore before you rely on it.

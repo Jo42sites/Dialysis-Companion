@@ -18,7 +18,13 @@ COPY server/ ./
 
 # Encrypted SQLite database lives here.
 # Mount a persistent volume at /var/data or data is lost on every redeploy.
-RUN mkdir -p /var/data && chmod 700 /var/data
+# The API never runs as root: if you use a host bind mount instead of a Docker
+# volume, chown it to 10001:10001 first.
+RUN mkdir -p /var/data \
+ && chown -R 10001:10001 /app /var/data \
+ && chmod 700 /var/data
+
+USER 10001:10001
 
 EXPOSE 3000
 
