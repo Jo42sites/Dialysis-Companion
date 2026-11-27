@@ -362,11 +362,13 @@ test('the labs and symptoms heading labels the guide with lab-range selection', 
 test('the guide keeps the standard sticky navigation and mobile menu available', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'account.html'), 'utf8');
   const styles = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');
+  const guideStyles = fs.readFileSync(path.join(__dirname, '..', 'interactive-guide.css'), 'utf8');
   const desktopNav = html.match(/<nav class="main-nav"[\s\S]*?<\/nav>/)?.[0];
   const mobileMenu = html.match(/<div class="mobile-menu"[\s\S]*?<\/div>\s*<div class="mobile-menu-foot"/)?.[0];
 
   assert.match(html, /<div class="utility-bar">/);
   assert.match(styles, /\.site-header\s*\{[^}]*position:\s*sticky;/);
+  assert.match(guideStyles, /@media\s*\(max-width:\s*1080px\)\s*\{[\s\S]*?\.interactive-guide-page \.main-nav\s*\{[^}]*display:\s*flex;[\s\S]*?overflow-x:\s*auto;/);
   assert.ok(desktopNav, 'standard desktop navigation exists');
   assert.ok(mobileMenu, 'mobile navigation exists');
   assert.match(desktopNav, /href="daily-care\.html"/);

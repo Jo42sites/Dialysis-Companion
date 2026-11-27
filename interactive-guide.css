@@ -128,9 +128,6 @@
 }
 @media (max-width: 600px) {
   .health-guide-wrap { width: calc(100% - 28px); margin-top: 1.4rem; }
-  .interactive-guide-page .account-header { width: calc(100% - 28px); min-height: 70px; }
-  .interactive-guide-page .account-header nav { gap: .55rem; font-size: .75rem; }
-  .interactive-guide-page .account-header nav > a:nth-child(2) { display: none; }
   .guide-language-switch button { padding: .32rem .5rem; }
   .symptom-form fieldset { grid-template-columns: 1fr; }
   .symptom-group-label { grid-column: 1; }
@@ -139,4 +136,29 @@
   .health-guide-emergency { grid-template-columns: 1fr auto; gap: .4rem .7rem; }
   .health-guide-emergency > span { grid-column: 1; }
   .health-guide-emergency a { grid-column: 2; grid-row: 1 / span 2; }
+}
+@media (max-width: 1080px) {
+  .interactive-guide-page .header-inner {
+    height: auto;
+    min-height: var(--header-h);
+    flex-wrap: wrap;
+    gap: .25rem .75rem;
+    padding-block: .4rem;
+  }
+  .interactive-guide-page .header-inner > div { order: 1; }
+  .interactive-guide-page .main-nav {
+    display: flex;
+    order: 2;
+    flex: 0 0 100%;
+    width: 100%;
+    gap: .2rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+  .interactive-guide-page .main-nav a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 8px 10px;
+  }
 }
