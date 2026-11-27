@@ -358,3 +358,21 @@ test('the labs and symptoms heading labels the guide with lab-range selection', 
   assert.match(html, /value="above"/);
   assert.match(html, /GABAY SA SINTOMAS/);
 });
+
+test('the guide keeps the standard sticky navigation and mobile menu available', () => {
+  const html = fs.readFileSync(path.join(__dirname, '..', 'account.html'), 'utf8');
+  const styles = fs.readFileSync(path.join(__dirname, '..', 'styles.css'), 'utf8');
+  const desktopNav = html.match(/<nav class="main-nav"[\s\S]*?<\/nav>/)?.[0];
+  const mobileMenu = html.match(/<div class="mobile-menu"[\s\S]*?<\/div>\s*<div class="mobile-menu-foot"/)?.[0];
+
+  assert.match(html, /<div class="utility-bar">/);
+  assert.match(styles, /\.site-header\s*\{[^}]*position:\s*sticky;/);
+  assert.ok(desktopNav, 'standard desktop navigation exists');
+  assert.ok(mobileMenu, 'mobile navigation exists');
+  assert.match(desktopNav, /href="daily-care\.html"/);
+  assert.match(desktopNav, /href="emergency\.html"/);
+  assert.match(desktopNav, /href="account\.html" aria-current="page"/);
+  assert.match(html, /id="menuToggle"[^>]*aria-controls="mobileMenu"/);
+  assert.match(mobileMenu, /href="daily-care\.html"/);
+  assert.match(mobileMenu, /href="emergency\.html"/);
+});

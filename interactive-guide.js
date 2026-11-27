@@ -529,6 +529,9 @@
   document.querySelectorAll('[data-guide-lang]').forEach((button) => {
     button.addEventListener('click', () => setLanguage(button.dataset.guideLang));
   });
+  const printGuide = $('#printGuide');
+  if (printGuide) printGuide.addEventListener('click', () => window.print());
+
   const menuToggle = $('#menuToggle');
   const mobileMenu = $('#mobileMenu');
   if (menuToggle && mobileMenu) {

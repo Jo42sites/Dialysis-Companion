@@ -13,6 +13,23 @@
 </head>
 <body class="account-page interactive-guide-page">
   <a class="skip-link" href="#main">Lumaktaw sa nilalaman / Skip to content</a>
+  <div class="utility-bar">
+    <div class="wrap utility-inner">
+      <div class="utility-note">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="long"><span class="tl">Gabay na pang-edukasyon</span><span class="en">Educational guide only</span></span>
+        <span class="short"><span class="tl">Gabay</span><span class="en">Guide</span></span>
+        <span class="sr-only">Hindi ito kapalit ng payo ng doktor.</span>
+      </div>
+      <div class="utility-actions">
+        <button class="util-btn" type="button" id="printGuide" title="Print this guide"><span class="tl">I-print</span><span class="en">Print</span></button>
+        <div class="guide-language-switch" role="group" aria-label="Language">
+          <button type="button" data-guide-lang="tl" aria-pressed="true">Tagalog</button>
+          <button type="button" data-guide-lang="en" aria-pressed="false">English</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <header class="site-header">
     <div class="wrap header-inner">
     <a class="brand" href="index.html#top" aria-label="Dialysis Companion home">
@@ -31,10 +48,6 @@
     </nav>
     <div style="display:flex;align-items:center;gap:.5rem">
       <a class="header-cta" href="tel:911">911</a>
-      <div class="guide-language-switch" role="group" aria-label="Language">
-        <button type="button" data-guide-lang="tl" aria-pressed="true">Tagalog</button>
-        <button type="button" data-guide-lang="en" aria-pressed="false">English</button>
-      </div>
       <button class="menu-toggle" type="button" id="menuToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Buksan ang menu / Open menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
