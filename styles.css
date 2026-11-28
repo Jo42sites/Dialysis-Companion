@@ -1635,3 +1635,14 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .food-goal strong { color: var(--teal-dark); }
 .food-goal svg { width: 15px; height: 15px; flex: none; color: var(--teal); fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 @media (max-width: 640px) { .food-goal { border-radius: 14px; align-items: flex-start; } }
+
+/* Compact plate: the guidance lives inside the graphic */
+.plate-figure--compact { display: block; text-align: center; }
+.plate-figure--compact .plate-title { margin: 0 0 .35rem; font-size: 1rem; }
+.plate-figure--compact .plate-svg { width: 100%; max-width: 340px; margin: 0 auto .4rem; display: block; }
+.plate-figure--compact .table-note { margin: 0; }
+
+/* Tighter rhythm on the guide pages */
+.v2-doc .section { padding-top: clamp(1.1rem, 2.6vw, 1.8rem); padding-bottom: clamp(1.1rem, 2.6vw, 1.8rem); }
+.v2-doc p { margin-bottom: .7rem; }
+.v2-doc .hero { padding-bottom: clamp(1rem, 2.5vw, 1.6rem); }
