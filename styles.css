@@ -1670,3 +1670,20 @@ details.accordion[open] summary { background: var(--teal-soft); }
   .v2-doc .topic-hero-card { display: none; }
   .v2-doc .topic-hero-grid { grid-template-columns: 1fr !important; }
 }
+
+/* Keep the page menu visible under the brand on every page (like the labs page) */
+@media (max-width: 1100px) {
+  .header-inner { height: auto; flex-wrap: wrap; padding-top: .45rem; padding-bottom: .3rem; row-gap: .2rem; }
+  .site-header .main-nav {
+    display: flex !important;
+    order: 3;
+    flex-basis: 100%;
+    gap: .2rem;
+    padding: .1rem 0 .25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .site-header .main-nav::-webkit-scrollbar { display: none; }
+  .site-header .main-nav a { white-space: nowrap; font-size: .8rem; padding: .35rem .55rem; }
+}
