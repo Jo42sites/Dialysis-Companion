@@ -1801,3 +1801,32 @@ details.accordion[open] summary { background: var(--teal-soft); }
 
 /* The session note spans the full content width (not the 68ch reading measure) */
 .v2-doc .wrap > p.session-note, .session-note { max-width: none; }
+
+/* Five things to watch: colour-coded cards with examples */
+.watch-block { margin: 1rem 0 .4rem; }
+.watch-title {
+  margin: 0 0 .6rem; font-family: var(--serif);
+  font-size: clamp(1.15rem, 2.4vw, 1.4rem); color: var(--ink);
+}
+.watch-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .55rem; }
+.watch-card {
+  position: relative; padding: .8rem .7rem .75rem;
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: 14px; border-top-width: 3px;
+}
+.watch-card h3 { margin: .35rem 0 .25rem; font-size: .88rem; letter-spacing: -.01em; }
+.watch-card p { margin: 0; font-size: .74rem; line-height: 1.4; color: var(--ink-soft); }
+.watch-card .watch-ex { margin-top: .35rem; color: var(--muted); font-size: .7rem; }
+.watch-dot { display: block; width: 10px; height: 10px; border-radius: 50%; }
+.watch-card .sodium { background: #c0392b; }
+.watch-card .potassium { background: #e3a63a; }
+.watch-card .phosphorus { background: #7c5cd6; }
+.watch-card .protein { background: #206b46; }
+.watch-card .fluid { background: #2f6fb3; }
+.watch-card:has(.sodium) { border-top-color: #c0392b; }
+.watch-card:has(.potassium) { border-top-color: #e3a63a; }
+.watch-card:has(.phosphorus) { border-top-color: #7c5cd6; }
+.watch-card:has(.protein) { border-top-color: #206b46; }
+.watch-card:has(.fluid) { border-top-color: #2f6fb3; }
+@media (max-width: 900px) { .watch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .watch-grid { grid-template-columns: 1fr; } }
