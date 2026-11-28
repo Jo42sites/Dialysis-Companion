@@ -1846,3 +1846,11 @@ details.accordion[open] summary { background: var(--teal-soft); }
   background: var(--ink); border-color: var(--ink); color: #fff;
 }
 .v2-doc .section-nav a.active::after { content: "✓"; margin-left: .35rem; font-size: .72rem; }
+
+/* Colour-code each guide page tab */
+.v2-doc .section-nav a[href="dialysis.html"] { background: #e9f4f0; border-color: #b5d9cf; color: #0b5f56; }
+.v2-doc .section-nav a[href="session.html"]  { background: #fdf3e1; border-color: #ecd3a2; color: #8a5f06; }
+.v2-doc .section-nav a[href="access.html"]   { background: #fdeee9; border-color: #f1c6ba; color: #a8402a; }
+.v2-doc .section-nav a[href="dialysis.html"].active { background: #0d6b61; border-color: #0d6b61; color: #fff; }
+.v2-doc .section-nav a[href="session.html"].active  { background: #b07a12; border-color: #b07a12; color: #fff; }
+.v2-doc .section-nav a[href="access.html"].active   { background: #b3462c; border-color: #b3462c; color: #fff; }
