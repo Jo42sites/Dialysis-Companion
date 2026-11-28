@@ -1677,3 +1677,25 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .nutrient-grid.compact .nutrient p { font-size: .7rem; line-height: 1.35; margin: .15rem 0 0; }
 .nutrient-grid.compact .nutrient strong { font-size: .82rem; }
 @media (max-width: 760px) { .nutrient-grid.compact { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Safety reminders as one compact block */
+.v2-safety-compact {
+  margin-top: 1rem; padding: .8rem 1rem;
+  background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.v2-safety-compact > strong {
+  display: block; margin-bottom: .45rem;
+  font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+}
+.v2-safety-compact ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; }
+.v2-safety-compact li {
+  display: flex; align-items: baseline; gap: .5rem;
+  margin: 0; font-size: .84rem; line-height: 1.4; color: var(--ink-soft);
+}
+.v2-safety-compact li strong { color: var(--red); }
+.v2-safety-compact li.ok strong { color: var(--green); }
+.v2-safety-compact svg {
+  width: 15px; height: 15px; flex: none; align-self: center;
+  fill: none; stroke: var(--red); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.v2-safety-compact li.ok svg { stroke: var(--green); }
