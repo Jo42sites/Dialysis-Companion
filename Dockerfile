@@ -17,11 +17,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY server/ ./
 
 # The website, served at / by the API process.
-COPY index.html dialysis.html daily-care.html emergency.html \
-     emergency-triage.js philhealth.html support.html account.html \
-     account.css interactive-guide.css interactive-guide.js \
-     admin.html admin.css admin.js styles.css app.js food-checker.js \
-     records.html records.css records.js ./static/
+COPY *.html ./static/
+COPY *.css *.js ./static/
 
 # Point the browser app at this origin. Without this the site falls back to its
 # browser-only vault and nothing syncs across devices.
