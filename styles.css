@@ -1623,3 +1623,15 @@ details.accordion[open] summary { background: var(--teal-soft); }
   .plate-figure { grid-template-columns: 1fr; gap: .7rem; justify-items: start; }
   .plate-svg { width: 132px; }
 }
+
+/* One-line goal reminder on the food page */
+.food-goal {
+  display: inline-flex; align-items: center; gap: .5rem;
+  margin: .1rem 0 1rem; padding: .45rem .9rem;
+  background: var(--mint); border: 1px solid #d5e8df;
+  border-radius: 999px; color: var(--ink-soft);
+  font-size: .82rem; line-height: 1.4;
+}
+.food-goal strong { color: var(--teal-dark); }
+.food-goal svg { width: 15px; height: 15px; flex: none; color: var(--teal); fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+@media (max-width: 640px) { .food-goal { border-radius: 14px; align-items: flex-start; } }
