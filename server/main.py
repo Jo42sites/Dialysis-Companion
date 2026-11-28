@@ -12,6 +12,7 @@ import time
 import uuid
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any
 
 import jwt
@@ -21,6 +22,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Res
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 import config
 from database import get_database, initialize_database
@@ -486,11 +488,6 @@ def get_admin_unit(connection: sqlite3.Connection, unit_id: int) -> sqlite3.Row:
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
-
-
-@app.get("/")
-def root() -> dict[str, str]:
-    return {"service": "dialysis-companion-api", "health": "/api/health"}
 
 
 @app.post("/api/site-admin/login")
@@ -1405,3 +1402,11 @@ def delete_record(
         raise HTTPException(status_code=404, detail="Patient record not found")
     audit(connection, unit["unitId"], unit["userId"], "records.delete", record_id)
     return Response(status_code=204)
+
+
+# Serve the static website (index.html, records.html, app.js, ...) from the same
+# container, so dialysisform.com and the API share one origin. Registered last so
+# every /api route above still wins; /api/* is never served from disk.
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+if STATIC_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")

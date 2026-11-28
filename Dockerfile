@@ -1,5 +1,5 @@
-# Dialysis Companion API (FastAPI, server/)
-# The static site (*.html, *.js) is deployed separately to GitHub Pages.
+# Dialysis Companion API + website (FastAPI, server/)
+# The static site is served by the API at / so the app and the API share one origin.
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -15,6 +15,19 @@ COPY server/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY server/ ./
+
+# The website, served at / by the API process.
+COPY index.html dialysis.html daily-care.html emergency.html \
+     emergency-triage.js philhealth.html support.html account.html \
+     account.css interactive-guide.css interactive-guide.js \
+     admin.html admin.css admin.js styles.css app.js food-checker.js \
+     records.html records.css records.js ./static/
+
+# Point the browser app at this origin. Without this the site falls back to its
+# browser-only vault and nothing syncs across devices.
+RUN sed -i 's|<meta name="admin-api" content="">|<meta name="admin-api" content="https://dialysisform.com">|' \
+      /app/static/records.html /app/static/admin.html \
+ && grep -q 'content="https://dialysisform.com"' /app/static/records.html
 
 # Encrypted SQLite database lives here.
 # Mount a persistent volume at /var/data or data is lost on every redeploy.
