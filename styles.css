@@ -1476,11 +1476,16 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .v2-footer-src a { color: var(--muted); }
 
 @media (max-width: 900px) {
-  .v2-hero-grid { grid-template-columns: 1fr; gap: 2rem; }
-  .v2-hero-art { order: -1; }
+  .v2-hero-grid { grid-template-columns: 1fr; gap: 1.6rem; }
+  .v2-hero-art { order: 2; }
   .v2-art-card { width: min(100%, 340px); }
   .v2-grid { grid-template-columns: repeat(2, 1fr); }
   .v2-footer-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  /* Keep the headline in the first screen; the art card is decorative. */
+  .v2-hero-art { display: none; }
+  .v2-lede { max-width: none; }
 }
 @media (max-width: 560px) {
   .v2-grid { grid-template-columns: 1fr; }
