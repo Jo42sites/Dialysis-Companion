@@ -203,3 +203,15 @@
 @media (min-width: 900px) {
   .lab-result-form { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+
+/* Match the other subpages: menu lives in the top-right button */
+@media (max-width: 1080px) {
+  .interactive-guide-page .main-nav { display: none !important; }
+  .interactive-guide-page .header-inner {
+    height: var(--header-h);
+    min-height: var(--header-h);
+    flex-wrap: nowrap;
+    padding-block: 0;
+  }
+  .interactive-guide-page .header-inner > div { order: 0; }
+}
