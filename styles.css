@@ -1578,8 +1578,7 @@ details.accordion[open] summary { background: var(--teal-soft); }
   font-size: clamp(1.45rem, 3vw, 2rem);
   line-height: 1.15;
   margin: 0 0 .55rem;
-  padding-top: 1.4rem;
-  border-top: 1px solid var(--line);
+  padding-top: 0;
 }
 .v2-doc section:first-of-type h2 { padding-top: 0; border-top: 0; }
 .v2-doc h3 { font-size: 1.05rem; margin: 0 0 .3rem; }
