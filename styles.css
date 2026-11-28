@@ -1687,3 +1687,17 @@ details.accordion[open] summary { background: var(--teal-soft); }
   .site-header .main-nav::-webkit-scrollbar { display: none; }
   .site-header .main-nav a { white-space: nowrap; font-size: .8rem; padding: .35rem .55rem; }
 }
+
+/* Menu always visible under the brand, scrollable when it does not fit */
+.site-header .header-inner { height: auto; flex-wrap: wrap; padding-top: .4rem; padding-bottom: .25rem; row-gap: .15rem; }
+.site-header .main-nav {
+  display: flex !important;
+  order: 3;
+  flex-basis: 100%;
+  gap: .2rem;
+  padding: .05rem 0 .2rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.site-header .main-nav::-webkit-scrollbar { display: none; }
+.site-header .main-nav a { white-space: nowrap; font-size: .8rem; padding: .35rem .55rem; }
