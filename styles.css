@@ -1664,3 +1664,9 @@ details.accordion[open] summary { background: var(--teal-soft); }
 @media (max-width: 760px) {
   .v2-doc .hero { padding: 18px 0 16px; }
 }
+
+/* The hero card is decoration; on phones it pushes content down */
+@media (max-width: 900px) {
+  .v2-doc .topic-hero-card { display: none; }
+  .v2-doc .topic-hero-grid { grid-template-columns: 1fr !important; }
+}
