@@ -6,7 +6,7 @@
   <meta name="description" content="Explore dialysis coverage information and practical assistance resources.">
   <meta name="theme-color" content="#0d6b61">
   <title>PhilHealth and assistance | Dialysis Companion</title>
-  <link rel="stylesheet" href="styles.css?v=20261201m">
+  <link rel="stylesheet" href="styles.css?v=20261201n">
 </head>
 <body>
   <a class="skip-link" href="#main">Lumaktaw sa nilalaman / Skip to content</a>
@@ -124,10 +124,10 @@
           <div class="stat"><span class="big">₱0</span><span class="label"><span class="tl">Cash payout; bawas sa bill ng facility</span><span class="en">Cash payout; deducted from the facility bill</span></span></div>
         </div>
 
-        <div class="callout info" style="margin-top:16px">
-          <div class="callout-label"><span class="tl">Paalala</span><span class="en">Note</span></div>
-          <p><span class="tl">Ang package ay ibinabawas sa bill ng accredited facility, hindi cash na ibinibigay sa pasyente. Maaaring may iba pang singil na hindi sakop. Itanong sa billing office bago ang treatment.</span><span class="en">The package is deducted from the accredited facility’s bill, not paid as cash to the patient. Other charges may not be covered. Ask the billing office before treatment.</span></p>
-        </div>
+        <p class="session-note note-soft">
+          <strong><span class="tl">Paalala:</span><span class="en">Note:</span></strong>
+          <span><span class="tl">Bawas ito sa bill ng accredited facility, hindi cash. Maaaring may iba pang singil — itanong sa billing bago mag-treatment.</span><span class="en">It is deducted from the accredited facility's bill, not paid as cash. Other charges may apply — ask billing before treatment.</span></span>
+        </p>
 
         <div class="grid grid-2" style="margin-top:16px;align-items:start">
             <div class="card">
@@ -158,8 +158,15 @@
         <details class="accordion" open style="margin-top:14px">
           <summary>PD at transplant packages / PD and transplant packages</summary>
           <div class="accordion-body">
-            <p><span class="tl">Ang peritoneal dialysis ay may Z benefit packages batay sa bags bawat araw: halos ₱389,640 para sa 3 bags/day at ₱510,140 para sa 4 bags/day, kasama ang ancillary services. Ang kidney transplant package ay nag-iiba ayon sa donor at surgery at umaabot sa milyon. Kailangan ng pre-authorization at accredited center.</span><span class="en">Peritoneal dialysis has Z benefit packages based on bags per day: about ₱389,640 for 3 bags/day and ₱510,140 for 4 bags/day, including ancillary services. Kidney transplant packages vary by donor and surgery and reach millions. Pre-authorization and an accredited center are required.</span></p>
-            <p><span class="tl">Pangkalahatang impormasyon lamang. I-verify ang eksaktong halaga at eligibility sa PhilHealth at sa PD/transplant center.</span><span class="en">General information only. Verify exact amounts and eligibility with PhilHealth and the PD/transplant center.</span></p>
+            <div class="pkg-list">
+              <div class="pkg"><strong><span class="tl">Peritoneal dialysis (PD)</span><span class="en">Peritoneal dialysis (PD)</span></strong>
+                <p><span class="tl">Z benefit: halos ₱389,640 para sa 3 bags/day at ₱510,140 para sa 4 bags/day, kasama ang ancillary services.</span><span class="en">Z benefit: about ₱389,640 for 3 bags/day and ₱510,140 for 4 bags/day, including ancillary services.</span></p>
+              </div>
+              <div class="pkg"><strong><span class="tl">Kidney transplant</span><span class="en">Kidney transplant</span></strong>
+                <p><span class="tl">Nag-iiba ayon sa donor at surgery; umaabot sa milyon. Kailangan ng pre-authorization at accredited center.</span><span class="en">Varies by donor and surgery; can reach millions. Pre-authorization and an accredited center are required.</span></p>
+              </div>
+            </div>
+            <p class="table-note"><span class="tl">Pangkalahatang impormasyon lamang. I-verify ang eksaktong halaga at eligibility sa PhilHealth at sa PD/transplant center.</span><span class="en">General information only. Verify exact amounts and eligibility with PhilHealth and the PD/transplant center.</span></p>
           </div>
         </details>
 
@@ -207,6 +214,6 @@
   <div class="print-area" id="printArea" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <button class="back-top" type="button" id="backToTop" aria-label="Bumalik sa itaas / Back to top"><svg aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
-  <script src="app.js?v=20261201m"></script>
+  <script src="app.js?v=20261201n"></script>
 </body>
 </html>

@@ -2051,3 +2051,10 @@ html { scroll-behavior: auto; }
   font-size: .84rem; font-weight: 600; color: var(--ink-soft);
 }
 .chip svg { width: 14px; height: 14px; flex: none; color: var(--green); }
+
+/* PhilHealth: quiet reminder, split package rows */
+.note-soft { margin: .2rem 0 1rem; background: #f4f7f5; border-left-color: #b9d3c8; font-size: .8rem; }
+.pkg-list { display: grid; gap: .6rem; }
+.pkg { padding: .6rem .75rem; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+.pkg strong { display: block; margin-bottom: .15rem; font-size: .86rem; color: var(--teal-dark); }
+.pkg p { margin: 0; font-size: .84rem; line-height: 1.5; }
