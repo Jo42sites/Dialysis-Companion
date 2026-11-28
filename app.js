@@ -490,7 +490,25 @@
         ['Emergency', data.emergency], ['Allergy', data.allergy]
       ];
       const cell = ([k, v]) => '<div class="kv"><span class="k">' + esc(k) + '</span><span class="v">' + esc(v) + '</span></div>';
-      printArea.innerHTML = '<div class="dc-card">' +
+      const css = '<style>' +
+        '.dc-card{width:85.6mm;height:54mm;box-sizing:border-box;padding:3mm;background:#fff;color:#111;' +
+        'font-family:Arial,Helvetica,sans-serif;font-size:5.6pt;line-height:1.2;display:flex;flex-direction:column;' +
+        'border:.3mm solid #111;border-radius:2mm;overflow:hidden}' +
+        '.dc-card *{box-sizing:border-box}' +
+        '.dc-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:.3mm solid #111;padding-bottom:.6mm;margin-bottom:1mm}' +
+        '.dc-head strong{font-size:8pt}.dc-head span{font-size:5pt;color:#666}' +
+        '.dc-cols{display:grid;grid-template-columns:1.25fr 1fr;gap:0 1.8mm;flex:1 1 auto;min-height:0}' +
+        '.dc-col{display:flex;flex-direction:column;gap:.45mm}' +
+        '.dc-col-meds{border-left:.2mm solid #bbb;padding-left:1.6mm}' +
+        '.kv{display:grid;grid-template-columns:12mm 1fr;gap:.6mm;font-size:5.4pt}' +
+        '.kv .k{color:#555}.kv .v{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+        '.dc-col-meds .k{font-size:5pt;color:#555;display:block;margin-bottom:.4mm}' +
+        '.med-lines{font-size:5.2pt;line-height:1.25;white-space:normal;overflow:hidden}' +
+        '.dc-notes{margin:.6mm 0;border:.25mm solid #444;border-radius:1mm;padding:.7mm;display:grid;grid-template-columns:9mm 1fr;gap:.6mm;max-height:9mm;overflow:hidden}' +
+        '.dc-notes .k{font-size:5pt;color:#555}.note-lines{font-size:5.2pt;line-height:1.2;white-space:normal}' +
+        '.dc-foot{font-size:4.8pt;line-height:1.15;border-top:.3mm solid #111;padding-top:.5mm;margin-top:auto}' +
+        '</style>';
+      printArea.innerHTML = css + '<div class="dc-card">' +
         '<div class="dc-head"><strong>Dialysis Card</strong><span>Emergency medical card</span></div>' +
         '<div class="dc-cols">' +
           '<div class="dc-col">' + left.map(cell).join('') + '</div>' +
