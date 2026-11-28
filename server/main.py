@@ -1445,3 +1445,230 @@ def delete_record(
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 if STATIC_DIR.is_dir():
     app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
+
+
+# ---------------------------------------------------------------------------
+# Passkeys (WebAuthn) — biometric sign-in on top of the password.
+# Import failures are caught so a library mismatch can never take the API down;
+# the endpoints simply answer 503 while password login keeps working.
+# ---------------------------------------------------------------------------
+try:  # pragma: no cover - depends on installed wheel
+    from webauthn import (
+        generate_authentication_options,
+        generate_registration_options,
+        options_to_json,
+        verify_authentication_response,
+        verify_registration_response,
+    )
+    from webauthn.helpers import (
+        parse_authentication_credential_json,
+        parse_registration_credential_json,
+    )
+    from webauthn.helpers.structs import (
+        AuthenticatorSelectionCriteria,
+        PublicKeyCredentialDescriptor,
+        ResidentKeyRequirement,
+        UserVerificationRequirement,
+    )
+
+    WEBAUTHN_AVAILABLE = True
+except Exception as webauthn_import_error:  # pragma: no cover
+    logger.warning("Passkeys unavailable: %s", webauthn_import_error)
+    WEBAUTHN_AVAILABLE = False
+
+
+_passkey_challenges: dict[int, tuple[bytes, float]] = {}
+_PASSKEY_TTL = 300
+
+
+def _b64url(value: bytes) -> str:
+    return base64.urlsafe_b64encode(value).decode("ascii").rstrip("=")
+
+
+def _unb64url(value: str) -> bytes:
+    padding = "=" * (-len(value) % 4)
+    return base64.urlsafe_b64decode(value + padding)
+
+
+def _store_passkey_challenge(user_id: int, challenge: bytes) -> None:
+    now = time.time()
+    _passkey_challenges[user_id] = (challenge, now + _PASSKEY_TTL)
+    if len(_passkey_challenges) > 2000:
+        for key, (_, expires) in list(_passkey_challenges.items()):
+            if expires < now:
+                _passkey_challenges.pop(key, None)
+
+
+def _take_passkey_challenge(user_id: int) -> bytes | None:
+    item = _passkey_challenges.pop(user_id, None)
+    if not item:
+        return None
+    challenge, expires = item
+    return challenge if expires >= time.time() else None
+
+
+def _passkey_user(payload: Any, connection: sqlite3.Connection) -> sqlite3.Row:
+    body = body_object(payload)
+    slug = str(body.get("slug") or "").strip().lower()
+    username = str(body.get("username") or "").strip()
+    user = connection.execute(
+        """
+        SELECT users.*, units.name AS unit_name, units.slug
+        FROM unit_users users JOIN units ON units.id = users.unit_id
+        WHERE units.slug = ? AND users.username = ? AND users.is_active = 1
+          AND units.is_active = 1
+        """,
+        (slug, username),
+    ).fetchone()
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid unit or username")
+    return user
+
+
+def _require_webauthn() -> None:
+    if not WEBAUTHN_AVAILABLE:
+        raise HTTPException(status_code=503, detail="Passkeys are not available on this server")
+
+
+@app.post("/api/units/passkeys/register/begin")
+async def passkey_register_begin(
+    request: Request, connection: sqlite3.Connection = Depends(get_database)
+) -> Any:
+    _require_webauthn()
+    body = await read_json(request)
+    user = _passkey_user(body, connection)
+    if not verify_password(str(body_object(body).get("password") or ""), user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid unit, username, or password")
+    existing = connection.execute(
+        "SELECT credential_id FROM webauthn_credentials WHERE user_id = ?", (user["id"],)
+    ).fetchall()
+    options = generate_registration_options(
+        rp_id=config.WEBAUTHN_RP_ID,
+        rp_name=config.WEBAUTHN_RP_NAME,
+        user_id=str(user["id"]).encode("utf-8"),
+        user_name=user["username"],
+        exclude_credentials=[
+            PublicKeyCredentialDescriptor(id=row["credential_id"]) for row in existing
+        ],
+        authenticator_selection=AuthenticatorSelectionCriteria(
+            resident_key=ResidentKeyRequirement.PREFERRED,
+            user_verification=UserVerificationRequirement.REQUIRED,
+        ),
+    )
+    _store_passkey_challenge(user["id"], options.challenge)
+    return json.loads(options_to_json(options))
+
+
+@app.post("/api/units/passkeys/register/complete")
+async def passkey_register_complete(
+    request: Request, connection: sqlite3.Connection = Depends(get_database)
+) -> dict[str, Any]:
+    _require_webauthn()
+    body = await read_json(request)
+    user = _passkey_user(body, connection)
+    challenge = _take_passkey_challenge(user["id"])
+    if not challenge:
+        raise HTTPException(status_code=400, detail="Passkey setup expired. Start again.")
+    label = str(body_object(body).get("label") or "This device")[:80]
+    try:
+        verification = verify_registration_response(
+            credential=parse_registration_credential_json(
+                json.dumps(body_object(body).get("credential"))
+            ),
+            expected_challenge=challenge,
+            expected_rp_id=config.WEBAUTHN_RP_ID,
+            expected_origin=config.WEBAUTHN_ORIGIN,
+            require_user_verification=True,
+        )
+    except Exception as error:
+        logger.warning("Passkey registration rejected: %s", error)
+        raise HTTPException(status_code=400, detail="Could not verify this device.") from None
+    transports = body_object(body).get("credential", {}).get("response", {}).get("transports")
+    try:
+        with immediate_transaction(connection):
+            connection.execute(
+                """
+                INSERT INTO webauthn_credentials
+                  (user_id, credential_id, public_key, sign_count, transports, label)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    user["id"],
+                    verification.credential_id,
+                    verification.credential_public_key,
+                    verification.sign_count,
+                    json.dumps(transports) if transports else None,
+                    label,
+                ),
+            )
+            audit(connection, user["unit_id"], user["id"], "auth.passkey_added")
+    except sqlite3.IntegrityError:
+        raise HTTPException(status_code=409, detail="This device is already registered.") from None
+    return {"ok": True, "label": label}
+
+
+@app.post("/api/units/passkeys/login/begin")
+async def passkey_login_begin(
+    request: Request, connection: sqlite3.Connection = Depends(get_database)
+) -> Any:
+    _require_webauthn()
+    body = await read_json(request)
+    user = _passkey_user(body, connection)
+    rows = connection.execute(
+        "SELECT credential_id, transports FROM webauthn_credentials WHERE user_id = ?",
+        (user["id"],),
+    ).fetchall()
+    if not rows:
+        raise HTTPException(status_code=404, detail="No passkey registered for this account.")
+    options = generate_authentication_options(
+        rp_id=config.WEBAUTHN_RP_ID,
+        allow_credentials=[PublicKeyCredentialDescriptor(id=row["credential_id"]) for row in rows],
+        user_verification=UserVerificationRequirement.REQUIRED,
+    )
+    _store_passkey_challenge(user["id"], options.challenge)
+    return json.loads(options_to_json(options))
+
+
+@app.post("/api/units/passkeys/login/complete")
+async def passkey_login_complete(
+    request: Request, connection: sqlite3.Connection = Depends(get_database)
+) -> dict[str, Any]:
+    _require_webauthn()
+    body = await read_json(request)
+    user = _passkey_user(body, connection)
+    challenge = _take_passkey_challenge(user["id"])
+    if not challenge:
+        raise HTTPException(status_code=400, detail="Sign-in expired. Try again.")
+    credential = body_object(body).get("credential") or {}
+    raw_id = credential.get("rawId") or credential.get("id") or ""
+    try:
+        raw_id_bytes = _unb64url(raw_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Malformed passkey response.") from None
+    row = connection.execute(
+        "SELECT * FROM webauthn_credentials WHERE user_id = ? AND credential_id = ?",
+        (user["id"], raw_id_bytes),
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Passkey not found on this account.")
+    try:
+        verification = verify_authentication_response(
+            credential=parse_authentication_credential_json(json.dumps(credential)),
+            expected_challenge=challenge,
+            expected_rp_id=config.WEBAUTHN_RP_ID,
+            expected_origin=config.WEBAUTHN_ORIGIN,
+            credential_public_key=row["public_key"],
+            credential_current_sign_count=row["sign_count"],
+            require_user_verification=True,
+        )
+    except Exception as error:
+        logger.warning("Passkey login rejected: %s", error)
+        raise HTTPException(status_code=401, detail="Touch or face check failed.") from None
+    with immediate_transaction(connection):
+        connection.execute(
+            "UPDATE webauthn_credentials SET sign_count = ? WHERE id = ?",
+            (verification.new_sign_count, row["id"]),
+        )
+        audit(connection, user["unit_id"], user["id"], "auth.passkey_login")
+    unit = {"id": user["unit_id"], "name": user["unit_name"], "slug": user["slug"]}
+    return session_payload(user, unit)

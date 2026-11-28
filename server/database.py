@@ -95,6 +95,20 @@ def initialize_database() -> None:
             CREATE INDEX IF NOT EXISTS idx_audit_events_unit_time
               ON audit_events(unit_id, created_at DESC);
 
+            CREATE TABLE IF NOT EXISTS webauthn_credentials (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              user_id INTEGER NOT NULL,
+              credential_id BLOB NOT NULL UNIQUE,
+              public_key BLOB NOT NULL,
+              sign_count INTEGER NOT NULL DEFAULT 0,
+              transports TEXT,
+              label TEXT,
+              created_at TEXT NOT NULL DEFAULT (datetime('now')),
+              FOREIGN KEY (user_id) REFERENCES unit_users(id) ON DELETE CASCADE
+            );
+            CREATE INDEX IF NOT EXISTS idx_webauthn_user
+              ON webauthn_credentials(user_id);
+
             CREATE TABLE IF NOT EXISTS mfa_recovery_codes (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               user_id INTEGER NOT NULL,

@@ -58,3 +58,8 @@ if bool(SITE_ADMIN_EMAIL) != bool(SITE_ADMIN_PASSWORD):
     raise RuntimeError("Set both SITE_ADMIN_EMAIL and SITE_ADMIN_PASSWORD, or leave both unset")
 if SITE_ADMIN_PASSWORD and not 12 <= len(SITE_ADMIN_PASSWORD.encode("utf-8")) <= 72:
     raise RuntimeError("SITE_ADMIN_PASSWORD must be 12-72 UTF-8 bytes for bcrypt")
+# Passkeys (WebAuthn). RP ID must be the registrable domain; the origin must match
+# what the browser sees exactly, or verification fails.
+WEBAUTHN_RP_ID = os.getenv("WEBAUTHN_RP_ID", "dialysisform.com")
+WEBAUTHN_RP_NAME = os.getenv("WEBAUTHN_RP_NAME", "Dialysis Companion")
+WEBAUTHN_ORIGIN = os.getenv("WEBAUTHN_ORIGIN", "https://dialysisform.com")

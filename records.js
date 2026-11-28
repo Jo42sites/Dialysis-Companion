@@ -2072,6 +2072,111 @@
       }
     });
 
+
+  /* ---------- Passkeys (WebAuthn) ---------- */
+  function b64urlToBuffer(value) {
+    const padded = value.replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(padded + '='.repeat((4 - (padded.length % 4)) % 4));
+    const bytes = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i += 1) bytes[i] = raw.charCodeAt(i);
+    return bytes.buffer;
+  }
+
+  function bufferToB64url(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let text = '';
+    for (let i = 0; i < bytes.length; i += 1) text += String.fromCharCode(bytes[i]);
+    return btoa(text).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+
+  function passkeyError(message) {
+    const target = $('#unlockError');
+    if (target) target.textContent = message;
+  }
+
+  async function signInWithPasskey() {
+    const slug = ($('#unitSlug').value || '').trim().toLowerCase();
+    const username = ($('#unitUsername').value || '').trim();
+    if (!slug || !username) {
+      passkeyError('Enter the unit login code and username first.');
+      return;
+    }
+    if (!window.PublicKeyCredential) {
+      passkeyError('This browser cannot use passkeys.');
+      return;
+    }
+    try {
+      const options = await serverApi('/api/units/passkeys/login/begin', {
+        method: 'POST', body: JSON.stringify({ slug, username })
+      });
+      options.challenge = b64urlToBuffer(options.challenge);
+      options.allowCredentials = (options.allowCredentials || []).map((item) => ({
+        ...item, id: b64urlToBuffer(item.id)
+      }));
+      const credential = await navigator.credentials.get({ publicKey: options });
+      const payload = {
+        id: credential.id,
+        rawId: bufferToB64url(credential.rawId),
+        type: credential.type,
+        response: {
+          authenticatorData: bufferToB64url(credential.response.authenticatorData),
+          clientDataJSON: bufferToB64url(credential.response.clientDataJSON),
+          signature: bufferToB64url(credential.response.signature),
+          userHandle: credential.response.userHandle
+            ? bufferToB64url(credential.response.userHandle) : null
+        }
+      };
+      const result = await serverApi('/api/units/passkeys/login/complete', {
+        method: 'POST', body: JSON.stringify({ slug, username, credential: payload })
+      });
+      await activateUnit(result);
+    } catch (err) {
+      passkeyError(err.message || 'Fingerprint or face check failed.');
+    }
+  }
+
+  async function addPasskeyToDevice() {
+    const slug = ($('#unitSlug').value || '').trim().toLowerCase();
+    const username = ($('#unitUsername').value || '').trim();
+    const password = $('#pw').value;
+    if (!slug || !username || !password) {
+      passkeyError('Enter the unit code, username and password first.');
+      return;
+    }
+    try {
+      const options = await serverApi('/api/units/passkeys/register/begin', {
+        method: 'POST', body: JSON.stringify({ slug, username, password })
+      });
+      options.challenge = b64urlToBuffer(options.challenge);
+      options.user.id = b64urlToBuffer(options.user.id);
+      options.excludeCredentials = (options.excludeCredentials || []).map((item) => ({
+        ...item, id: b64urlToBuffer(item.id)
+      }));
+      const credential = await navigator.credentials.create({ publicKey: options });
+      const payload = {
+        id: credential.id,
+        rawId: bufferToB64url(credential.rawId),
+        type: credential.type,
+        response: {
+          attestationObject: bufferToB64url(credential.response.attestationObject),
+          clientDataJSON: bufferToB64url(credential.response.clientDataJSON)
+        }
+      };
+      await serverApi('/api/units/passkeys/register/complete', {
+        method: 'POST', body: JSON.stringify({ slug, username, credential: payload })
+      });
+      passkeyError('');
+      toast('This device can now sign in with your fingerprint or face.');
+    } catch (err) {
+      passkeyError(err.message || 'Could not add this device.');
+    }
+  }
+
+    const passkeyLoginBtn = $('#passkeyLoginBtn');
+    if (passkeyLoginBtn) passkeyLoginBtn.addEventListener('click', signInWithPasskey);
+    const passkeyAddBtn = $('#passkeyAddBtn');
+    if (passkeyAddBtn) passkeyAddBtn.addEventListener('click', addPasskeyToDevice);
+
     /* Show / hide password */
     document.addEventListener('click', (event) => {
       const toggle = event.target.closest('[data-toggle-pw]');
