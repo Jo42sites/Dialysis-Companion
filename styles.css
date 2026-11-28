@@ -1725,3 +1725,9 @@ details.accordion[open] summary { background: var(--teal-soft); }
   .plate-figure--compact { grid-template-columns: 1fr; }
   .plate-figure--compact .table-note { text-align: left; }
 }
+
+/* Tighter food list card after dropping the legend */
+.food-checker { padding: .85rem 1rem; }
+.food-checker-form { margin-top: .35rem; }
+#foodGrid { margin-top: .5rem; }
+.card:has(#foodGrid) { padding: .9rem 1rem; }
