@@ -1964,3 +1964,31 @@ html { scroll-behavior: auto; }
 
 @view-transition { navigation: auto; }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .18s; }
+
+/* Compact textareas and buttons across the guide pages */
+.v2-doc textarea { min-height: 0; height: auto; padding: .5rem .6rem; font-size: .86rem; line-height: 1.45; }
+.symptom-form textarea { min-height: 58px; }
+.v2-doc .account-button, .v2-doc .tool button[type="submit"] {
+  min-height: 38px; padding: .5rem .9rem; font-size: .82rem; width: auto;
+}
+.v2-doc .food-checker-button { min-height: 36px; padding: .45rem .85rem; font-size: .82rem; }
+
+/* Lab rows and symptom options: less air */
+.lab-result-row { padding: .3rem .45rem; }
+.lab-range-choices label { padding: .15rem .4rem; font-size: .7rem; }
+.symptom-option { padding: .3rem .45rem; font-size: .8rem; }
+.symptom-form fieldset { gap: .3rem; }
+
+/* Last row of the five checks sits centred */
+.watch-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: .45rem; }
+.watch-card { flex: 1 1 30%; max-width: 32.5%; }
+@media (max-width: 760px) { .watch-card { flex: 1 1 46%; max-width: 48%; } }
+
+/* Section tabs on other pages match the page tabs */
+.section-nav a { background: #fff; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink); }
+.section-nav a:hover { border-color: var(--teal); color: var(--teal-dark); }
+.section-nav a.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+/* Labs hero sized like the other subpages */
+.health-guide-hero h1 { font-size: clamp(1.9rem, 4vw, 2.8rem); }
+.health-guide-hero { margin: 0 0 .7rem; }
