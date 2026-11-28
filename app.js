@@ -483,20 +483,25 @@
         ['Mga gamot / Medicines', data.meds], ['Notes', data.notes]
       ];
       const printArea = $('#printArea');
-      const cardRows = [
-        ['Pangalan / Name', data.name], ['Uri / Type', data.type], ['Access', data.access],
+      const left = [
+        ['Pangalan', data.name], ['Uri', data.type], ['Access', data.access],
         ['Dry weight', data.dry ? data.dry + ' kg' : ''], ['Fluid limit', data.limit ? data.limit + ' mL/day' : ''],
-        ['Iskedyul / Schedule', data.schedule], ['Doctor', data.doctor], ['Unit phone', data.unit],
-        ['Emergency', data.emergency], ['Allergy', data.allergy],
-        ['Gamot / Meds', data.meds], ['Notes', data.notes]
+        ['Iskedyul', data.schedule]
+      ];
+      const right = [
+        ['Doctor', data.doctor], ['Unit phone', data.unit],
+        ['Emergency', data.emergency], ['Allergy', data.allergy]
       ];
       const cell = ([k, v]) => '<div class="kv"><span class="k">' + esc(k) + '</span><span class="v">' + esc(v) + '</span></div>';
-      const half = Math.ceil(cardRows.length / 2);
       printArea.innerHTML = '<div class="dc-card">' +
         '<div class="dc-head"><strong>Dialysis Card</strong><span>Aking Dialysis Card</span></div>' +
         '<div class="dc-cols">' +
-          '<div class="dc-col">' + cardRows.slice(0, half).map(cell).join('') + '</div>' +
-          '<div class="dc-col">' + cardRows.slice(half).map(cell).join('') + '</div>' +
+          '<div class="dc-col">' + left.map(cell).join('') + '</div>' +
+          '<div class="dc-col">' + right.map(cell).join('') + '</div>' +
+        '</div>' +
+        '<div class="dc-wide">' +
+          '<div class="kv wide"><span class="k">Gamot</span><span class="v lines2">' + esc(data.meds) + '</span></div>' +
+          '<div class="kv wide"><span class="k">Notes</span><span class="v lines2">' + esc(data.notes) + '</span></div>' +
         '</div>' +
         '<div class="dc-foot">EMERGENCY: 911 — sabihin ang uri ng dialysis, huling session, access, dry weight, gamot, at allergy.</div>' +
         '</div>';

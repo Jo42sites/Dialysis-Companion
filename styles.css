@@ -2086,3 +2086,9 @@ html { scroll-behavior: auto; }
   body.print-card-mode .card-preview-body .dc-card { transform: none; margin: 0; }
   body.print-card-mode .dc-card { border: 0.3mm solid #000; }
 }
+
+/* Room for several medicines and notes on the card */
+.dc-wide { display: grid; gap: .4mm; }
+.dc-wide .kv { grid-template-columns: 10mm 1fr; }
+.dc-wide .kv .v { white-space: normal; }
+.dc-wide .lines2 { min-height: 4.6mm; line-height: 1.15; display: block; }
