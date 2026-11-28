@@ -83,6 +83,13 @@
     return item;
   }
 
+  // Typing (or clearing) makes the previous answer stale.
+  input.addEventListener('input', () => {
+    result.hidden = true;
+    flagsList.replaceChildren();
+    name.textContent = '';
+  });
+
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const value = input.value.trim();
