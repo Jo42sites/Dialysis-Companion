@@ -1992,3 +1992,7 @@ html { scroll-behavior: auto; }
 /* Labs hero sized like the other subpages */
 .health-guide-hero h1 { font-size: clamp(1.9rem, 4vw, 2.8rem); }
 .health-guide-hero { margin: 0 0 .7rem; }
+
+/* Free-text symptom box: two lines, not a panel */
+.symptom-form textarea, #customSymptom { min-height: 52px; height: 52px; }
+.v2-doc .account-button { min-height: 40px; }
