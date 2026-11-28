@@ -6,7 +6,7 @@
   <meta name="description" content="Practical dialysis guidance about food, fluids, medicines, and lab results.">
   <meta name="theme-color" content="#0d6b61">
   <title>Food, medicines and labs | Dialysis Companion</title>
-  <link rel="stylesheet" href="styles.css?v=20261129u">
+  <link rel="stylesheet" href="styles.css?v=20261129v">
 </head>
 <body>
   <a class="skip-link" href="#main">Lumaktaw sa nilalaman / Skip to content</a>
@@ -155,9 +155,9 @@
           </svg>
           </div>
           <div class="plate-notes">
-          <div class="nutrient"><span class="nutrient-dot sodium"></span><strong>Sodium</strong><p><span class="tl">Limitahan ang asin, patis, at tuyo.</span><span class="en">Limit salt, fish sauce, dried fish.</span></p></div>
-          <div class="nutrient"><span class="nutrient-dot potassium"></span><strong>Potassium</strong><p><span class="tl">Depende sa lab.</span><span class="en">Depends on your labs.</span></p></div>
-          <div class="nutrient"><span class="nutrient-dot phosphorus"></span><strong>Phosphorus</strong><p><span class="tl">Iwasan ang cola; binder sa kain.</span><span class="en">Avoid cola; binder with meals.</span></p></div>
+          <div class="nutrient"><span class="nutrient-dot sodium"></span><strong>Sodium (Na)</strong><p><span class="tl">Limitahan ang asin, patis, at tuyo.</span><span class="en">Limit salt, fish sauce, dried fish.</span></p></div>
+          <div class="nutrient"><span class="nutrient-dot potassium"></span><strong>Potassium (K)</strong><p><span class="tl">Depende sa lab.</span><span class="en">Depends on your labs.</span></p></div>
+          <div class="nutrient"><span class="nutrient-dot phosphorus"></span><strong>Phosphorus (P)</strong><p><span class="tl">Iwasan ang cola; binder sa kain.</span><span class="en">Avoid cola; binder with meals.</span></p></div>
           <div class="nutrient"><span class="nutrient-dot protein"></span><strong>Protein</strong><p><span class="tl">Huwag bawasan nang wala sa payo.</span><span class="en">Do not cut back unprescribed.</span></p></div>
           </div>
           <p class="table-note"><span class="tl">Halimbawa lamang ito. Sundin ang plano ng inyong dietitian.</span><span class="en">This is only an example. Follow your dietitian’s plan.</span></p>
@@ -187,10 +187,7 @@
           </div>
         </section>
 
-        <details class="accordion" open style="margin-top:12px">
-          <summary><span class="tl">Hanapin ang pagkain — listahan</span><span class="en">Find a food — list</span></summary>
-          <div class="accordion-body">
-          <div class="card">
+                <div class="card" style="margin-top:12px">
             <span class="badge k">High K</span>
             <span class="badge p">High P</span>
             <span class="badge na">High NA</span>
@@ -198,9 +195,8 @@
             <span class="badge fluid">Fluid</span>
           </div>
           <p class="food-scroll-note"><span class="tl">I-scroll ang listahan o mag-search.</span><span class="en">Scroll the list or search.</span></p>
-          <div class="food-grid" id="foodGrid"></div>
-          <p class="table-note"><span class="tl">Ang “high” ay pangkalahatang babala, hindi eksaktong sukat. Ang serving, paraan ng pagluto, at latest labs ang pagbatayan. Tanungin ang dietitian bago magbawas ng pagkain.</span><span class="en">“High” is a general warning, not an exact measure. Serving size, cooking method, and latest labs matter. Ask your dietitian before removing foods.</span></p>
-        </details>
+          <div class="food-grid" id="foodGrid">
+        </div>
     </section>
 
   </main>
@@ -244,7 +240,7 @@
   <div class="print-area" id="printArea" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <button class="back-top" type="button" id="backToTop" aria-label="Bumalik sa itaas / Back to top"><svg aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
-  <script src="app.js?v=20261129u"></script>
-  <script src="food-checker.js?v=20261129u"></script>
+  <script src="app.js?v=20261129v"></script>
+  <script src="food-checker.js?v=20261129v"></script>
 </body>
 </html>
