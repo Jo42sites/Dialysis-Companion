@@ -189,3 +189,17 @@
 .health-guide-hero .account-eyebrow { margin: 0 0 .15rem; }
 .health-guide-hero .privacy-note { width: auto; max-width: 620px; margin: 0; }
 .health-guide-grid { gap: .7rem; }
+
+/* Compact lab rows: one line per test option */
+.lab-result-row { padding: .4rem .5rem; min-height: 0; }
+.lab-result-row legend { font-size: .8rem; }
+.lab-range-choices { gap: .25rem; }
+.lab-range-choices label {
+  min-height: 0 !important; padding: .22rem .4rem !important;
+  font-size: .74rem; line-height: 1.2; display: inline-flex;
+  align-items: center; gap: .3rem; border-radius: 8px;
+}
+.lab-range-choices input { width: 14px; height: 14px; margin: 0; }
+@media (min-width: 900px) {
+  .lab-result-form { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
