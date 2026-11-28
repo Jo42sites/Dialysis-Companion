@@ -181,3 +181,11 @@
 @media (min-width: 1000px) {
   .lab-result-form { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+
+/* Align the labs hero with the rest of the site and close the gaps */
+.health-guide-wrap { margin: .5rem auto 2rem; }
+.health-guide-hero { max-width: none; margin: 0 0 .7rem; text-align: left; }
+.health-guide-hero h1 { margin: 0 0 .45rem; }
+.health-guide-hero .account-eyebrow { margin: 0 0 .15rem; }
+.health-guide-hero .privacy-note { width: auto; max-width: 620px; margin: 0; }
+.health-guide-grid { gap: .7rem; }
