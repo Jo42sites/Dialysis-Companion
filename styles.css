@@ -1739,3 +1739,19 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .v2-doc .card p { font-size: .86rem; line-height: 1.45; margin: 0; }
 .v2-doc .card .icon-badge { width: 38px; height: 38px; }
 .v2-doc .card .icon-badge svg { width: 20px; height: 20px; }
+
+/* Dialysis day: four steps in two columns instead of a tall stack */
+.v2-doc .timeline { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+.v2-doc .timeline-item {
+  display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: .6rem;
+  padding: .7rem .8rem; background: var(--paper); border: 1px solid var(--line);
+  border-radius: 14px; align-items: start;
+}
+.v2-doc .timeline-item::before { display: none; }
+.v2-doc .timeline-mark {
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  font-size: .78rem; font-weight: 800; background: var(--teal-soft); color: var(--teal-dark);
+}
+.v2-doc .timeline-body h3 { margin: 0 0 .3rem; font-size: .92rem; }
+.v2-doc .timeline-body .compact-list li { font-size: .8rem; line-height: 1.4; }
+@media (max-width: 760px) { .v2-doc .timeline { grid-template-columns: 1fr; } }
