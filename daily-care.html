@@ -6,7 +6,7 @@
   <meta name="description" content="Practical dialysis guidance about food, fluids, medicines, and lab results.">
   <meta name="theme-color" content="#0d6b61">
   <title>Food, medicines and labs | Dialysis Companion</title>
-  <link rel="stylesheet" href="styles.css?v=20261129t">
+  <link rel="stylesheet" href="styles.css?v=20261129u">
 </head>
 <body>
   <a class="skip-link" href="#main">Lumaktaw sa nilalaman / Skip to content</a>
@@ -101,7 +101,7 @@
       <div class="wrap"><div class="hero-grid topic-hero-grid" style="grid-template-columns:1fr"><div class="topic-hero-copy">
         <div class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span><span class="tl">Gabay sa dialysis</span><span class="en">Dialysis guide</span></div>
         <h1><span class="tl">Pagkain at tubig</span><span class="en">Food and fluid</span></h1>
-        <p class="hero-note"><svg aria-hidden="true"><use href="#i-info"/></svg><span><span class="tl">Hindi ito kapalit ng payo ng nephrologist o dialysis team. Ang itinatalagang diet ay depende sa labs, timbang, gamot at uri ng dialysis.</span><span class="en">This does not replace advice from your nephrologist or dialysis team. The prescribed diet depends on labs, weight, medicines and dialysis type.</span></span></p>
+        <p class="hero-note"><svg aria-hidden="true"><use href="#i-info"/></svg><span><span class="tl">Hindi ito kapalit ng payo ng nephrologist o dialysis team.<br>Ang itinatalagang diet ay depende sa labs, timbang, gamot at uri ng dialysis.</span><span class="en">This does not replace advice from your nephrologist or dialysis team.<br>The prescribed diet depends on labs, weight, medicines and dialysis type.</span></span></p>
       </div>
 </div></div>
     </section>
@@ -163,9 +163,19 @@
           <p class="table-note"><span class="tl">Halimbawa lamang ito. Sundin ang plano ng inyong dietitian.</span><span class="en">This is only an example. Follow your dietitian’s plan.</span></p>
         </div>
 
+                <div class="v2-safety-compact">
+          <div class="safety-row avoid">
+            <strong><span class="tl">Iwasan</span><span class="en">Avoid</span></strong>
+            <span><span class="tl">NSAIDs (ibuprofen, mefenamic acid) · salt substitute · herbal detox</span><span class="en">NSAIDs (ibuprofen, mefenamic acid) · salt substitutes · herbal detox</span></span>
+          </div>
+          <div class="safety-row do">
+            <strong><span class="tl">Gawin</span><span class="en">Do</span></strong>
+            <span><span class="tl">Inumin ang binder (calcium acetate, sevelamer) kasabay ng pagkain. Walang pagkain, walang bisa.</span><span class="en">Take the binder (calcium acetate, sevelamer) with meals. No food, no effect.</span></span>
+          </div>
+        </div>
+
         <section class="food-checker" aria-labelledby="foodCheckerTitle">
           <h3 id="foodCheckerTitle"><span class="tl">Suriin ang pagkain</span><span class="en">Check a food</span></h3>
-          <p class="food-checker-intro"><span class="tl">Mas mabuting sundin ang personal na plano ng renal dietitian.</span><span class="en">Follow your renal dietitian’s personal plan.</span></p>
           <form id="foodCheckerForm" class="food-checker-form">
             <label for="foodCheckerInput"><span class="tl">Pangalan ng pagkain o inumin</span><span class="en">Food or drink name</span></label>
             <input id="foodCheckerInput" type="text" maxlength="120" required autocomplete="off" placeholder="Hal. instant noodles, saging, adobo / e.g. instant noodles, banana, adobo">
@@ -177,7 +187,7 @@
           </div>
         </section>
 
-        <details class="accordion" style="margin-top:12px">
+        <details class="accordion" open style="margin-top:12px">
           <summary><span class="tl">Hanapin ang pagkain — listahan</span><span class="en">Find a food — list</span></summary>
           <div class="accordion-body">
           <div class="card">
@@ -191,17 +201,6 @@
           <div class="food-grid" id="foodGrid"></div>
           <p class="table-note"><span class="tl">Ang “high” ay pangkalahatang babala, hindi eksaktong sukat. Ang serving, paraan ng pagluto, at latest labs ang pagbatayan. Tanungin ang dietitian bago magbawas ng pagkain.</span><span class="en">“High” is a general warning, not an exact measure. Serving size, cooking method, and latest labs matter. Ask your dietitian before removing foods.</span></p>
         </details>
-
-        <div class="v2-safety-compact">
-          <div class="safety-row avoid">
-            <strong><span class="tl">Iwasan</span><span class="en">Avoid</span></strong>
-            <span><span class="tl">NSAIDs (ibuprofen, mefenamic acid) · salt substitute · herbal detox</span><span class="en">NSAIDs (ibuprofen, mefenamic acid) · salt substitutes · herbal detox</span></span>
-          </div>
-          <div class="safety-row do">
-            <strong><span class="tl">Gawin</span><span class="en">Do</span></strong>
-            <span><span class="tl">Inumin ang binder (calcium acetate, sevelamer) kasabay ng pagkain. Walang pagkain, walang bisa.</span><span class="en">Take the binder (calcium acetate, sevelamer) with meals. No food, no effect.</span></span>
-          </div>
-        </div>
     </section>
 
   </main>
@@ -245,7 +244,7 @@
   <div class="print-area" id="printArea" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <button class="back-top" type="button" id="backToTop" aria-label="Bumalik sa itaas / Back to top"><svg aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
-  <script src="app.js?v=20261129t"></script>
-  <script src="food-checker.js?v=20261129t"></script>
+  <script src="app.js?v=20261129u"></script>
+  <script src="food-checker.js?v=20261129u"></script>
 </body>
 </html>
