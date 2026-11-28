@@ -6,7 +6,7 @@
   <meta name="description" content="Practical dialysis guidance about food, fluids, medicines, and lab results.">
   <meta name="theme-color" content="#0d6b61">
   <title>Food, medicines and labs | Dialysis Companion</title>
-  <link rel="stylesheet" href="styles.css?v=20261128r">
+  <link rel="stylesheet" href="styles.css?v=20261128s">
 </head>
 <body>
   <a class="skip-link" href="#main">Lumaktaw sa nilalaman / Skip to content</a>
@@ -98,20 +98,12 @@
   </header>
   <main id="main" class="v2-doc">
     <section class="hero subpage-hero" id="top">
-      <div class="wrap"><div class="hero-grid topic-hero-grid"><div class="topic-hero-copy">
+      <div class="wrap"><div class="hero-grid topic-hero-grid" style="grid-template-columns:1fr"><div class="topic-hero-copy">
         <div class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span><span class="tl">Gabay sa dialysis</span><span class="en">Dialysis guide</span></div>
-        <h1><span class="tl">Pagkain, gamot at labs</span><span class="en">Food, medicines and labs</span></h1>
-        <p class="hero-lede"><span class="tl">Gabay sa pagkain at fluid limit.</span><span class="en">Guidance on food, fluid limits, medicines, and understanding your lab results.</span></p>
+        <h1><span class="tl">Pagkain at tubig</span><span class="en">Food and fluid</span></h1>
         <p class="hero-note"><svg aria-hidden="true"><use href="#i-info"/></svg><span><span class="tl">Hindi ito kapalit ng payo ng nephrologist o dialysis team.</span><span class="en">This does not replace advice from your nephrologist or dialysis team.</span></span></p>
       </div>
-      <aside class="topic-hero-card topic-hero-card--daily">
-        <span class="topic-hero-icon" aria-hidden="true"><svg><use href="#i-plate"/></svg></span>
-        <span class="topic-hero-kicker"><span class="tl">Personal ang bawat plano</span><span class="en">Your plan is personal</span></span>
-        <p class="topic-hero-title"><span class="tl">Maliit na hakbang, araw-araw.</span><span class="en">Small choices, day by day.</span></p>
-        <div class="topic-hero-tags">
-          <span><span class="tl">Pagkain at tubig</span><span class="en">Food &amp; fluid</span></span>
-        </div>
-      </aside></div></div>
+</div></div>
     </section>
 
     <section class="section tint" id="food">
@@ -173,7 +165,7 @@
 
         <section class="food-checker" aria-labelledby="foodCheckerTitle">
           <h3 id="foodCheckerTitle"><span class="tl">Suriin ang pagkain</span><span class="en">Check a food</span></h3>
-          <p class="food-checker-intro"><span class="tl">I-type ang pangalan ng pagkain o inumin, kasama ang paraan ng pagluto kung mahalaga. Magbibigay ito ng posibleng paalala tungkol sa potassium (K), phosphorus (P), sodium (Na), protein, at fluid.</span><span class="en">Type a food or drink, including how it is prepared when relevant. It will show possible flags for potassium (K), phosphorus (P), sodium (Na), protein, and fluid.</span></p>
+          <p class="food-checker-intro"><span class="tl">I-type ang pangalan ng pagkain o inumin. Magbibigay ito ng posibleng paalala tungkol sa potassium (K), phosphorus (P), sodium (Na), protein, at fluid. Hindi ibig sabihin ng “hindi natukoy” na ligtas o mababa ito. Sundin ang personal na plano ng renal dietitian.</span><span class="en">Type a food or drink name. It will show possible flags for potassium (K), phosphorus (P), sodium (Na), protein, and fluid. “Not identified” does not mean safe or low. Follow your renal dietitian’s personal plan.</span></p>
           <form id="foodCheckerForm" class="food-checker-form">
             <label for="foodCheckerInput"><span class="tl">Pangalan ng pagkain o inumin</span><span class="en">Food or drink name</span></label>
             <input id="foodCheckerInput" type="text" maxlength="120" required autocomplete="off" placeholder="Hal. instant noodles, saging, adobo / e.g. instant noodles, banana, adobo">
@@ -183,12 +175,10 @@
             <h4 id="foodCheckerName"></h4>
             <ul id="foodCheckerFlags" class="food-checker-flags"></ul>
           </div>
-          <p class="food-checker-disclaimer"><span class="tl">Pagtatantiya ito batay sa mga salitang nakilala—hindi kumpletong nutrition database o eksaktong sukat. Maaaring mag-iba ang laman ayon sa brand, sangkap, serving, at pagluto. Hindi ibig sabihin ng “hindi natukoy” na ligtas o mababa ito. Sundin ang personal na plano ng renal dietitian.</span><span class="en">This is an estimate based on recognized keywords—not a complete nutrition database or exact measurement. Content varies by brand, ingredients, portion, and preparation. “Not identified” does not mean safe or low. Follow your renal dietitian’s personal plan.</span></p>
         </section>
 
         <div class="card" style="margin-top:16px">
           <h3><span class="tl">Hanapin ang pagkain</span><span class="en">Find a food</span></h3>
-          <p><span class="tl">Gamitin ang kahon na “Pangalan ng pagkain o inumin” sa itaas para i-search ang listahan. Hindi ito kapalit ng plano ng dietitian.</span><span class="en">Use the “Food or drink name” box above to search this list. This does not replace your dietitian’s plan.</span></p>
           <div class="food-legend" aria-label="Legend">
             <span class="badge k">High K</span>
             <span class="badge p">High P</span>
@@ -196,7 +186,6 @@
             <span class="badge protein">Protein</span>
             <span class="badge fluid">Fluid</span>
           </div>
-          <p class="food-count" id="foodCount" aria-live="polite"></p>
           <p class="food-scroll-note"><span class="tl">I-scroll ang listahan o mag-search.</span><span class="en">Scroll the list or search.</span></p>
           <div class="food-grid" id="foodGrid"></div>
           <p class="table-note"><span class="tl">Ang “high” ay pangkalahatang babala, hindi eksaktong sukat. Ang serving, paraan ng pagluto, at latest labs ang pagbatayan. Tanungin ang dietitian bago magbawas ng pagkain.</span><span class="en">“High” is a general warning, not an exact measure. Serving size, cooking method, and latest labs matter. Ask your dietitian before removing foods.</span></p>
@@ -268,7 +257,7 @@
   <div class="print-area" id="printArea" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <button class="back-top" type="button" id="backToTop" aria-label="Bumalik sa itaas / Back to top"><svg aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
-  <script src="app.js?v=20261128r"></script>
-  <script src="food-checker.js?v=20261128r"></script>
+  <script src="app.js?v=20261128s"></script>
+  <script src="food-checker.js?v=20261128s"></script>
 </body>
 </html>
