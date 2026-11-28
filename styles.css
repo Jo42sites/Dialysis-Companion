@@ -1695,3 +1695,33 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .safety-row.avoid strong { color: var(--red); }
 .safety-row.do { border-left-color: var(--green); }
 .safety-row.do strong { color: var(--green); }
+
+/* Plate card: graphic on the left, nutrient keys on the right */
+.plate-figure--compact {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 1.2rem;
+  align-items: center;
+  text-align: left;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+.plate-figure--compact .plate-visual { text-align: center; }
+.plate-figure--compact .plate-title { margin: 0 0 .35rem; font-size: .95rem; }
+.plate-figure--compact .plate-svg { width: 100%; max-width: 300px; margin: 0 auto; display: block; }
+.plate-notes { display: grid; gap: .45rem; }
+.plate-notes .nutrient {
+  display: grid; grid-template-columns: 10px 1fr; gap: .2rem .55rem;
+  align-items: baseline; padding: .45rem .6rem; border-radius: 10px;
+  background: var(--mint); border: 1px solid #dfeee6;
+}
+.plate-notes .nutrient strong { font-size: .84rem; }
+.plate-notes .nutrient p { margin: 0; grid-column: 2; font-size: .76rem; line-height: 1.35; color: var(--muted); }
+.plate-notes .nutrient-dot { grid-row: 1 / span 2; align-self: start; margin-top: .35rem; }
+.plate-figure--compact .table-note { grid-column: 1 / -1; margin: .2rem 0 0; text-align: center; }
+@media (max-width: 720px) {
+  .plate-figure--compact { grid-template-columns: 1fr; }
+  .plate-figure--compact .table-note { text-align: left; }
+}
