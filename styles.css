@@ -1901,3 +1901,16 @@ details.accordion[open] summary { background: var(--teal-soft); }
   background: var(--teal); border-color: var(--teal); color: #fff;
 }
 #pages { scroll-margin-top: 90px; }
+
+/* Keep "Mas mabuti:" and its answer on one flowing line */
+.food-card .swap { display: block; }
+.food-card .swap strong,
+.food-card .swap .tl,
+.food-card .swap .en { display: inline; }
+.food-card .swap strong { margin-right: .25rem; }
+
+/* Everything to be careful about reads red; protein stays green */
+.badge.k, .badge.p, .badge.na, .badge.fluid {
+  background: #fee2e2; color: #991b1b; border: 1px solid #f2b8b5;
+}
+.badge.protein { background: #dcfce7; color: #166534; border: 1px solid #b7e4c7; }
