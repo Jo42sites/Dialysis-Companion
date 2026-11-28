@@ -1854,3 +1854,9 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .v2-doc .section-nav a[href="dialysis.html"].active { background: #0d6b61; border-color: #0d6b61; color: #fff; }
 .v2-doc .section-nav a[href="session.html"].active  { background: #b07a12; border-color: #b07a12; color: #fff; }
 .v2-doc .section-nav a[href="access.html"].active   { background: #b3462c; border-color: #b3462c; color: #fff; }
+
+/* Selected page tab: solid colour, obvious even if scripts strip the class */
+.v2-doc .section-nav a[href="dialysis.html"][aria-current="page"] { background: #0d6b61; border-color: #0d6b61; color: #fff; }
+.v2-doc .section-nav a[href="session.html"][aria-current="page"]  { background: #b07a12; border-color: #b07a12; color: #fff; }
+.v2-doc .section-nav a[href="access.html"][aria-current="page"]   { background: #b3462c; border-color: #b3462c; color: #fff; }
+.v2-doc .section-nav a[aria-current="page"]::after { content: " ✓"; font-weight: 700; }
