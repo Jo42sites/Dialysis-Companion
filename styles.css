@@ -1791,7 +1791,7 @@ details.accordion[open] summary { background: var(--teal-soft); }
 
 /* Single-line reminder instead of a full callout */
 .session-note {
-  display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap;
+  display: block; width: 100%;
   margin: .9rem 0 0; padding: .55rem .85rem;
   background: var(--mint); border-left: 4px solid var(--teal);
   border-radius: 10px; font-size: .85rem; line-height: 1.45; color: var(--ink-soft);
