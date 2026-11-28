@@ -308,6 +308,20 @@ def safe_user(user: sqlite3.Row | dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def session_payload(
+    user: sqlite3.Row | dict[str, Any], unit: dict[str, Any]
+) -> dict[str, Any]:
+    return {
+        "unit": unit,
+        "user": {
+            "id": user["id"],
+            "username": user["username"],
+            "role": user["role"],
+        },
+        "token": sign_unit_token(user),
+    }
+
+
 def audit(
     connection: sqlite3.Connection,
     unit_id: int,
@@ -936,6 +950,8 @@ async def register_unit(
             ) from None
         raise
 
+    if not config.MFA_REQUIRED:
+        return session_payload(user, {"name": name, "slug": slug})
     return {"unit": {"name": name, "slug": slug}, **auth_payload(user, secret)}
 
 
@@ -965,6 +981,9 @@ async def login(
 
     secret = decrypt_record(user["unit_id"], user["totp_secret"])["secret"]
     unit = {"id": user["unit_id"], "name": user["unit_name"], "slug": user["slug"]}
+    if not config.MFA_REQUIRED:
+        audit(connection, user["unit_id"], user["id"], "auth.login_no_mfa")
+        return session_payload(user, unit)
     if not user["totp_enabled"]:
         return {"unit": unit, **auth_payload(user, secret)}
 
@@ -993,11 +1012,7 @@ async def login(
         user["id"],
         "auth.login_recovery_code" if recovery_valid else "auth.login",
     )
-    return {
-        "unit": unit,
-        "user": {"id": user["id"], "username": user["username"], "role": user["role"]},
-        "token": sign_unit_token(user),
-    }
+    return session_payload(user, unit)
 
 
 @app.post("/api/units/mfa/confirm")

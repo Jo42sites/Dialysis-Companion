@@ -23,6 +23,15 @@ if len(MEDICAL_DATA_KEY.encode("utf-8")) < 32:
 PORT = int(os.getenv("PORT", "3001"))
 HOST = os.getenv("HOST", "127.0.0.1")
 JWT_EXPIRES_IN = os.getenv("JWT_EXPIRES_IN", "15m")
+# Two-step sign-in. Keep this on for clinical data; set MFA_REQUIRED=0 only when
+# no authenticator is available. Users with MFA already enrolled still need a code
+# once this is turned back on.
+MFA_REQUIRED = os.getenv("MFA_REQUIRED", "1").strip().lower() not in (
+    "0",
+    "false",
+    "no",
+    "off",
+)
 DATABASE_PATH = Path(os.getenv("DATABASE_PATH", "./data/dialysis-admin.sqlite"))
 if not DATABASE_PATH.is_absolute():
     DATABASE_PATH = Path(__file__).resolve().parent / DATABASE_PATH
