@@ -2028,3 +2028,11 @@ html { scroll-behavior: auto; }
   body.print-card-mode .card-preview-sheet { box-shadow: none; border-radius: 0; padding: 0; width: 100%; }
   body.print-card-mode .card-preview-bar { display: none; }
 }
+
+/* Preview table headers were white on mint — unreadable */
+.card-preview-body th,
+.card-preview-body td { color: var(--ink) !important; background-clip: padding-box; }
+.card-preview-body th {
+  background: var(--mint) !important; color: var(--ink) !important;
+  text-transform: none; letter-spacing: 0; font-weight: 700;
+}
