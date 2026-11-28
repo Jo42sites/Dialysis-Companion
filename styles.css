@@ -1731,3 +1731,11 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .food-checker-form { margin-top: .35rem; }
 #foodGrid { margin-top: .5rem; }
 .card:has(#foodGrid) { padding: .9rem 1rem; }
+
+/* Dialysis page: stop cards stretching and tighten their padding */
+.v2-doc .grid { align-items: start; }
+.v2-doc .card { padding: .85rem .95rem; }
+.v2-doc .card h3 { margin: .35rem 0 .25rem; font-size: .98rem; }
+.v2-doc .card p { font-size: .86rem; line-height: 1.45; margin: 0; }
+.v2-doc .card .icon-badge { width: 38px; height: 38px; }
+.v2-doc .card .icon-badge svg { width: 20px; height: 20px; }
