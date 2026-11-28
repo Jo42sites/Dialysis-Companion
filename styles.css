@@ -1920,3 +1920,19 @@ details.accordion[open] summary { background: var(--teal-soft); }
   background: #fee2e2; color: #991b1b; border: 1px solid #f2b8b5;
 }
 .badge.protein { background: #dcfce7; color: #166534; border: 1px solid #b7e4c7; }
+
+/* Page tabs: land instantly, no smooth-scroll bounce */
+html { scroll-behavior: auto; }
+
+/* Five checks: three on the first row, two below; dot beside the name */
+.watch-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.watch-card { display: grid; grid-template-columns: 12px minmax(0, 1fr); column-gap: .4rem; align-items: center; padding: .55rem .65rem .5rem; }
+.watch-card h3 { grid-column: 2; margin: 0; font-size: .8rem; }
+.watch-card p { grid-column: 2; }
+.watch-dot { width: 10px; height: 10px; }
+@media (max-width: 760px) { .watch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Search result flags read red like the food list */
+.food-checker-flag {
+  background: #fee2e2; color: #991b1b; border: 1px solid #f2b8b5;
+}
