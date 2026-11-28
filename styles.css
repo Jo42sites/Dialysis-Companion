@@ -2058,3 +2058,31 @@ html { scroll-behavior: auto; }
 .pkg { padding: .6rem .75rem; background: #fff; border: 1px solid var(--line); border-radius: 12px; }
 .pkg strong { display: block; margin-bottom: .15rem; font-size: .86rem; color: var(--teal-dark); }
 .pkg p { margin: 0; font-size: .84rem; line-height: 1.5; }
+
+/* Wallet card: 85.6 × 54 mm (ID-1), shown 2× on screen */
+.dc-card {
+  width: 85.6mm; height: 54mm; box-sizing: border-box;
+  padding: 3mm; background: #fff; color: #111;
+  font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+  display: flex; flex-direction: column; gap: 1.2mm;
+  border: 0.3mm solid #111; border-radius: 2mm;
+}
+.card-preview-body .dc-card {
+  transform: scale(2); transform-origin: top left;
+  margin: 0 auto 54mm 0;
+}
+.dc-head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 0.3mm solid #111; padding-bottom: .6mm; }
+.dc-head strong { font-size: 7.5pt; letter-spacing: .02em; }
+.dc-head span { font-size: 5.5pt; color: #555; }
+.dc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2mm; flex: 1; }
+.dc-col { display: grid; align-content: start; gap: .5mm; }
+.kv { font-size: 5.6pt; line-height: 1.2; display: grid; grid-template-columns: 15mm 1fr; gap: .6mm; }
+.kv .k { color: #555; }
+.kv .v { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dc-foot { font-size: 5.2pt; line-height: 1.15; border-top: 0.3mm solid #111; padding-top: .6mm; }
+
+@media print {
+  @page { margin: 10mm; }
+  body.print-card-mode .card-preview-body .dc-card { transform: none; margin: 0; }
+  body.print-card-mode .dc-card { border: 0.3mm solid #000; }
+}

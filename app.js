@@ -483,12 +483,22 @@
         ['Mga gamot / Medicines', data.meds], ['Notes', data.notes]
       ];
       const printArea = $('#printArea');
-      printArea.innerHTML = '<div class="print-card">' +
-        '<h1>Dialysis Companion — Aking Dialysis Card</h1>' +
-        '<div class="sub">Itago sa pitaka. Ipakita sa emergency team. / Keep in wallet. Show to the emergency team.</div>' +
-        '<table><tbody>' + rows.map(([k, v]) => '<tr><th>' + esc(k) + '</th><td>' + esc(v) + '</td></tr>').join('') + '</tbody></table>' +
-        '<div class="emergency">EMERGENCY: Call 911. Sabihin ang uri ng dialysis, huling session, access, dry weight, gamot, at allergy.</div>' +
-        '<p style="font-size:.7rem;margin-top:10px">Hindi ito opisyal na medical record. I-verify sa care team. / Not an official medical record. Verify with your care team.</p>' +
+      const rows = [
+        ['Pangalan / Name', data.name], ['Uri / Type', data.type], ['Access', data.access],
+        ['Dry weight', data.dry ? data.dry + ' kg' : ''], ['Fluid limit', data.limit ? data.limit + ' mL/day' : ''],
+        ['Iskedyul / Schedule', data.schedule], ['Doctor', data.doctor], ['Unit phone', data.unit],
+        ['Emergency', data.emergency], ['Allergy', data.allergy],
+        ['Gamot / Meds', data.meds], ['Notes', data.notes]
+      ];
+      const cell = ([k, v]) => '<div class="kv"><span class="k">' + esc(k) + '</span><span class="v">' + esc(v) + '</span></div>';
+      const half = Math.ceil(rows.length / 2);
+      printArea.innerHTML = '<div class="dc-card">' +
+        '<div class="dc-head"><strong>Dialysis Card</strong><span>Aking Dialysis Card</span></div>' +
+        '<div class="dc-cols">' +
+          '<div class="dc-col">' + rows.slice(0, half).map(cell).join('') + '</div>' +
+          '<div class="dc-col">' + rows.slice(half).map(cell).join('') + '</div>' +
+        '</div>' +
+        '<div class="dc-foot">EMERGENCY: 911 — sabihin ang uri ng dialysis, huling session, access, dry weight, gamot, at allergy.</div>' +
         '</div>';
       const cardHtml = document.querySelector('#printArea').innerHTML;
       let modal = document.querySelector('#cardPreviewModal');
