@@ -1439,12 +1439,6 @@ def delete_record(
     return Response(status_code=204)
 
 
-# Serve the static website (index.html, records.html, app.js, ...) from the same
-# container, so dialysisform.com and the API share one origin. Registered last so
-# every /api route above still wins; /api/* is never served from disk.
-STATIC_DIR = Path(__file__).resolve().parent / "static"
-if STATIC_DIR.is_dir():
-    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 
 
 # ---------------------------------------------------------------------------
@@ -1672,3 +1666,10 @@ async def passkey_login_complete(
         audit(connection, user["unit_id"], user["id"], "auth.passkey_login")
     unit = {"id": user["unit_id"], "name": user["unit_name"], "slug": user["slug"]}
     return session_payload(user, unit)
+
+# Serve the static website (index.html, records.html, app.js, ...) from the same
+# container, so dialysisform.com and the API share one origin. Registered last so
+# every /api route above still wins; /api/* is never served from disk.
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+if STATIC_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
