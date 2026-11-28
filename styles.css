@@ -1914,3 +1914,9 @@ details.accordion[open] summary { background: var(--teal-soft); }
   background: #fee2e2; color: #991b1b; border: 1px solid #f2b8b5;
 }
 .badge.protein { background: #dcfce7; color: #166534; border: 1px solid #b7e4c7; }
+
+/* Actual food badge classes: anything to watch reads red, protein green */
+.badge.high-k, .badge.high-p, .badge.high-na, .badge.fluid {
+  background: #fee2e2; color: #991b1b; border: 1px solid #f2b8b5;
+}
+.badge.protein { background: #dcfce7; color: #166534; border: 1px solid #b7e4c7; }
