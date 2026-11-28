@@ -1936,3 +1936,31 @@ html { scroll-behavior: auto; }
 .food-checker-flag {
   background: #fee2e2; color: #991b1b; border: 1px solid #f2b8b5;
 }
+
+/* Labs page hero matches the other subpages */
+.health-guide-hero .account-eyebrow {
+  display: inline-flex; align-items: center; gap: .55rem;
+  margin: 0 0 .5rem; color: var(--teal); font-size: .72rem;
+  letter-spacing: .09em; text-transform: uppercase; font-weight: 800;
+}
+.health-guide-hero .account-eyebrow::before {
+  content: ""; width: 26px; height: 2px; background: var(--coral); flex: none;
+}
+.health-guide-hero .privacy-note {
+  border: 0; background: transparent; padding: 0; border-radius: 0;
+  margin: .55rem 0 0; color: var(--muted); font-size: .85rem; width: auto;
+  box-shadow: none;
+}
+.health-guide-hero .privacy-note span[aria-hidden] { display: none; }
+
+/* Page tabs: hover feedback, and a smooth cross-fade between pages */
+.v2-doc .section-nav a[href^="dialysis.html"]:hover,
+.v2-doc .section-nav a[href^="session.html"]:hover,
+.v2-doc .section-nav a[href^="access.html"]:hover {
+  background: var(--teal-soft); border-color: var(--teal);
+  color: var(--teal-dark); transform: translateY(-1px);
+}
+.v2-doc .section-nav a { transition: background .15s ease, color .15s ease, border-color .15s ease, transform .15s ease; }
+
+@view-transition { navigation: auto; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .18s; }
