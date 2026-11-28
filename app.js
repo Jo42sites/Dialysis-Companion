@@ -486,10 +486,7 @@
       const left = [
         ['Name', data.name], ['Type', data.type], ['Access', data.access],
         ['Dry weight', data.dry ? data.dry + ' kg' : ''], ['Fluid limit', data.limit ? data.limit + ' mL/day' : ''],
-        ['Schedule', data.schedule]
-      ];
-      const right = [
-        ['Doctor', data.doctor], ['Unit phone', data.unit],
+        ['Schedule', data.schedule], ['Doctor', data.doctor], ['Unit phone', data.unit],
         ['Emergency', data.emergency], ['Allergy', data.allergy]
       ];
       const cell = ([k, v]) => '<div class="kv"><span class="k">' + esc(k) + '</span><span class="v">' + esc(v) + '</span></div>';
@@ -497,9 +494,8 @@
         '<div class="dc-head"><strong>Dialysis Card</strong><span>Emergency medical card</span></div>' +
         '<div class="dc-cols">' +
           '<div class="dc-col">' + left.map(cell).join('') + '</div>' +
-          '<div class="dc-col">' + right.map(cell).join('') + '</div>' +
+          '<div class="dc-col dc-col-meds"><span class="k">Medicines</span><div class="med-lines">' + esc(data.meds) + '</div></div>' +
         '</div>' +
-        '<div class="dc-meds"><span class="k">Medicines</span><div class="med-lines">' + esc(data.meds) + '</div></div>' +
         '<div class="dc-notes"><span class="k">Notes</span><div class="note-lines">' + esc(data.notes) + '</div></div>' +
         '<div class="dc-foot">EMERGENCY 911 — say the dialysis type, last session, access, dry weight, medicines and allergies.</div>' +
         '</div>';
