@@ -1996,3 +1996,10 @@ html { scroll-behavior: auto; }
 /* Free-text symptom box: two lines, not a panel */
 .symptom-form textarea, #customSymptom { min-height: 52px; height: 52px; }
 .v2-doc .account-button { min-height: 40px; }
+
+/* Support tabs: hover tint and a solid teal selection, no ambiguity */
+.section-nav a:hover { background: var(--teal-soft); border-color: var(--teal); color: var(--teal-dark); }
+.section-nav a.active,
+.section-nav a[aria-current="page"] {
+  background: var(--teal) !important; border-color: var(--teal) !important; color: #fff !important;
+}
