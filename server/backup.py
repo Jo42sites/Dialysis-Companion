@@ -45,6 +45,23 @@ def main() -> None:
         finally:
             temporary_output.unlink(missing_ok=True)
     print(f"Encrypted backup written to {output}")
+    prune(output.parent)
+
+
+def prune(folder: Path) -> None:
+    """Keep the newest backups only; a full disk stops dialysis at 06:00."""
+    keep = int(os.getenv("BACKUP_KEEP", "30"))
+    if keep <= 0:
+        return
+    backups = sorted(
+        folder.glob("records-*.dcbackup"), key=lambda p: p.stat().st_mtime, reverse=True
+    )
+    for old in backups[keep:]:
+        try:
+            old.unlink()
+            print(f"Removed old backup {old.name}")
+        except OSError as error:
+            print(f"Could not remove {old.name}: {error}", file=sys.stderr)
 
 
 if __name__ == "__main__":
