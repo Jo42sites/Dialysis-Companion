@@ -490,22 +490,20 @@
         '<div class="emergency">EMERGENCY: Call 911. Sabihin ang uri ng dialysis, huling session, access, dry weight, gamot, at allergy.</div>' +
         '<p style="font-size:.7rem;margin-top:10px">Hindi ito opisyal na medical record. I-verify sa care team. / Not an official medical record. Verify with your care team.</p>' +
         '</div>';
-      const preview = window.open('', '_blank');
-      if (!preview) { window.print(); return; }
-      preview.document.write(
-        '<!doctype html><html><head><meta charset="utf-8"><title>Dialysis Card</title>' +
+      const cardHtml = document.querySelector('#printArea').innerHTML;
+      const html = '<!doctype html><html><head><meta charset="utf-8"><title>Dialysis Card</title>' +
         '<style>body{font-family:Georgia,serif;margin:24px;color:#17312e}' +
         'h1{font-size:1.1rem;margin:0 0 4px}.sub{color:#64756f;font-size:.75rem;margin-bottom:12px}' +
         'table{width:100%;border-collapse:collapse}th,td{border:1px solid #999;padding:6px 8px;font-size:.8rem;text-align:left;vertical-align:top}' +
         'th{background:#f2f2f2;width:34%}.emergency{margin-top:12px;border:2px solid #000;padding:8px;font-weight:700;font-size:.8rem}' +
-        '.bar{position:sticky;top:0;background:#fff;padding:8px 0 14px;display:flex;gap:8px}' +
+        '.bar{padding:0 0 14px;display:flex;gap:8px}' +
         '.bar button{font:inherit;padding:8px 14px;border-radius:8px;border:1px solid #0d6b61;background:#0d6b61;color:#fff;cursor:pointer}' +
         '@media print{.bar{display:none}}</style></head><body>' +
         '<div class="bar"><button onclick="window.print()">Print / Save as PDF</button></div>' +
-        document.querySelector('#printArea').innerHTML +
-        '</body></html>'
-      );
-      preview.document.close();
+        cardHtml + '</body></html>';
+      const blobUrl = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      const preview = window.open(blobUrl, '_blank');
+      if (!preview) { window.print(); }
     });
   }
 
