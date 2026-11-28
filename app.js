@@ -483,7 +483,7 @@
         ['Mga gamot / Medicines', data.meds], ['Notes', data.notes]
       ];
       const printArea = $('#printArea');
-      const rows = [
+      const cardRows = [
         ['Pangalan / Name', data.name], ['Uri / Type', data.type], ['Access', data.access],
         ['Dry weight', data.dry ? data.dry + ' kg' : ''], ['Fluid limit', data.limit ? data.limit + ' mL/day' : ''],
         ['Iskedyul / Schedule', data.schedule], ['Doctor', data.doctor], ['Unit phone', data.unit],
@@ -491,12 +491,12 @@
         ['Gamot / Meds', data.meds], ['Notes', data.notes]
       ];
       const cell = ([k, v]) => '<div class="kv"><span class="k">' + esc(k) + '</span><span class="v">' + esc(v) + '</span></div>';
-      const half = Math.ceil(rows.length / 2);
+      const half = Math.ceil(cardRows.length / 2);
       printArea.innerHTML = '<div class="dc-card">' +
         '<div class="dc-head"><strong>Dialysis Card</strong><span>Aking Dialysis Card</span></div>' +
         '<div class="dc-cols">' +
-          '<div class="dc-col">' + rows.slice(0, half).map(cell).join('') + '</div>' +
-          '<div class="dc-col">' + rows.slice(half).map(cell).join('') + '</div>' +
+          '<div class="dc-col">' + cardRows.slice(0, half).map(cell).join('') + '</div>' +
+          '<div class="dc-col">' + cardRows.slice(half).map(cell).join('') + '</div>' +
         '</div>' +
         '<div class="dc-foot">EMERGENCY: 911 — sabihin ang uri ng dialysis, huling session, access, dry weight, gamot, at allergy.</div>' +
         '</div>';
