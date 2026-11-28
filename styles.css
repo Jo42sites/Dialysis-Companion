@@ -1762,3 +1762,17 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .v2-doc .grid > .card > h3 { margin: 0; }
 .v2-doc .grid > .card > p { margin-top: .15rem; }
 .v2-doc .grid > .card > ul { grid-column: 1 / -1; }
+
+/* Modality cards: compact row, icon beside the text */
+.v2-doc .modality {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  column-gap: .7rem;
+  align-items: start;
+  padding: .7rem .8rem;
+  border-radius: 14px;
+}
+.v2-doc .modality .icon-badge { grid-row: 1 / span 2; margin: 0; width: 34px; height: 34px; }
+.v2-doc .modality .icon-badge svg { width: 18px; height: 18px; }
+.v2-doc .modality h3 { margin: 0; font-size: .92rem; }
+.v2-doc .modality p { margin: .1rem 0 0; font-size: .78rem; line-height: 1.4; }
