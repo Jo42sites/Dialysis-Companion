@@ -1798,3 +1798,6 @@ details.accordion[open] summary { background: var(--teal-soft); }
   text-align: justify; text-justify: inter-word;
 }
 .session-note strong { color: var(--teal-dark); }
+
+/* The session note spans the full content width (not the 68ch reading measure) */
+.v2-doc .wrap > p.session-note, .session-note { max-width: none; }
