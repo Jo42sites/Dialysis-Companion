@@ -1846,3 +1846,19 @@ details.accordion[open] summary { background: var(--teal-soft); }
   background: var(--ink); border-color: var(--ink); color: #fff;
 }
 .v2-doc .section-nav a.active::after { content: "✓"; margin-left: .35rem; font-size: .72rem; }
+
+/* Colour the five watch cards */
+.watch-card { border-color: transparent; }
+.watch-card h3 { font-weight: 800; }
+.watch-card:has(.sodium) { background: #fdf0ee; border-top-color: #c0392b; }
+.watch-card:has(.sodium) h3 { color: #a32b1e; }
+.watch-card:has(.potassium) { background: #fdf4e3; border-top-color: #e3a63a; }
+.watch-card:has(.potassium) h3 { color: #8a5f06; }
+.watch-card:has(.phosphorus) { background: #f3effd; border-top-color: #7c5cd6; }
+.watch-card:has(.phosphorus) h3 { color: #5638b0; }
+.watch-card:has(.protein) { background: #eaf5ee; border-top-color: #206b46; }
+.watch-card:has(.protein) h3 { color: #17573a; }
+.watch-card:has(.fluid) { background: #eaf2fb; border-top-color: #2f6fb3; }
+.watch-card:has(.fluid) h3 { color: #245381; }
+.watch-dot { width: 12px; height: 12px; }
+.watch-ex { opacity: .9; }
