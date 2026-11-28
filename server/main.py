@@ -113,17 +113,37 @@ def rate_limit(request: Request, scope: str, limit: int, window: int) -> bool:
         return True
 
 
+def request_is_https(request: Request) -> bool:
+    """True when the original visitor used HTTPS.
+
+    Behind Cloudflare -> Nginx Proxy Manager -> Traefik the last hop is plain
+    HTTP, so X-Forwarded-Proto often arrives as "http". Cloudflare also sets
+    CF-Visitor, and NPM may set X-Forwarded-Ssl; any of them proves the visitor
+    side was encrypted. Client-supplied copies are overwritten by Cloudflare.
+    """
+    if not config.TRUST_PROXY_HOPS:
+        return request.url.scheme == "https"
+    forwarded_proto = request.headers.get("x-forwarded-proto", "").split(",")[0].strip().lower()
+    if forwarded_proto == "https":
+        return True
+    cf_visitor = request.headers.get("cf-visitor", "").replace(" ", "").lower()
+    if '"scheme":"https"' in cf_visitor:
+        return True
+    return request.headers.get("x-forwarded-ssl", "").strip().lower() == "on"
+
+
 @app.middleware("http")
 async def api_safety_middleware(request: Request, call_next: Any) -> Response:
     if request.url.path.startswith("/api") and request.url.path != "/api/health":
         if config.NODE_ENV == "production":
-            forwarded_proto = request.headers.get("x-forwarded-proto", "").split(",")[0].strip()
-            is_https = (
-                forwarded_proto == "https"
-                if config.TRUST_PROXY_HOPS
-                else request.url.scheme == "https"
-            )
-            if not is_https:
+            if not request_is_https(request):
+                logger.warning(
+                    "Rejected %s: no HTTPS proof (x-forwarded-proto=%r cf-visitor=%r x-forwarded-ssl=%r)",
+                    request.url.path,
+                    request.headers.get("x-forwarded-proto"),
+                    request.headers.get("cf-visitor"),
+                    request.headers.get("x-forwarded-ssl"),
+                )
                 return json_error(426, "HTTPS is required")
         if not rate_limit(request, "api", 100, 15 * 60):
             return json_error(429, "Too many requests. Try again later.")
