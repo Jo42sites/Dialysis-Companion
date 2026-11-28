@@ -162,3 +162,22 @@
     padding: 8px 10px;
   }
 }
+
+/* Tighten the labs & symptoms page */
+.health-guide-wrap { margin-top: .6rem; }
+.health-guide-hero { margin: 0 auto .8rem; }
+.health-guide-hero h1 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); margin: 0 auto .4rem; letter-spacing: -.03em; }
+.health-guide-hero > p:not(.account-eyebrow) { font-size: .95rem; margin: 0 auto .6rem; }
+.health-guide-hero .privacy-note { padding: .45rem .85rem; font-size: .78rem; }
+.health-tool-card { padding: .95rem 1rem; border-radius: 18px; }
+.health-tool-heading { margin-bottom: .5rem; }
+.lab-result-tool { padding: .7rem .75rem; margin: 0 0 .7rem; }
+.lab-result-intro { margin-bottom: .45rem; }
+.lab-result-row { padding: .45rem .55rem; }
+.lab-result-row p { margin: 0 0 .3rem; font-size: .7rem; }
+.lab-range-choices { gap: .3rem; }
+.lab-range-choices label { padding: .3rem .45rem; font-size: .78rem; }
+.symptom-option { padding: .45rem .5rem; }
+@media (min-width: 1000px) {
+  .lab-result-form { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
