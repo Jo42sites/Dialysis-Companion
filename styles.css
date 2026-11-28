@@ -1610,3 +1610,16 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .v2-safety-body strong { display: block; font-size: .95rem; margin-bottom: .15rem; }
 .v2-safety-body p { margin: 0; font-size: .85rem; line-height: 1.45; color: var(--muted); }
 @media (max-width: 860px) { .v2-safety { grid-template-columns: 1fr; } }
+
+/* Plate check: compact two-column layout instead of a tall stack */
+.plate-figure { display: grid; grid-template-columns: 150px 1fr; gap: 1.1rem; align-items: center; }
+.plate-svg { width: 150px; height: auto; }
+.plate-legend { display: grid; grid-template-columns: 1fr 1fr; gap: .3rem .9rem; margin: .45rem 0 .35rem; padding: 0; list-style: none; }
+.plate-legend li { display: flex; gap: .45rem; align-items: flex-start; margin: 0; font-size: .82rem; line-height: 1.35; }
+.plate-legend strong { display: block; font-size: .86rem; }
+.plate-legend .dot { margin-top: .32rem; flex: none; }
+.plate-figure .table-note { font-size: .74rem; margin: 0; }
+@media (max-width: 680px) {
+  .plate-figure { grid-template-columns: 1fr; gap: .7rem; justify-items: start; }
+  .plate-svg { width: 132px; }
+}
