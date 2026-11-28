@@ -1646,3 +1646,21 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .v2-doc .section { padding-top: clamp(1.1rem, 2.6vw, 1.8rem); padding-bottom: clamp(1.1rem, 2.6vw, 1.8rem); }
 .v2-doc p { margin-bottom: .7rem; }
 .v2-doc .hero { padding-bottom: clamp(1rem, 2.5vw, 1.6rem); }
+
+/* Kill the dead space on guide pages */
+.v2-doc .hero { padding: 26px 0 22px; }
+.v2-doc .hero h1 { margin: .1rem 0 .4rem; }
+.v2-doc .hero-note { margin-top: .5rem; }
+.v2-doc .topic-hero-card { min-height: 0; padding: 1.1rem 1.2rem; }
+.v2-doc .section { padding: 1rem 0 1.5rem; }
+.v2-doc .section-head { margin-bottom: .8rem; }
+.v2-doc .card, .v2-doc .tool, .v2-doc article.card { min-height: 0; }
+.v2-doc .grid { gap: .8rem; }
+.v2-doc .callout { margin: .8rem 0; }
+.v2-doc .section-nav { padding: .35rem 0; }
+.v2-doc .section-nav a { padding: .45rem .8rem; }
+.v2-doc .timeline-item + .timeline-item { margin-top: .5rem; }
+.v2-doc .compact-list li { margin-bottom: .2rem; }
+@media (max-width: 760px) {
+  .v2-doc .hero { padding: 18px 0 16px; }
+}
