@@ -6,7 +6,7 @@
   <meta name="description" content="Practical dialysis guidance about food, fluids, medicines, and lab results.">
   <meta name="theme-color" content="#0d6b61">
   <title>Food, medicines and labs | Dialysis Companion</title>
-  <link rel="stylesheet" href="styles.css?v=20261129l">
+  <link rel="stylesheet" href="styles.css?v=20261129m">
 </head>
 <body>
   <a class="skip-link" href="#main">Lumaktaw sa nilalaman / Skip to content</a>
@@ -155,11 +155,11 @@
           <p class="table-note"><span class="tl">Halimbawa lamang ito. Sundin ang plano ng inyong dietitian.</span><span class="en">This is only an example. Follow your dietitian’s plan.</span></p>
         </div>
 
-        <div class="nutrient-grid">
-          <div class="nutrient"><span class="nutrient-dot sodium"></span><strong>Sodium</strong><p><span class="tl">Limitahan ang tuyo, patis, at processed food. Nagpapataas ng BP at uhaw.</span><span class="en">Limit dried fish, fish sauce, and processed food. Raises BP and thirst.</span></p></div>
-          <div class="nutrient"><span class="nutrient-dot potassium"></span><strong>Potassium</strong><p><span class="tl">Depende sa lab. Iwasan ang salt substitute at sobrang sabaw ng gulay.</span><span class="en">Depends on labs. Avoid salt substitutes and excess vegetable broth.</span></p></div>
-          <div class="nutrient"><span class="nutrient-dot phosphorus"></span><strong>Phosphorus</strong><p><span class="tl">Iwasan ang cola at processed meat. Inumin ang binder kasabay ng pagkain.</span><span class="en">Avoid cola and processed meat. Take binders with meals.</span></p></div>
-          <div class="nutrient"><span class="nutrient-dot protein"></span><strong>Protein</strong><p><span class="tl">Huwag magbawas nang wala sa payo; kailangan ito sa lakas at laban sa infection.</span><span class="en">Do not cut back without advice; it supports strength and infection defense.</span></p></div>
+        <div class="nutrient-grid compact">
+          <div class="nutrient"><span class="nutrient-dot sodium"></span><strong>Sodium</strong><p><span class="tl">Limitahan ang asin, patis, at tuyo.</span><span class="en">Limit salt, fish sauce, dried fish.</span></p></div>
+          <div class="nutrient"><span class="nutrient-dot potassium"></span><strong>Potassium</strong><p><span class="tl">Depende sa lab.</span><span class="en">Depends on your labs.</span></p></div>
+          <div class="nutrient"><span class="nutrient-dot phosphorus"></span><strong>Phosphorus</strong><p><span class="tl">Iwasan ang cola; binder sa kain.</span><span class="en">Avoid cola; binder with meals.</span></p></div>
+          <div class="nutrient"><span class="nutrient-dot protein"></span><strong>Protein</strong><p><span class="tl">Huwag bawasan nang wala sa payo.</span><span class="en">Do not cut back unprescribed.</span></p></div>
         </div>
 
         <section class="food-checker" aria-labelledby="foodCheckerTitle">
@@ -176,9 +176,10 @@
           </div>
         </section>
 
-        <div class="card" style="margin-top:16px">
-          <h3><span class="tl">Hanapin ang pagkain</span><span class="en">Find a food</span></h3>
-          <div class="food-legend" aria-label="Legend">
+        <details class="accordion" style="margin-top:12px">
+          <summary><span class="tl">Hanapin ang pagkain — listahan</span><span class="en">Find a food — list</span></summary>
+          <div class="accordion-body">
+          <div class="card">
             <span class="badge k">High K</span>
             <span class="badge p">High P</span>
             <span class="badge na">High NA</span>
@@ -188,7 +189,7 @@
           <p class="food-scroll-note"><span class="tl">I-scroll ang listahan o mag-search.</span><span class="en">Scroll the list or search.</span></p>
           <div class="food-grid" id="foodGrid"></div>
           <p class="table-note"><span class="tl">Ang “high” ay pangkalahatang babala, hindi eksaktong sukat. Ang serving, paraan ng pagluto, at latest labs ang pagbatayan. Tanungin ang dietitian bago magbawas ng pagkain.</span><span class="en">“High” is a general warning, not an exact measure. Serving size, cooking method, and latest labs matter. Ask your dietitian before removing foods.</span></p>
-        </div>
+        </details>
 
         <div class="v2-safety" role="list">
           <div class="v2-safety-item v2-no" role="listitem">
@@ -256,7 +257,7 @@
   <div class="print-area" id="printArea" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <button class="back-top" type="button" id="backToTop" aria-label="Bumalik sa itaas / Back to top"><svg aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
-  <script src="app.js?v=20261129l"></script>
-  <script src="food-checker.js?v=20261129l"></script>
+  <script src="app.js?v=20261129m"></script>
+  <script src="food-checker.js?v=20261129m"></script>
 </body>
 </html>

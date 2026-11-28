@@ -1670,3 +1670,10 @@ details.accordion[open] summary { background: var(--teal-soft); }
   .v2-doc .topic-hero-card { display: none; }
   .v2-doc .topic-hero-grid { grid-template-columns: 1fr !important; }
 }
+
+/* Compact nutrient strip on the food page */
+.nutrient-grid.compact { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; }
+.nutrient-grid.compact .nutrient { padding: .55rem .65rem; }
+.nutrient-grid.compact .nutrient p { font-size: .7rem; line-height: 1.35; margin: .15rem 0 0; }
+.nutrient-grid.compact .nutrient strong { font-size: .82rem; }
+@media (max-width: 760px) { .nutrient-grid.compact { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
