@@ -1830,3 +1830,19 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .watch-card:has(.fluid) { border-top-color: #2f6fb3; }
 @media (max-width: 900px) { .watch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 480px) { .watch-grid { grid-template-columns: 1fr; } }
+
+/* Section chips read as page tabs */
+.section-nav-inner { display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
+.section-nav-label {
+  font-size: .66rem; font-weight: 800; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--muted); margin-right: .45rem;
+}
+.v2-doc .section-nav a {
+  border: 1px solid var(--line-strong); border-radius: 999px;
+  background: var(--paper); color: var(--ink-soft); font-weight: 700;
+}
+.v2-doc .section-nav a:hover { border-color: var(--teal); color: var(--teal-dark); }
+.v2-doc .section-nav a.active {
+  background: var(--ink); border-color: var(--ink); color: #fff;
+}
+.v2-doc .section-nav a.active::after { content: "✓"; margin-left: .35rem; font-size: .72rem; }
