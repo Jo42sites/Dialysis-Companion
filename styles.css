@@ -1486,3 +1486,12 @@ details.accordion[open] summary { background: var(--teal-soft); }
   .v2-grid { grid-template-columns: 1fr; }
   .v2-actions .v2-btn { flex: 1 1 auto; justify-content: center; }
 }
+
+/* v2 icons use the same stroke sprite as the rest of the site */
+.v2-hero svg, .v2-section svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
