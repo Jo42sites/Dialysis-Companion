@@ -1903,7 +1903,6 @@
       $('#unitUsernameField').hidden = true;
       $('#unitSlug').required = false;
       $('#unitUsername').required = false;
-      $('#loginCode').closest('.field').hidden = true;
       $('label[for="pw"]').textContent = 'Browser vault password';
       $('#setupBtn').textContent = 'Create local record book';
       $('#showLoginBtn').hidden = true;
@@ -2056,7 +2055,7 @@
       try {
         const result = await serverApi('/api/units/login', {
           method: 'POST',
-          body: JSON.stringify({ slug, username, password: pw, code: $('#loginCode').value.trim() })
+          body: JSON.stringify({ slug, username, password: pw })
         });
         try {
           localStorage.setItem(UNIT_SLUG_KEY, result.unit.slug);
