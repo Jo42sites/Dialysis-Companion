@@ -2003,3 +2003,28 @@ html { scroll-behavior: auto; }
 .section-nav a[aria-current="page"] {
   background: var(--teal) !important; border-color: var(--teal) !important; color: #fff !important;
 }
+
+/* In-page card preview (popups are blocked in some setups) */
+.card-preview {
+  position: fixed; inset: 0; z-index: 300; display: grid; place-items: start center;
+  padding: 2rem 1rem; overflow: auto; background: rgba(23, 49, 46, .55);
+  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+}
+.card-preview[hidden] { display: none; }
+.card-preview-sheet {
+  background: #fff; border-radius: 14px; padding: 1.2rem 1.3rem;
+  width: min(760px, 100%); box-shadow: 0 30px 80px rgba(0, 0, 0, .35);
+}
+.card-preview-bar { display: flex; gap: .5rem; margin-bottom: .9rem; }
+.card-preview-body { color: var(--ink); }
+.card-preview-body h1 { font-family: var(--serif); font-size: 1.15rem; margin: 0 0 .2rem; }
+.card-preview-body .sub { color: var(--muted); font-size: .78rem; margin-bottom: .8rem; }
+.card-preview-body table { width: 100%; border-collapse: collapse; }
+.card-preview-body th, .card-preview-body td { border: 1px solid var(--line-strong); padding: .4rem .55rem; font-size: .8rem; text-align: left; vertical-align: top; }
+.card-preview-body th { width: 34%; background: var(--mint); }
+.card-preview-body .emergency { margin-top: .8rem; border: 2px solid var(--ink); padding: .5rem .6rem; font-weight: 700; font-size: .8rem; }
+@media print {
+  body.print-card-mode .card-preview { position: static; background: none; padding: 0; }
+  body.print-card-mode .card-preview-sheet { box-shadow: none; border-radius: 0; padding: 0; width: 100%; }
+  body.print-card-mode .card-preview-bar { display: none; }
+}
