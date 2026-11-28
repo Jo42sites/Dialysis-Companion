@@ -1757,11 +1757,10 @@ details.accordion[open] summary { background: var(--teal-soft); }
 @media (max-width: 760px) { .v2-doc .timeline { grid-template-columns: 1fr; } }
 
 /* Modality cards: icon beside the text instead of above it */
-.v2-doc .grid > .card { display: grid; grid-template-columns: 38px minmax(0, 1fr); column-gap: .7rem; align-items: start; }
-.v2-doc .grid > .card > .icon-badge { grid-row: 1 / span 2; align-self: start; }
-.v2-doc .grid > .card > h3 { margin: 0; }
-.v2-doc .grid > .card > p { margin-top: .15rem; }
-.v2-doc .grid > .card > ul { grid-column: 1 / -1; }
+.v2-doc .grid > .card:has(> .icon-badge) { display: grid; grid-template-columns: 38px minmax(0, 1fr); column-gap: .7rem; align-items: start; }
+.v2-doc .grid > .card:has(> .icon-badge) > .icon-badge { grid-row: 1 / span 2; align-self: start; }
+.v2-doc .grid > .card:has(> .icon-badge) > h3 { margin: 0; }
+.v2-doc .grid > .card:has(> .icon-badge) > p { margin-top: .15rem; }
 
 /* Modality cards: compact row, icon beside the text */
 .v2-doc .modality {
