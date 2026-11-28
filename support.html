@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tools for dialysis caregivers, your personal dialysis card, and common questions.">
   <meta name="theme-color" content="#0d6b61">
-  <title>Support, family and care card | Dialysis Companion</title>
-  <link rel="stylesheet" href="styles.css?v=20261201e">
+  <title>Suporta at card | Dialysis Companion</title>
+  <link rel="stylesheet" href="styles.css?v=20261201f">
 </head>
 <body>
   <a class="skip-link" href="#main">Lumaktaw sa nilalaman / Skip to content</a>
@@ -100,7 +100,7 @@
     <section class="hero subpage-hero" id="top">
       <div class="wrap"><div class="hero-grid topic-hero-grid"><div class="topic-hero-copy">
         <div class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span><span class="tl">Gabay sa dialysis</span><span class="en">Dialysis guide</span></div>
-        <h1><span class="tl">Suporta, pamilya at care card</span><span class="en">Support, family and care card</span></h1>
+        <h1><span class="tl">Suporta at card</span><span class="en">Support &amp; card</span></h1>
         <p class="hero-note"><svg aria-hidden="true"><use href="#i-info"/></svg><span><span class="tl">Hindi ito kapalit ng payo ng nephrologist o dialysis team.</span><span class="en">This does not replace advice from your nephrologist or dialysis team.</span></span></p>
       </div>
       <aside class="topic-hero-card topic-hero-card--support">
@@ -110,11 +110,12 @@
         <div class="topic-hero-tags"><span class="tl">Pamilya</span><span class="en">Family</span><span class="tl">Care team</span><span class="en">Care team</span></div>
       </aside></div></div>
     </section>
-  <nav class="section-nav" aria-label="Mga seksyon / Sections">
+  <nav class="section-nav" id="pages" aria-label="Mga seksyon / Sections">
     <div class="wrap section-nav-inner">
-      <a href="#family"><span class="tl">Pamilya at care team</span><span class="en">Family and care team</span></a>
-      <a href="#care-plan"><span class="tl">Aking dialysis card</span><span class="en">My dialysis card</span></a>
-      <a href="#faq"><span class="tl">FAQ</span><span class="en">FAQ</span></a>
+      <span class="section-nav-label"><span class="tl">Mga pahina</span><span class="en">Pages</span></span>
+      <a href="support.html#pages" class="active" aria-current="page"><span class="tl">Pamilya at care team</span><span class="en">Family &amp; care team</span></a>
+      <a href="card.html#pages"><span class="tl">Aking dialysis card</span><span class="en">My dialysis card</span></a>
+      <a href="faq.html#pages"><span class="tl">FAQ</span><span class="en">FAQ</span></a>
     </div>
   </nav>
 
@@ -209,115 +210,6 @@
       </div>
     </section>
 
-    <section class="section tint" id="care-plan">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <div class="kicker"><span class="tl">Ihanda, i-print, itago</span><span class="en">Prepare, print, keep</span></div>
-            <h2><span class="tl">Aking dialysis card</span><span class="en">My dialysis card</span></h2>
-          </div>
-        </div>
-
-        <div class="grid" style="grid-template-columns:1fr;align-items:start">
-          <form class="tool" id="carePlanForm" novalidate>
-            <div class="tool-head">
-              <span class="icon-badge coral"><svg><use href="#i-book"/></svg></span>
-              <div>
-                <h3><span class="tl">Punan ang iyong detalye</span><span class="en">Fill in your details</span></h3>
-                <p><span class="tl">Opsyonal ang lahat. Awtomatikong naka-save habang nagta-type.</span><span class="en">All fields are optional. Saves automatically as you type.</span></p>
-              </div>
-            </div>
-            <div class="form-grid">
-              <div class="field"><label for="planName"><span class="tl">Pangalan</span><span class="en">Name</span></label><input id="planName" name="name" autocomplete="off" placeholder="Juan Dela Cruz"></div>
-              <div class="field"><label for="planType"><span class="tl">Uri ng dialysis</span><span class="en">Type</span></label><select id="planType" name="type"><option value="">—</option><option data-tl="Hemodialysis sa center" data-en="Center hemodialysis">Center hemodialysis</option><option>Home hemodialysis</option><option>Peritoneal dialysis (CAPD)</option><option>Peritoneal dialysis (APD)</option><option>Transplant</option><option>Conservative care</option></select></div>
-              <div class="field"><label for="planAccess">Access</label><select id="planAccess" name="access"><option value="">—</option><option>AV fistula</option><option>AV graft</option><option>Central catheter</option><option>PD catheter</option><option>None yet</option></select></div>
-              <div class="field"><label for="planDry">Dry weight / target (kg)</label><input id="planDry" name="dry" inputmode="decimal" placeholder="e.g., 55.0"></div>
-              <div class="field"><label for="planLimit">Fluid limit (mL/day)</label><input id="planLimit" name="limit" inputmode="numeric" placeholder="e.g., 800"></div>
-              <div class="field"><label for="planSchedule"><span class="tl">Iskedyul</span><span class="en">Schedule</span></label><input id="planSchedule" name="schedule" placeholder="e.g., Mon/Wed/Fri, 7 AM"></div>
-              <div class="field"><label for="planDoctor">Nephrologist / Doctor</label><input id="planDoctor" name="doctor" placeholder="Dr. Maria Santos"></div>
-              <div class="field"><label for="planUnit">Unit phone</label><input id="planUnit" name="unit" inputmode="tel" placeholder="e.g., 0917 000 0000"></div>
-              <div class="field"><label for="planEmergency">Emergency contact</label><input id="planEmergency" name="emergency" inputmode="tel" placeholder="Name and number"></div>
-              <div class="field"><label for="planAllergy">Allergies</label><input id="planAllergy" name="allergy" placeholder="e.g., penicillin"></div>
-              <div class="field full"><label for="planMeds"><span class="tl">Mga gamot</span><span class="en">Medicines</span></label><textarea id="planMeds" name="meds" rows="2" placeholder="e.g., amlodipine 5 mg morning; calcium acetate with meals"></textarea></div>
-              <div class="field full"><label for="planNotes"><span class="tl">Paalala</span><span class="en">Notes</span></label><textarea id="planNotes" name="notes" rows="2" placeholder="e.g., iodine allergy; diabetes; prefer left arm"></textarea></div>
-            </div>
-            <div class="form-actions">
-              <button class="btn btn-primary btn-small" type="submit"><span class="tl">I-save</span><span class="en">Save</span></button>
-              <button class="btn btn-secondary btn-small" type="button" id="printCareCard"><span class="tl">I-print ang card</span><span class="en">Print card</span></button>
-              <button class="btn btn-secondary btn-small" type="button" id="clearCarePlan"><span class="tl">Burahin</span><span class="en">Clear</span></button>
-            </div>
-            <p class="hint" style="margin-top:9px" id="planStatus"><span class="tl">Hindi pa naka-save.</span><span class="en">Not saved yet.</span></p>
-          </form>
-
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="faq">
-      <div class="wrap">
-        <div class="section-head">
-          <div>
-            <div class="kicker"><span class="tl">Mabilisang sagot</span><span class="en">Quick answers</span></div>
-            <h2><span class="tl">FAQ</span><span class="en">FAQ</span></h2>
-            <p class="section-lede">
-              <span class="tl">Madalas itanong ng pasyente at pamilya. Pangkalahatan ang bawat sagot; ang care team pa rin ang magsasabi kung ano ang tama para sa inyo.</span>
-              <span class="en">Questions patients and families often ask. Each answer is general; your care team still decides what is right for you.</span>
-            </p>
-          </div>
-        </div>
-
-        <div class="grid grid-2" style="align-items:start">
-          <div>
-            <details class="accordion">
-              <summary>Mabubuhay ba ako nang normal? / Can I live a normal life?</summary>
-              <div class="accordion-body"><p><span class="tl">Maraming pasyente ang nakakapagtrabaho at nakakasama sa pamilya. Kailangan ng schedule, disiplina sa gamot at fluid, at suporta. Iba-iba ang “normal” para sa bawat tao.</span><span class="en">Many patients work and spend time with family. It takes schedule, medicine and fluid discipline, and support. “Normal” is different for each person.</span></p></div>
-            </details>
-            <details class="accordion">
-              <summary>Masakit ba ang dialysis? / Is dialysis painful?</summary>
-              <div class="accordion-body"><p><span class="tl">Ang needle insertion ay maaaring kirot sandali. Ang mismong dialysis ay hindi dapat masakit. Sabihin sa nurse ang pulikat, sakit ng ulo, o discomfort.</span><span class="en">Needle insertion may pinch briefly. Dialysis itself should not hurt. Tell the nurse about cramps, headache, or discomfort.</span></p></div>
-            </details>
-            <details class="accordion">
-              <summary>Pwede ba akong kumain ng saging? / Can I eat bananas?</summary>
-              <div class="accordion-body"><p><span class="tl">Depende sa potassium mo at serving size. Mataas sa potassium ang saging. Itanong sa dietitian kung gaano karami at gaano kadalas.</span><span class="en">It depends on your potassium and serving size. Bananas are high in potassium. Ask your dietitian how much and how often.</span></p></div>
-            </details>
-          </div>
-          <div>
-            <details class="accordion">
-              <summary>Pwede ba akong uminom ng kape? / Can I drink coffee?</summary>
-              <div class="accordion-body"><p><span class="tl">Kape ay likido at may potassium; ang creamer at asukal ay may phosphorus at calories. Kung papayagan, maliit na serving at bilangin sa limit. Limitahan ang 3-in-1 kung mataas ang phosphorus.</span><span class="en">Coffee is fluid and has potassium; creamer and sugar add phosphorus and calories. If allowed, keep it small and count it in your limit. Limit 3-in-1 mixes if phosphorus is high.</span></p></div>
-            </details>
-            <details class="accordion">
-              <summary>Pwede ba akong magtrabaho o maglakbay? / Can I work or travel?</summary>
-              <div class="accordion-body"><p><span class="tl">Marami ang nakakapagtrabaho at nakakapaglakbay nang planado. Kailangan ng flexible schedule at pag-iwas sa mabigat na buhat sa access arm. Para sa biyahe, magtanong sa unit 4–6 linggo bago at mag-book ng dialysis slot sa destinasyon.</span><span class="en">Many people work and travel with planning. It needs a flexible schedule and avoiding heavy lifting with the access arm. For travel, ask your unit 4–6 weeks ahead and book a dialysis slot at your destination.</span></p></div>
-            </details>
-            <details class="accordion">
-              <summary>May gamot ba para gumaling ang bato? / Is there a cure?</summary>
-              <div class="accordion-body"><p><span class="tl">Sa advanced kidney failure, wala pang gamot na nagbabalik ng normal na bato. Dialysis, transplant, at conservative care ang pangunahing opsyon. Mag-ingat sa nag-aalok ng “lunas” o “kidney cleanse.”</span><span class="en">In advanced kidney failure, no medicine restores normal kidneys. Dialysis, transplant, and conservative care are the main options. Beware of “cures” or “kidney cleanses.”</span></p></div>
-            </details>
-          </div>
-        </div>
-
-        <details class="accordion" style="margin-top:14px">
-          <summary>Glossary: mga salitang madalas marinig / Words you may hear</summary>
-          <div class="accordion-body">
-            <dl class="glossary-grid">
-              <div class="glossary-item"><dt>Bato / Kidney</dt><dd><span class="tl">Organong naglilinis ng dugo at nagbabalanse ng tubig at asin.</span><span class="en">Organ that cleans blood and balances water and salts.</span></dd></div>
-              <div class="glossary-item"><dt>Dialysis</dt><dd><span class="tl">Paraan ng paglilinis ng dugo kapag hindi na kaya ng bato.</span><span class="en">A way to clean blood when the kidneys cannot.</span></dd></div>
-              <div class="glossary-item"><dt>AV fistula</dt><dd><span class="tl">Pinagdugtong na ugat at artery sa braso para sa dialysis.</span><span class="en">Joined vein and artery in the arm for dialysis.</span></dd></div>
-              <div class="glossary-item"><dt>Catheter</dt><dd><span class="tl">Tubing para sa dialysis; pansamantala o para sa PD.</span><span class="en">Tubing for dialysis; temporary or for PD.</span></dd></div>
-              <div class="glossary-item"><dt>Thrill / Bruit</dt><dd><span class="tl">Pagaspas at ugong na senyales na may daloy sa fistula.</span><span class="en">Buzzing and whooshing that show flow in the fistula.</span></dd></div>
-              <div class="glossary-item"><dt>Dry weight</dt><dd><span class="tl">Target na timbang pagkatapos ng dialysis.</span><span class="en">Target weight after dialysis.</span></dd></div>
-              <div class="glossary-item"><dt>Ultrafiltration</dt><dd><span class="tl">Pag-alis ng sobrang tubig sa machine.</span><span class="en">Removal of extra fluid by the machine.</span></dd></div>
-              <div class="glossary-item"><dt>Anemia</dt><dd><span class="tl">Kulang sa pulang selula; nagdudulot ng pagod.</span><span class="en">Low red blood cells; causes fatigue.</span></dd></div>
-              <div class="glossary-item"><dt>Kt/V / URR</dt><dd><span class="tl">Mga sukat kung sapat ang paglilinis ng dialysis.</span><span class="en">Measures of whether dialysis clearance is enough.</span></dd></div>
-              <div class="glossary-item"><dt>PTH</dt><dd><span class="tl">Hormone ng parathyroid; mahalaga sa buto at mineral.</span><span class="en">Parathyroid hormone; important for bones and minerals.</span></dd></div>
-              <div class="glossary-item"><dt>Peritonitis</dt><dd><span class="tl">Impeksyon sa loob ng tiyan, madalas sa PD.</span><span class="en">Infection inside the abdomen, often with PD.</span></dd></div>
-              <div class="glossary-item"><dt>Nephrologist</dt><dd><span class="tl">Doktor na dalubhasa sa bato.</span><span class="en">Doctor who specializes in kidneys.</span></dd></div>
-            </dl>
-          </div>
-        </details>
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">
@@ -359,6 +251,6 @@
   <div class="print-area" id="printArea" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <button class="back-top" type="button" id="backToTop" aria-label="Bumalik sa itaas / Back to top"><svg aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
-  <script src="app.js?v=20261201e"></script>
+  <script src="app.js?v=20261201f"></script>
 </body>
 </html>
