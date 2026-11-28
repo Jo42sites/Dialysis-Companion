@@ -621,18 +621,12 @@
     if (input) input.value = unit;
   }
 
-  function showMfaSetup(result) {
-    state.pendingSetupToken = result.setupToken;
-    state.pendingAuth = null;
-    $('#setupView').hidden = true;
-    $('#unlockView').hidden = true;
-    $('#mfaSetupView').hidden = false;
-    $('#recoveryCodesView').hidden = true;
-    $('#mfaSecret').textContent = result.secret;
-    $('#mfaSetupForm').hidden = false;
-    $('#mfaCode').value = '';
-    $('#mfaSetupError').textContent = '';
-    setTimeout(() => $('#mfaCode').focus(), 60);
+  function showMfaSetup() {
+    // Two-step sign-in is disabled on this deployment (MFA_REQUIRED=0), so the
+    // API never returns a setup challenge. If it ever does, say so instead of
+    // rendering a form that no longer exists.
+    const target = $('#loginError') || $('#setupError');
+    if (target) target.textContent = 'Two-step sign-in is disabled on this server. Ask the administrator to enable it.';
   }
 
   async function activateUnit(result) {
@@ -644,7 +638,6 @@
     state.patients = (response.records || []).map((item) => normalizePatient(item.record));
     $('#unlockForm').reset();
     $('#setupForm').reset();
-    $('#mfaSetupView').hidden = true;
     showApp();
   }
 
@@ -2077,44 +2070,6 @@
       } finally {
         btn.disabled = false;
         btn.textContent = 'Unlock records';
-      }
-    });
-
-    $('#mfaSetupForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const error = $('#mfaSetupError');
-      error.textContent = '';
-      const button = $('#mfaConfirmBtn');
-      button.disabled = true;
-      try {
-        const result = await serverApi('/api/units/mfa/confirm', {
-          method: 'POST',
-          body: JSON.stringify({
-            setupToken: state.pendingSetupToken,
-            code: $('#mfaCode').value.trim()
-          })
-        });
-        state.pendingAuth = result;
-        $('#recoveryCodes').textContent = result.recoveryCodes.join('\n');
-        $('#mfaSetupForm').hidden = true;
-        $('#recoveryCodesView').hidden = false;
-      } catch (err) {
-        error.textContent = err.message || 'Could not verify the code.';
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    $('#finishMfaBtn').addEventListener('click', async () => {
-      const result = state.pendingAuth;
-      if (!result) return;
-      try {
-        await activateUnit(result);
-        state.pendingSetupToken = null;
-        state.pendingAuth = null;
-        toast('Two-step sign-in is enabled. Keep recovery codes offline.');
-      } catch (err) {
-        $('#mfaSetupError').textContent = err.message || 'Could not load unit records.';
       }
     });
 

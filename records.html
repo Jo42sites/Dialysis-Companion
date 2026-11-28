@@ -7,8 +7,8 @@
 <meta name="description" content="Unit-based hemodialysis patient record manager with encrypted server-side storage.">
 <meta name="admin-api" content="">
 <title>HD Patient Records | Dialysis Companion</title>
-<link rel="stylesheet" href="styles.css?v=20261128n">
-<link rel="stylesheet" href="records.css?v=20261128n">
+<link rel="stylesheet" href="styles.css?v=20261128o">
+<link rel="stylesheet" href="records.css?v=20261128o">
 </head>
 <body class="records-body">
 
@@ -106,26 +106,6 @@
       </form>
       <div class="lock-actions">
         <button class="link-btn" type="button" id="showRegisterBtn">Register a new unit</button>
-      </div>
-    </div>
-
-    <div id="mfaSetupView" hidden>
-      <h1>Set up two-step sign-in</h1>
-      <p class="lock-lede">Add this secret to an authenticator app, then enter its six-digit code.</p>
-      <p class="hint">Keep your authenticator secret and recovery codes private. Do not share screenshots of this page.</p>
-      <p><strong>Authenticator secret</strong><br><code id="mfaSecret"></code></p>
-      <form id="mfaSetupForm" novalidate>
-        <div class="field">
-          <label for="mfaCode">Six-digit code</label>
-          <input id="mfaCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
-        </div>
-        <p class="form-error" id="mfaSetupError" role="alert"></p>
-        <button class="btn btn-primary lock-submit" id="mfaConfirmBtn" type="submit">Verify and continue</button>
-      </form>
-      <div id="recoveryCodesView" hidden>
-        <p><strong>Save these recovery codes offline.</strong> Each can be used once if you lose access to your authenticator.</p>
-        <pre id="recoveryCodes"></pre>
-        <button class="btn btn-primary lock-submit" id="finishMfaBtn" type="button">I saved my codes</button>
       </div>
     </div>
 
@@ -1164,6 +1144,6 @@
 <div id="printRecord" aria-hidden="true"></div>
 <div class="toast" id="recToast" role="status" aria-live="polite"></div>
 
-<script src="records.js?v=20261128n"></script>
+<script src="records.js?v=20261128o"></script>
 </body>
 </html>
