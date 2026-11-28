@@ -1564,5 +1564,4 @@ details.accordion[open] summary { background: var(--teal-soft); }
 }
 @media (max-width: 640px) {
   .v2-note { border-radius: 16px; align-items: flex-start; }
-  .v2-note strong { display: block; }
 }
