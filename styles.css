@@ -1776,3 +1776,16 @@ details.accordion[open] summary { background: var(--teal-soft); }
 .v2-doc .modality .icon-badge svg { width: 18px; height: 18px; }
 .v2-doc .modality h3 { margin: 0; font-size: .92rem; }
 .v2-doc .modality p { margin: .1rem 0 0; font-size: .78rem; line-height: 1.4; }
+
+/* Access section: consistent cards and a clear lead-in */
+.access-intro { margin: 0 0 .6rem; font-size: .88rem; color: var(--ink-soft); }
+.tab-panel .grid { gap: .6rem; }
+.tab-panel .card { padding: .8rem .9rem; }
+.tab-panel .card h3 { font-size: .92rem; margin: 0 0 .35rem; }
+.tab-panel .card p { font-size: .82rem; line-height: 1.45; margin: 0; }
+.tab-panel .compact-list li { font-size: .81rem; line-height: 1.45; margin-bottom: .2rem; }
+.tab-panel .table-note {
+  margin: .55rem 0 0; padding-top: .45rem; border-top: 1px dashed var(--line);
+  font-size: .74rem; color: var(--muted);
+}
+.tabs { margin-bottom: .7rem; }
