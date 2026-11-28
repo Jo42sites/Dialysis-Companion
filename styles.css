@@ -2092,3 +2092,16 @@ html { scroll-behavior: auto; }
 .dc-wide .kv { grid-template-columns: 10mm 1fr; }
 .dc-wide .kv .v { white-space: normal; }
 .dc-wide .lines2 { min-height: 4.6mm; line-height: 1.15; display: block; }
+
+/* Card: English only, medicines and notes get their own areas */
+.dc-cols { flex: 0 0 auto; }
+.dc-meds { margin-top: .6mm; display: grid; grid-template-columns: 14mm 1fr; gap: .6mm; }
+.dc-meds .k, .dc-notes .k { font-size: 5.4pt; color: #555; }
+.dc-meds .med-lines { font-size: 5.4pt; line-height: 1.15; min-height: 6mm; }
+.dc-notes {
+  margin-top: .4mm; border: 0.25mm solid #444; border-radius: 1mm;
+  padding: .8mm; display: grid; grid-template-columns: 10mm 1fr; gap: .6mm;
+  min-height: 7mm;
+}
+.dc-notes .note-lines { font-size: 5.4pt; line-height: 1.15; }
+.dc-card { justify-content: space-between; }

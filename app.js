@@ -484,9 +484,9 @@
       ];
       const printArea = $('#printArea');
       const left = [
-        ['Pangalan', data.name], ['Uri', data.type], ['Access', data.access],
+        ['Name', data.name], ['Type', data.type], ['Access', data.access],
         ['Dry weight', data.dry ? data.dry + ' kg' : ''], ['Fluid limit', data.limit ? data.limit + ' mL/day' : ''],
-        ['Iskedyul', data.schedule]
+        ['Schedule', data.schedule]
       ];
       const right = [
         ['Doctor', data.doctor], ['Unit phone', data.unit],
@@ -494,16 +494,14 @@
       ];
       const cell = ([k, v]) => '<div class="kv"><span class="k">' + esc(k) + '</span><span class="v">' + esc(v) + '</span></div>';
       printArea.innerHTML = '<div class="dc-card">' +
-        '<div class="dc-head"><strong>Dialysis Card</strong><span>Aking Dialysis Card</span></div>' +
+        '<div class="dc-head"><strong>Dialysis Card</strong><span>Emergency medical card</span></div>' +
         '<div class="dc-cols">' +
           '<div class="dc-col">' + left.map(cell).join('') + '</div>' +
           '<div class="dc-col">' + right.map(cell).join('') + '</div>' +
         '</div>' +
-        '<div class="dc-wide">' +
-          '<div class="kv wide"><span class="k">Gamot</span><span class="v lines2">' + esc(data.meds) + '</span></div>' +
-          '<div class="kv wide"><span class="k">Notes</span><span class="v lines2">' + esc(data.notes) + '</span></div>' +
-        '</div>' +
-        '<div class="dc-foot">EMERGENCY: 911 — sabihin ang uri ng dialysis, huling session, access, dry weight, gamot, at allergy.</div>' +
+        '<div class="dc-meds"><span class="k">Medicines</span><div class="med-lines">' + esc(data.meds) + '</div></div>' +
+        '<div class="dc-notes"><span class="k">Notes</span><div class="note-lines">' + esc(data.notes) + '</div></div>' +
+        '<div class="dc-foot">EMERGENCY 911 — say the dialysis type, last session, access, dry weight, medicines and allergies.</div>' +
         '</div>';
       const cardHtml = document.querySelector('#printArea').innerHTML;
       let modal = document.querySelector('#cardPreviewModal');
