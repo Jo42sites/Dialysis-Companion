@@ -1565,3 +1565,28 @@ details.accordion[open] summary { background: var(--teal-soft); }
 @media (max-width: 640px) {
   .v2-note { border-radius: 16px; align-items: flex-start; }
 }
+
+/* ============================================================
+   Reading layout for the guide pages
+   ============================================================ */
+.v2-doc { padding-bottom: clamp(2rem, 5vw, 3.5rem); }
+.v2-doc p { line-height: 1.65; }
+.v2-doc .section-lede,
+.v2-doc .wrap > p { max-width: 68ch; }
+.v2-doc h2 {
+  font-family: var(--serif);
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  line-height: 1.15;
+  margin: 0 0 .55rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+}
+.v2-doc section:first-of-type h2 { padding-top: 0; border-top: 0; }
+.v2-doc h3 { font-size: 1.05rem; margin: 0 0 .3rem; }
+.v2-doc .timeline-item { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.1rem; margin-bottom: .7rem; }
+.v2-doc .timeline-mark { background: var(--teal); color: #fff; }
+.v2-doc .card, .v2-doc article.card { background: linear-gradient(180deg, #fffefa, var(--paper)); }
+.v2-doc .callout { border-radius: var(--radius); }
+.v2-doc .callout p { max-width: none; }
+.v2-doc ul, .v2-doc ol { padding-left: 1.15rem; }
+.v2-doc li { margin-bottom: .35rem; line-height: 1.55; }
